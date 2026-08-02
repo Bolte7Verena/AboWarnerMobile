@@ -94,18 +94,44 @@ Die Windows-App zeigt beim Start einen Toast für Abos, die in genau 3 Tagen fä
 
 ## Was für eine echte Store-Einreichung noch fehlt (nichts davon ist Code)
 
-- **App-Icons und Splashscreens** in allen von Apple/Google geforderten Auflösungen — braucht ein Quellbild (idealerweise 1024×1024), am einfachsten via `@capacitor/assets` generierbar. Noch nicht erstellt.
-- **Entwickler-Accounts:** Apple Developer Program (99 $/Jahr) für iOS, Google Play Console (einmalig 25 $) für Android.
-- **Code-Signierung:** iOS braucht ein Mac + Xcode (oder Apples EAS-artige Cloud-Build-Dienste) für Provisioning Profiles/Zertifikate; Android braucht einen Signing-Keystore.
-- **Store-Listing-Metadaten:** Screenshots je Gerätegröße, Beschreibungstexte, Kategorisierung, Altersfreigabe, Google Play Data-Safety-Formular, Apple App Privacy-Angaben (Privacy Nutrition Label) — letzteres deckt sich inhaltlich mit der bereits vorhandenen Datenschutzerklärung im Footer, muss aber zusätzlich in App Store Connect ausgefüllt werden.
-- **Datenschutz/Impressum:** `rechtliches.js`/`index.html` wurden 1:1 mit denselben Platzhaltern wie die Windows-App übernommen (siehe dortige `PROJECT_STATUS.md`) — echte Betreiberdaten fehlen weiterhin, siehe dortige Warnhinweise.
+- ~~App-Icons und Splashscreens~~ — **erledigt, siehe Abschnitt „iOS ohne physischen Mac" unten.**
+- **Entwickler-Accounts:** Apple Developer Program (99 $/Jahr) für iOS, Google Play Console (einmalig 25 $) für Android. Weiterhin offen, reine Kontoanlage außerhalb des Codes.
+- **Code-Signierung:** iOS-Signierung läuft jetzt über Codemagic + App-Store-Connect-API (siehe unten), kein eigener Mac mehr nötig. Android-Keystore existiert bereits (siehe Play-Store-Audit oben).
+- **Store-Listing-Metadaten:** Screenshots je Gerätegröße, Beschreibungstexte, Kategorisierung, Altersfreigabe, Google Play Data-Safety-Formular, Apple App Privacy-Angaben (Privacy Nutrition Label) — weiterhin offen, reine Content-Aufgabe.
+- **Gehostete Datenschutzerklärung-URL:** Beide Stores verlangen im Store-Listing selbst eine öffentlich erreichbare URL, nicht nur den In-App-Text unter „Datenschutz" im Footer. Noch nicht vorhanden — braucht irgendein Hosting (z.B. GitHub Pages aus genau diesem jetzt existierenden Repo, eine simple Static-Page).
+- **Datenschutz/Impressum:** `rechtliches.js`/`index.html` — echte Betreiberdaten sind inzwischen eingetragen (siehe Datei), keine Platzhalter mehr im aktuellen Quellcode.
 
-## Nächste Schritte (kein festgelegter Backlog, nur Kandidaten)
+## iOS ohne physischen Mac — Codemagic-Cloud-Build eingerichtet (2026-08-02)
 
-- Quell-Icon bereitstellen und `@capacitor/assets` für Icon-/Splash-Generierung einrichten.
-- Auf einem Mac: `npx cap open ios`, echten Simulator-Test durchführen.
-- Auf einer Maschine mit Android Studio: `npx cap open android`, Emulator-Test durchführen.
-- Reale Betreiberdaten in `rechtliches.js` eintragen (siehe Windows-App-Hinweis).
+Auf Nutzerwunsch: konkreter, umsetzbarer Weg zur App-Store-Einreichung ohne eigenen Mac. Vorher zwei tatsächliche Store-Blocker im iOS-Zweig gefunden und behoben, die unabhängig vom CI-Thema bestanden:
+
+**1. iOS-Markenicon & Splashscreen waren nie ersetzt worden** (anders als Android — siehe Play-Store-Audit oben): `Assets.xcassets/AppIcon.appiconset` zeigte noch das generische Capacitor/Ionic-Standardicon, `Splash.imageset` den Standard-Splash. Beides ersetzt:
+- Neue Quell-Assets unter `assets/icon.png` (1024×1024, voll ausgefüllt, keine eingebrannten abgerundeten Ecken — Apple maskiert das Icon selbst; ein vorgerundetes Quellbild hätte ein sichtbares „Icon-im-Icon"-Artefakt erzeugt) und `assets/splash.png` (2732×2732), pixelgenau aus denselben Gradient-/Pfaddaten wie das bereits geprüfte Android-Adaptive-Icon nachgebaut (`android/app/src/main/res/drawable/ic_launcher_background.xml` + `drawable-v24/ic_launcher_foreground.xml`), per SVG+`sharp` gerendert (kein Mac/Xcode nötig).
+- `npx @capacitor/assets generate --ios` (bewusst nur `--ios`, NICHT `--android` — die bestehende, bereits audit-geprüfte Android-Adaptive-Icon-Lösung mit ihren erklärenden Kommentaren sollte nicht durch rasterisierte PNGs ersetzt werden) erzeugte daraus den vollständigen iOS-Asset-Katalog (AppIcon 1024er + Splash light/dark in allen Skalierungen). Alte, jetzt unreferenzierte Platzhalter-Splash-PNGs aus dem `Splash.imageset`-Ordner entfernt.
+- Visuell verifiziert (beide Quellbilder UND die generierten Xcode-Assets angesehen) — Icon und Splash zeigen jetzt exakt dasselbe Wallet-Symbol/denselben Farbverlauf wie Android/Windows.
+
+**2. Kein `PrivacyInfo.xcprivacy`-Privacy-Manifest im App-Target.** Seit Mai 2024 verlangt Apple bei Nutzung bestimmter „Required Reason APIs" ein deklariertes Manifest, sonst droht eine automatisierte Ablehnung/Warnung bei der Einreichung. Recherchiert (siehe Quellen unten): `@capacitor/filesystem` nutzt nachweislich `modificationDate`-APIs (bestätigt über ein offenes Issue im `ionic-team/capacitor-plugins`-Repo) → Kategorie **File Timestamp APIs**, Reason-Code **`C617.1`** („Zugriff auf Zeitstempel/Größe/Metadaten von Dateien innerhalb des eigenen App-Containers" — passt exakt zu `Directory.Data`/`Directory.Cache`, die einzigen in `api.js` genutzten Speicherorte). Neue Datei `ios/App/App/PrivacyInfo.xcprivacy` angelegt (`NSPrivacyTracking: false`, `NSPrivacyCollectedDataTypes: []`, ein Required-Reason-Eintrag für `C617.1`) und **manuell korrekt ins Xcode-Projekt verdrahtet** (`project.pbxproj`: neuer `PBXFileReference`- und `PBXBuildFile`-Eintrag, in der „App"-Gruppe und in der Resources-Build-Phase registriert — sonst würde die Datei zwar im Ordner liegen, aber nie in die IPA gepackt).
+- **Bewusst nicht spekulativ erweitert:** Für die übrigen Plugins (`local-notifications`, `share`, `app`, `status-bar`, Capacitor-Core selbst) ließ sich von hier ohne Mac/Xcode nicht zweifelsfrei verifizieren, ob sie zusätzliche Required-Reason-APIs (z.B. UserDefaults) berühren. Statt zu raten: Der erste TestFlight-Upload über Codemagic gibt in App Store Connect exakt an, welche zusätzlichen Kategorien Apples automatischer Scan im fertig gelinkten Binary findet, falls welche fehlen — dann gezielt ergänzen statt vorab blind deklarieren.
+
+**3. Git-Repository lokal initialisiert** (`C:\AboWarnerMobile` war bis dahin gar nicht unter Versionskontrolle — Voraussetzung für jeden Cloud-CI-Dienst, der von einem Git-Host baut). Neues Top-Level-`.gitignore` (node_modules, `www/`-Build-Output, `builds/`, alle Signing-Artefakte `*.jks`/`*.keystore`/`keystore.properties`/`*.p8`/`*.mobileprovision`/`*.p12` — verifiziert vor dem ersten Commit, dass keine dieser Dateien im Staging landet). Erster Commit lokal erstellt. **Noch kein Remote/Push** — dafür fehlt ein GitHub/GitLab-Repo, siehe manuelle Schritte unten.
+
+**4. `codemagic.yaml` (Workflow `ios-app-store`) im Repo-Root angelegt** — deklarativer Build/Sign/Publish-Workflow für Codemagic:
+- `npm ci` → `npm run build` (esbuild, `src/` → `www/`) → `npx cap sync ios` (synct `www/` ins native Projekt, führt `pod install` automatisch aus) → `xcode-project use-profiles` (holt/erzeugt Zertifikat + Provisioning-Profil vollautomatisch über die App-Store-Connect-API-Integration, kein manuelles Zertifikats-Handling) → Build-Nummer automatisch hochgezählt (`app-store-connect get-latest-build-number` + `agvtool`, verhindert „Build-Nummer bereits vergeben"-Fehler bei wiederholten Uploads) → `xcode-project build-ipa`.
+- Publishing bewusst konservativ: `submit_to_testflight: true`, `submit_to_app_store: false` — jeder erfolgreiche Build landet automatisch in TestFlight, geht aber NICHT automatisch in die echte Apple-Review. Erst nach eigenem Test in TestFlight bewusst auf `submit_to_app_store: true` umstellen oder manuell in App Store Connect einreichen.
+- Kein automatischer Trigger auf `git push` konfiguriert (bewusst) — Builds werden anfangs manuell über das Codemagic-Dashboard gestartet, bis der Ablauf sich bewährt hat.
+- `APP_STORE_APPLE_ID` (die numerische App-Store-Connect-App-ID, nicht die Bundle-ID) ist noch ein Platzhalter (`0000000000`) — kann erst eingetragen werden, nachdem die App einmal in App Store Connect angelegt wurde (siehe manuelle Schritte).
+
+**Kann von hier aus nicht verifiziert werden:** ob der erste echte Codemagic-Build tatsächlich grün durchläuft (Signing-Integration, Provisioning, Xcode-Kompatibilität der generierten CapApp-SPM-Swift-Package-Struktur) — die YAML-Konfiguration folgt dem offiziell dokumentierten Codemagic-Capacitor/Fastlane-losen Standardablauf, aber ein realer Build auf Apples/Codemagics Infrastruktur wurde noch nicht ausgelöst (fehlt: Apple-Developer-Account, App-Store-Connect-App-Eintrag, Codemagic-Account, GitHub-Remote — alles außerhalb dieser Sandbox).
+
+**Manuelle Schritte, die zwingend beim Nutzer liegen (keine davon technisch von hier aus möglich):**
+1. Apple Developer Program beitreten (developer.apple.com, 99 $/Jahr, Verifizierung kann 24–48h dauern).
+2. In App Store Connect eine neue App anlegen mit Bundle-ID `com.abowarner.pro` (App-ID vorher unter „Certificates, Identifiers & Profiles" registrieren) → liefert die numerische App-ID für `APP_STORE_APPLE_ID` in `codemagic.yaml`.
+3. App-Store-Connect-API-Key erzeugen: App Store Connect → Users and Access → Integrations → App Store Connect API → Key mit Rolle „App Manager" erzeugen, `.p8`-Datei herunterladen (nur einmalig möglich!), Key-ID + Issuer-ID notieren.
+4. GitHub-Repo für `C:\AboWarnerMobile` anlegen (privat empfohlen) und den bestehenden lokalen Commit dorthin pushen (`git remote add origin ...`, `git push -u origin main`).
+5. Codemagic-Account erstellen (codemagic.io, kostenloses Kontingent reicht für gelegentliche Releases), das GitHub-Repo verbinden/autorisieren.
+6. In Codemagic unter Teams → Integrations → App Store Connect: die Daten aus Schritt 3 (.p8, Key-ID, Issuer-ID) eintragen, Integration **exakt** `appstore_credentials` nennen (muss zum Namen in `codemagic.yaml` passen).
+7. `APP_STORE_APPLE_ID` in `codemagic.yaml` mit der echten App-ID aus Schritt 2 ersetzen, committen, pushen.
+8. Ersten Build im Codemagic-Dashboard manuell starten (Workflow „iOS – Build, Sign & TestFlight"), Ergebnis in TestFlight prüfen.
 
 ## Android / Google-Play-Store-Audit (2026-08-01)
 

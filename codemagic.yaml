@@ -1,0 +1,69 @@
+workflows:
+  ios-app-store:
+    name: iOS – Build, Sign & TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    integrations:
+      # Name muss exakt mit der App-Store-Connect-Integration übereinstimmen,
+      # die im Codemagic-Dashboard unter Teams > Integrations angelegt wird.
+      app_store_connect: appstore_credentials
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.abowarner.pro
+      vars:
+        # Numerische App-Store-Connect-App-ID (NICHT die Bundle-ID) —
+        # erst bekannt, nachdem die App in App Store Connect angelegt wurde.
+        # Bis dahin bricht der "Increment build number"-Schritt unten ab.
+        APP_STORE_APPLE_ID: 0000000000
+      node: latest
+      xcode: latest
+      cocoapods: default
+    cache:
+      cache_paths:
+        - $HOME/.npm
+        - $HOME/Library/Caches/CocoaPods
+    scripts:
+      - name: Install npm dependencies
+        script: npm ci
+
+      - name: Web-Assets bauen (src/ -> www/)
+        script: npm run build
+
+      - name: Capacitor iOS-Projekt synchronisieren (inkl. pod install)
+        script: npx cap sync ios
+
+      - name: Code-Signing einrichten (automatisch via App Store Connect API)
+        script: xcode-project use-profiles
+
+      - name: Build-Nummer hochzählen
+        script: |
+          cd ios/App
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID")
+          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+
+      - name: IPA bauen
+        script: |
+          xcode-project build-ipa \
+            --workspace ios/App/App.xcworkspace \
+            --scheme App
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      email:
+        recipients:
+          - bolte7verena@gmail.com
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        # Absichtlich konservativ: landet in TestFlight, geht NICHT automatisch
+        # in die Apple-Review. Erst nach eigenem Test in TestFlight auf
+        # submit_to_app_store: true umstellen (oder manuell in App Store
+        # Connect einreichen).
+        submit_to_testflight: true
+        submit_to_app_store: false
