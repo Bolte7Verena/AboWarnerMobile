@@ -1,0 +1,30 @@
+{
+  "name": "abo-warner-mobile",
+  "version": "2.0.0",
+  "description": "Abo-Warner Pro — mobile Version (iOS & Android) auf Basis der bestehenden Windows-Electron-App, via Capacitor.",
+  "private": true,
+  "type": "module",
+  "author": "Abo-Warner Pro",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "node build.mjs",
+    "sync": "npm run build && cap sync",
+    "open:ios": "cap open ios",
+    "open:android": "cap open android",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/local-notifications": "^8.2.1",
+    "@capacitor/share": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/ios": "^8.5.0",
+    "esbuild": "^0.28.1"
+  }
+}

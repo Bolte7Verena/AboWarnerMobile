@@ -1,0 +1,498 @@
+/* ABO-WARNER PRO — Design 1:1 übernommen aus C:\minimalist-landing-gen-main (src/styles.css) */
+
+:root {
+    --radius: 0.85rem;
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --radius-2xl: calc(var(--radius) + 8px);
+
+    --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+    /* Deep atmospheric dark palette */
+    --background: oklch(0.16 0.03 265);
+    --foreground: oklch(0.97 0.008 250);
+
+    --surface: oklch(0.19 0.035 265);
+    --surface-muted: oklch(0.22 0.04 265);
+
+    --card: oklch(0.21 0.038 265);
+    --card-foreground: oklch(0.97 0.008 250);
+    --popover: oklch(0.21 0.038 265);
+    --popover-foreground: oklch(0.97 0.008 250);
+
+    --primary: oklch(0.72 0.19 275);
+    --primary-foreground: oklch(0.12 0.03 265);
+
+    --secondary: oklch(0.26 0.04 265);
+    --secondary-foreground: oklch(0.95 0.008 250);
+
+    --muted: oklch(0.24 0.035 265);
+    --muted-foreground: oklch(0.72 0.02 260);
+
+    --accent: oklch(0.28 0.05 275);
+    --accent-foreground: oklch(0.97 0.008 250);
+
+    --destructive: oklch(0.65 0.24 20);
+    --destructive-foreground: oklch(0.98 0.005 250);
+
+    --border: oklch(1 0 0 / 0.09);
+    --input: oklch(1 0 0 / 0.12);
+    --ring: oklch(0.72 0.19 275);
+
+    --accent-violet: oklch(0.75 0.22 300);
+    --accent-teal: oklch(0.78 0.15 185);
+    --accent-amber: oklch(0.82 0.16 78);
+    --accent-rose: oklch(0.6 0.19 22);
+    --accent-lime: oklch(0.83 0.19 135);
+    --accent-sky: oklch(0.78 0.16 232);
+
+    --gradient-cta: linear-gradient(135deg, oklch(0.72 0.19 275), oklch(0.72 0.22 300) 50%, oklch(0.72 0.22 12));
+
+    --gradient-hero:
+        radial-gradient(900px 500px at 15% 0%, oklch(0.55 0.25 300 / 0.35), transparent 60%),
+        radial-gradient(800px 500px at 85% 10%, oklch(0.55 0.24 230 / 0.28), transparent 65%),
+        radial-gradient(700px 500px at 50% 90%, oklch(0.55 0.24 12 / 0.22), transparent 65%),
+        linear-gradient(180deg, oklch(0.14 0.03 265), oklch(0.18 0.035 265));
+
+    --gradient-primary: linear-gradient(135deg, oklch(0.72 0.19 275), oklch(0.72 0.22 300));
+
+    --shadow-elegant: 0 20px 60px -20px oklch(0.55 0.25 285 / 0.55), 0 1px 0 oklch(1 0 0 / 0.06) inset;
+    --shadow-soft: 0 1px 0 oklch(1 0 0 / 0.05) inset, 0 20px 50px -20px oklch(0 0 0 / 0.55);
+    --shadow-glow: 0 0 0 1px oklch(1 0 0 / 0.06), 0 30px 80px -20px oklch(0.55 0.25 285 / 0.45);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background-image:
+        radial-gradient(1000px 600px at 10% -10%, oklch(0.55 0.25 300 / 0.18), transparent 60%),
+        radial-gradient(900px 600px at 100% 20%, oklch(0.55 0.24 230 / 0.14), transparent 65%);
+    background-attachment: fixed;
+}
+h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; margin: 0; }
+p { margin: 0; }
+
+.glass {
+    background: linear-gradient(180deg, oklch(1 0 0 / 0.06), oklch(1 0 0 / 0.02));
+    border: 1px solid oklch(1 0 0 / 0.09);
+    backdrop-filter: blur(20px) saturate(140%);
+    box-shadow: 0 1px 0 oklch(1 0 0 / 0.06) inset, 0 20px 50px -20px oklch(0 0 0 / 0.5);
+}
+.glass-strong {
+    background: linear-gradient(180deg, oklch(1 0 0 / 0.09), oklch(1 0 0 / 0.03));
+    border: 1px solid oklch(1 0 0 / 0.12);
+    backdrop-filter: blur(24px) saturate(150%);
+    box-shadow: 0 1px 0 oklch(1 0 0 / 0.08) inset, 0 30px 80px -20px oklch(0 0 0 / 0.6);
+}
+
+/* Header */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid oklch(1 0 0 / 0.05);
+    background: color-mix(in oklch, var(--background) 40%, transparent);
+    backdrop-filter: blur(24px) saturate(150%);
+}
+.header-inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    /* Mobile-Anpassung ggü. der Desktop-Version: Platz für Notch/Dynamic
+       Island (iOS) bzw. Kamera-Aussparung (Android) reservieren. env()
+       fällt auf 0px zurück, wo nicht unterstützt — auf dem Desktop also
+       wirkungslos. */
+    padding-top: env(safe-area-inset-top);
+    height: calc(4rem + env(safe-area-inset-top));
+}
+.brand { display: flex; align-items: center; gap: 0.5rem; }
+.brand-icon {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-lg);
+    background-image: var(--gradient-primary);
+    color: var(--primary-foreground);
+    box-shadow: var(--shadow-elegant);
+}
+.brand-icon svg { width: 1rem; height: 1rem; }
+.brand-name { font-family: var(--font-display); font-size: 1.125rem; font-weight: 600; letter-spacing: -0.02em; }
+
+/* Main / hero */
+.main { position: relative; flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+.hero-bg { position: fixed; inset: 0; z-index: -1; background-image: var(--gradient-hero); }
+.page-container { max-width: 88rem; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
+
+.intro { max-width: 42rem; margin: -2.5rem auto 0; text-align: center; }
+.page-title {
+    font-size: 2.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--primary);
+    text-shadow: 0 0 40px color-mix(in oklch, var(--primary) 45%, transparent);
+}
+.page-subline {
+    margin-top: 0.75rem;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: color-mix(in oklch, var(--foreground) 82%, transparent);
+}
+.page-subtitle { margin-top: 0.625rem; font-size: 0.875rem; color: var(--muted-foreground); }
+
+/* Layout — die Abo-Liste ist der einzige Bereich der Seite, volle Breite bis
+   zum page-container-Maximum; das Hinzufügen-Formular lebt jetzt im Modal
+   weiter unten (nicht mehr als dauerhafte Sidebar). */
+.content-panel { margin-top: 5.5rem; }
+
+.content-toolbar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+.content-toolbar .search-wrap { flex: 1; margin-bottom: 0; }
+
+/* Form */
+#abo-form { display: flex; flex-direction: column; gap: 1rem; }
+.form-group { flex: 1; }
+.form-group label { display: block; margin-bottom: 0.375rem; font-size: 0.8rem; font-weight: 500; color: var(--foreground); }
+.form-row { display: flex; gap: 0.75rem; }
+
+.input-control {
+    display: flex;
+    height: 2.25rem;
+    width: 100%;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--input);
+    background: transparent;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
+    transition: box-shadow 0.15s;
+}
+.input-control::placeholder { color: var(--muted-foreground); }
+.input-control:focus { outline: none; box-shadow: 0 0 0 1px var(--ring); }
+.input-control[type="number"]::-webkit-inner-spin-button,
+.input-control[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.input-control[type="number"] { appearance: textfield; -moz-appearance: textfield; }
+
+/* Datumsfeld (ersetzt <input type="date">) */
+.date-input-wrap { position: relative; }
+.date-input { cursor: pointer; padding-right: 2.25rem; }
+.date-input-icon { position: absolute; top: 50%; right: 0.75rem; transform: translateY(-50%); width: 1rem; height: 1rem; color: var(--muted-foreground); pointer-events: none; }
+
+.date-picker-popover {
+    /* position:fixed statt absolute — das Popover hängt zur Laufzeit direkt an
+       <body> (siehe datepicker.js oeffnen()), um dem Stacking-Context von
+       .glass-strong (backdrop-filter) zu entkommen. top/bottom/left werden
+       dynamisch in JS als Viewport-Pixel gesetzt, siehe positioniereSauber(). */
+    /* z-index über dem Modal-Overlay (100) — das Datumsfeld lebt jetzt selbst
+       im "Neues Abo"-Modal, sein Kalender-Popover muss darüber liegen, sonst
+       würde es unsichtbar hinter dem Modal rendern. */
+    position: fixed;
+    z-index: 110;
+    width: 16.5rem;
+    max-height: min(22rem, calc(100vh - 6rem));
+    display: flex;
+    flex-direction: column;
+    padding: 0.875rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, oklch(1 0 0 / 0.09), oklch(1 0 0 / 0.03));
+    border: 1px solid oklch(1 0 0 / 0.12);
+    backdrop-filter: blur(24px) saturate(150%);
+    box-shadow: var(--shadow-glow);
+}
+/* Ohne diese Regel gewinnt die eigene "display: flex"-Deklaration oben gegen
+   das UA-Stylesheet ([hidden] { display: none; } ist dort NICHT !important) —
+   das Popover würde trotz gesetztem hidden-Attribut sichtbar bleiben. */
+.date-picker-popover[hidden] { display: none; }
+.date-picker-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-shrink: 0; }
+.date-picker-nav-btn { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: var(--radius-md); border: none; background: transparent; color: var(--muted-foreground); cursor: pointer; }
+.date-picker-nav-btn svg { width: 0.875rem; height: 0.875rem; }
+.date-picker-nav-btn:hover { background: oklch(1 0 0 / 0.08); color: var(--foreground); }
+.date-picker-month-label { font-family: var(--font-display); font-size: 0.8125rem; font-weight: 600; }
+.date-picker-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 0.25rem; flex-shrink: 0; }
+.date-picker-weekdays span { display: block; text-align: center; font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted-foreground); }
+.date-picker-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; overflow-y: auto; }
+.date-picker-day { display: grid; place-items: center; height: 1.9rem; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--foreground); font-size: 0.75rem; font-family: var(--font-sans); cursor: pointer; }
+.date-picker-day:hover { background: oklch(1 0 0 / 0.08); }
+.date-picker-day.outside { color: var(--muted-foreground); opacity: 0.35; cursor: default; }
+.date-picker-day.today { box-shadow: inset 0 0 0 1px var(--primary); }
+.date-picker-day.selected { background: var(--primary); color: var(--primary-foreground); font-weight: 600; }
+
+.select-control {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    padding-right: 2rem;
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    background-size: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23b8bcd4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+.select-control option { background: var(--popover); color: var(--popover-foreground); }
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    border-radius: var(--radius-md);
+    border: none;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s, opacity 0.15s;
+    height: 2.25rem;
+    padding: 0 1rem;
+}
+.btn svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+.btn-sm { height: 2rem; padding: 0 0.75rem; font-size: 0.75rem; }
+.btn-lg { height: 2.5rem; padding: 0 2rem; }
+.btn-block { width: 100%; margin-top: 0.5rem; }
+.form-fehler, .edit-fehler { margin-top: 0.5rem; font-size: 0.75rem; color: var(--accent-rose); min-height: 1rem; }
+.btn-primary { background: var(--primary); color: var(--primary-foreground); box-shadow: 0 1px 2px oklch(0 0 0 / 0.05); }
+.btn-primary:hover { background: color-mix(in oklch, var(--primary) 90%, transparent); }
+.btn-outline { background: var(--background); border: 1px solid var(--input); color: var(--foreground); box-shadow: 0 1px 2px oklch(0 0 0 / 0.05); }
+.btn-outline:hover { background: var(--accent); color: var(--accent-foreground); }
+
+/* Stat tiles */
+.stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin-bottom: 1.5rem; }
+@media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.stat-tile { display: flex; align-items: center; gap: 0.5rem; border-radius: var(--radius-xl); padding: 0.625rem; min-width: 0; }
+.stat-icon { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; flex-shrink: 0; border-radius: var(--radius-lg); }
+.stat-icon svg { width: 0.75rem; height: 0.75rem; }
+.stat-icon.tone-neutral { background: oklch(1 0 0 / 0.05); color: var(--muted-foreground); box-shadow: inset 0 0 0 1px oklch(1 0 0 / 0.1); }
+.stat-icon.tone-primary { background: color-mix(in oklch, var(--primary) 20%, transparent); color: var(--primary); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--primary) 30%, transparent); }
+.stat-icon.tone-warning { background: color-mix(in oklch, var(--accent-amber) 20%, transparent); color: var(--accent-amber); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--accent-amber) 30%, transparent); }
+.stat-body { min-width: 0; }
+.stat-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); }
+.stat-value { margin-top: 0.125rem; font-family: var(--font-display); font-size: 0.875rem; font-weight: 600; color: var(--foreground); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stat-value.tone-primary { color: var(--primary); }
+.stat-value.tone-warning { color: var(--accent-amber); }
+
+/* Search */
+.search-wrap { position: relative; margin-bottom: 1.5rem; }
+.search-icon { position: absolute; top: 50%; left: 0.875rem; transform: translateY(-50%); width: 1rem; height: 1rem; color: var(--muted-foreground); pointer-events: none; }
+.search-input {
+    width: 100%;
+    border-radius: 9999px;
+    border: 1px solid oklch(1 0 0 / 0.1);
+    background: oklch(1 0 0 / 0.05);
+    padding: 0.625rem 1rem 0.625rem 2.5rem;
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    outline: none;
+    transition: box-shadow 0.15s;
+}
+.search-input::placeholder { color: var(--muted-foreground); }
+.search-input:focus { box-shadow: 0 0 0 2px color-mix(in oklch, var(--primary) 40%, transparent); }
+
+/* Kategorie-Filter-Chips */
+.filter-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+.filter-chip {
+    border-radius: 9999px;
+    border: none;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-family: var(--font-sans);
+    color: var(--muted-foreground);
+    background: oklch(1 0 0 / 0.05);
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+}
+.filter-chip:hover { background: oklch(1 0 0 / 0.1); color: var(--foreground); }
+.filter-chip.active { background: var(--primary); color: var(--primary-foreground); }
+
+/* Abo list — responsives Karten-Grid statt einspaltiger Liste, damit die neu
+   gewonnene volle Breite auf großen Monitoren tatsächlich genutzt wird (mehrere
+   Spalten) und auf schmalen Fenstern automatisch auf eine Spalte zurückfällt,
+   ganz ohne eigene Media-Query. */
+.abo-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; list-style: none; padding: 0; margin: 0; }
+.abo-karte {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-xl);
+    padding: 1.375rem 1.375rem 1.375rem 1.625rem;
+    transition: border-color 0.15s, transform 0.15s;
+}
+.abo-karte:hover { border-color: oklch(1 0 0 / 0.18); transform: translateY(-1px); }
+.abo-karte::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: transparent; }
+.abo-karte.kritisch::before { background: var(--accent-rose); }
+.abo-karte.warnung::before { background: var(--accent-amber); }
+.abo-karte.sicher::before { background: var(--accent-lime); }
+.abo-karte.gekuendigt::before { background: var(--muted-foreground); }
+.abo-karte.gekuendigt { opacity: 0.65; }
+.abo-karte.gekuendigt:hover { transform: none; }
+
+.abo-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+.abo-left { display: flex; align-items: flex-start; gap: 0.75rem; }
+.abo-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex-shrink: 0; border-radius: var(--radius-lg); background: oklch(1 0 0 / 0.05); color: var(--muted-foreground); }
+.abo-icon svg { width: 1rem; height: 1rem; }
+.abo-name-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.abo-name { font-family: var(--font-display); font-size: 0.875rem; font-weight: 600; }
+.abo-meta { margin-top: 0.25rem; font-size: 0.75rem; color: var(--muted-foreground); white-space: nowrap; }
+.abo-right { text-align: right; }
+.abo-price { font-family: var(--font-display); font-size: 0.875rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.abo-price-sub { font-size: 0.75rem; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+
+/* margin-top: auto (statt fixem 1rem) drückt die Aktionsleiste in flex-column
+   Karten an den unteren Rand — im Grid stehen so alle Buttons einer Zeile auf
+   gleicher Höhe, selbst wenn Nachbarkarten durch längere Namen/Badges höher sind. */
+.abo-bottom { margin-top: auto; padding-top: 0.875rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; border-top: 1px solid oklch(1 0 0 / 0.06); }
+.abo-bottom-info { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--muted-foreground); }
+.abo-status-pill { border-radius: 9999px; background: oklch(1 0 0 / 0.05); padding: 0.25rem 0.625rem; color: color-mix(in oklch, var(--foreground) 90%, transparent); }
+.abo-aktionen { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; width: 100%; }
+/* Löschen ist die einzige destruktive Aktion der Karte — bewusst nach rechts
+   abgesetzt und dezent rot eingefärbt, damit sie sich von den drei sicheren
+   Aktionen (Bearbeiten/Kündigen/Exportieren) klar abhebt und nicht versehentlich
+   im selben Grüppchen "wegwischbar" wirkt. */
+.abo-aktionen .delete-btn { margin-left: auto; color: var(--accent-rose); border-color: color-mix(in oklch, var(--accent-rose) 35%, var(--input)); }
+.abo-aktionen .delete-btn:hover { background: color-mix(in oklch, var(--accent-rose) 15%, transparent); color: var(--accent-rose); }
+.karte-export-status { margin-top: 0.5rem; font-size: 0.75rem; color: var(--muted-foreground); min-height: 1rem; overflow-wrap: anywhere; }
+
+/* Inline-Bearbeitungsformular direkt auf der Abo-Karte */
+.abo-edit-form { display: flex; flex-direction: column; gap: 0.75rem; }
+.abo-edit-aktionen { display: flex; gap: 0.5rem; margin-top: 0.25rem; }
+
+/* Badges — etwas kräftiger (Gewicht/Letter-Spacing) als reiner Fließtext, damit
+   Status auf einen Blick erfassbar ist, ohne die Zeile lesen zu müssen. */
+.badge { display: inline-flex; align-items: center; border-radius: var(--radius-md); border: 1px solid var(--border); padding: 0.1875rem 0.625rem; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.02em; color: var(--foreground); background: transparent; white-space: nowrap; }
+.badge-cat-violet { background: color-mix(in oklch, var(--accent-violet) 20%, transparent); color: var(--accent-violet); border-color: color-mix(in oklch, var(--accent-violet) 30%, transparent); }
+.badge-cat-sky { background: color-mix(in oklch, var(--accent-sky) 20%, transparent); color: var(--accent-sky); border-color: color-mix(in oklch, var(--accent-sky) 30%, transparent); }
+.badge-cat-teal { background: color-mix(in oklch, var(--accent-teal) 20%, transparent); color: var(--accent-teal); border-color: color-mix(in oklch, var(--accent-teal) 30%, transparent); }
+.badge-cat-lime { background: color-mix(in oklch, var(--accent-lime) 20%, transparent); color: var(--accent-lime); border-color: color-mix(in oklch, var(--accent-lime) 30%, transparent); }
+.badge-cat-amber { background: color-mix(in oklch, var(--accent-amber) 20%, transparent); color: var(--accent-amber); border-color: color-mix(in oklch, var(--accent-amber) 30%, transparent); }
+.badge-cat-rose { background: color-mix(in oklch, var(--accent-rose) 20%, transparent); color: var(--accent-rose); border-color: color-mix(in oklch, var(--accent-rose) 30%, transparent); }
+.badge-cat-muted { background: var(--muted); color: var(--muted-foreground); border-color: oklch(1 0 0 / 0.1); }
+
+.badge-status-critical { background: color-mix(in oklch, var(--accent-rose) 20%, transparent); color: var(--accent-rose); border-color: color-mix(in oklch, var(--accent-rose) 30%, transparent); }
+.badge-status-warnung { background: color-mix(in oklch, var(--accent-amber) 20%, transparent); color: var(--accent-amber); border-color: color-mix(in oklch, var(--accent-amber) 30%, transparent); }
+.badge-status-safe { background: color-mix(in oklch, var(--accent-lime) 20%, transparent); color: var(--accent-lime); border-color: color-mix(in oklch, var(--accent-lime) 30%, transparent); }
+.badge-status-gekuendigt { background: var(--muted); color: var(--muted-foreground); border-color: oklch(1 0 0 / 0.1); }
+
+/* Empty state */
+.empty-msg { border-radius: var(--radius-2xl); padding: 2rem; text-align: center; font-size: 0.875rem; color: var(--muted-foreground); }
+
+/* Kündigungsschreiben-Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: oklch(0 0 0 / 0.6);
+    backdrop-filter: blur(4px);
+}
+/* Ohne diese Regel gewinnt die eigene "display: flex"-Deklaration gegen das
+   UA-Stylesheet ([hidden] { display: none; } ist dort NICHT !important) — exakt
+   derselbe Bug wie beim Datepicker-Popover (siehe PROJECT_STATUS.md). Das
+   "Neues Abo"-Modal wird per [hidden]-Attribut ein-/ausgeblendet, daher hier
+   vorab abgesichert. */
+.modal-overlay[hidden] { display: none; }
+.modal-dialog {
+    width: 100%;
+    max-width: 34rem;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+    border-radius: var(--radius-2xl);
+    padding: 1.75rem;
+    box-shadow: var(--shadow-glow);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.modal-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; }
+.modal-close-btn { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; flex-shrink: 0; border-radius: var(--radius-md); border: none; background: transparent; color: var(--muted-foreground); cursor: pointer; }
+.modal-close-btn:hover { background: oklch(1 0 0 / 0.08); color: var(--foreground); }
+.modal-close-btn svg { width: 1rem; height: 1rem; }
+.modal-subline { font-size: 0.8rem; color: var(--muted-foreground); margin-top: -0.5rem; }
+.modal-letter-textarea { min-height: 16rem; height: auto; resize: vertical; font-family: var(--font-sans); line-height: 1.5; white-space: pre-wrap; padding: 0.75rem; }
+.modal-aktionen { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.modal-copy-status { font-size: 0.75rem; color: var(--accent-lime); min-height: 1rem; }
+
+/* Fälligkeitshinweis-Toast (beim App-Start, für Abos mit Fälligkeit in genau 3 Tagen) */
+.faelligkeit-toast {
+    position: fixed;
+    right: 1.5rem;
+    /* Mobile-Anpassung ggü. der Desktop-Version: Ohne Safe-Area-Abstand könnte
+       der Toast auf Android/iOS teilweise hinter der Gesten-Navigationsleiste
+       bzw. dem Home-Indicator verschwinden oder nicht antippbar sein. */
+    bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    z-index: 90;
+    width: 100%;
+    max-width: 22rem;
+    padding: 1.25rem;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-glow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.faelligkeit-toast-header { display: flex; align-items: flex-start; gap: 0.75rem; }
+.faelligkeit-toast-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; flex-shrink: 0; border-radius: var(--radius-lg); background: color-mix(in oklch, var(--accent-amber) 20%, transparent); color: var(--accent-amber); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--accent-amber) 30%, transparent); }
+.faelligkeit-toast-icon svg { width: 1.125rem; height: 1.125rem; }
+.faelligkeit-toast-title { flex: 1; align-self: center; font-family: var(--font-display); font-size: 0.9375rem; font-weight: 600; }
+.faelligkeit-toast-close-btn { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; flex-shrink: 0; border-radius: var(--radius-md); border: none; background: transparent; color: var(--muted-foreground); cursor: pointer; }
+.faelligkeit-toast-close-btn:hover { background: oklch(1 0 0 / 0.08); color: var(--foreground); }
+.faelligkeit-toast-close-btn svg { width: 1rem; height: 1rem; }
+.faelligkeit-toast-liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.faelligkeit-toast-item { font-size: 0.8125rem; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+.faelligkeit-toast-item strong { color: var(--foreground); font-weight: 600; }
+
+/* Footer */
+.site-footer { border-top: 1px solid oklch(1 0 0 / 0.05); }
+.footer-inner { max-width: 72rem; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 1rem; padding: 2rem 1.5rem; font-size: 0.875rem; color: var(--muted-foreground); }
+/* Mobile-Anpassung: Platz für Home-Indicator (iOS) bzw. Gesten-Leiste (Android). */
+.footer-inner { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+@media (min-width: 640px) { .footer-inner { flex-direction: row; } }
+.footer-brand { display: flex; align-items: center; gap: 0.5rem; }
+.footer-brand-icon { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: var(--radius-md); background-image: var(--gradient-primary); color: var(--primary-foreground); }
+.footer-brand-icon svg { width: 0.75rem; height: 0.75rem; }
+.footer-brand-name { font-family: var(--font-display); font-weight: 600; color: var(--foreground); }
+.footer-links { display: flex; align-items: center; gap: 1.5rem; }
+.footer-links a { color: inherit; text-decoration: none; transition: color 0.15s; }
+.footer-links a:hover { color: var(--foreground); }
+.footer-link-btn { border: none; background: transparent; padding: 0; font-family: var(--font-sans); font-size: inherit; color: inherit; cursor: pointer; transition: color 0.15s; }
+.footer-link-btn:hover { color: var(--foreground); }
+
+/* Rechtliches-Modal (Datenschutz/Impressum) */
+.rechtliches-dialog { max-width: 38rem; }
+.rechtliches-inhalt { font-size: 0.8125rem; line-height: 1.65; color: var(--muted-foreground); }
+.rechtliches-inhalt h3 { font-family: var(--font-display); font-size: 0.875rem; font-weight: 600; color: var(--foreground); margin-top: 1.25rem; }
+.rechtliches-inhalt h3:first-child { margin-top: 0; }
+.rechtliches-inhalt p { margin-top: 0.5rem; }
+.rechtliches-platzhalter { color: var(--accent-amber); font-style: italic; }
+.rechtliches-warnhinweis { margin-top: 1.25rem; padding: 0.75rem 1rem; border-radius: var(--radius-md); background: color-mix(in oklch, var(--accent-amber) 15%, transparent); border: 1px solid color-mix(in oklch, var(--accent-amber) 30%, transparent); color: var(--accent-amber); font-style: normal; font-size: 0.75rem; }
+
+@media (max-width: 480px) {
+    .content-toolbar { flex-wrap: wrap; }
+    .content-toolbar .search-wrap { flex-basis: 100%; }
+}

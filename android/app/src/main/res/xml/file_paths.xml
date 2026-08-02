@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nur der Cache-Pfad wird tatsächlich verwendet (Filesystem.getUri mit
+     Directory.Cache in api.js für den Share-Sheet-Export). Der ursprüngliche,
+     unveränderte Capacitor-Vorlagen-Eintrag "external-path path='.'" gewährte
+     FileProvider-Zugriff auf das GESAMTE externe Speicherverzeichnis, obwohl
+     die App dort nie schreibt — entfernt nach dem Least-Privilege-Prinzip. -->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path name="my_cache_images" path="." />
+</paths>

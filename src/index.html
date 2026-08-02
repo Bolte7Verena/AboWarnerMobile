@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <!-- Analog zur Desktop-Härtung (Electron): explizite CSP für die WebView.
+         Ohne 'unsafe-inline'/'unsafe-eval', da auch hier nur element.style.property
+         verwendet wird statt <style>-Tags/style="..."-Attributen. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none';">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Abo-Warner Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
+                </div>
+                <span class="brand-name">Abo-Warner Pro</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="page-container">
+            <div class="intro">
+                <h1 class="page-title">Abo-Übersicht</h1>
+                <p class="page-subline">Deine Überwachung</p>
+                <p class="page-subtitle">Behalte alle Verträge, Kosten und Kündigungsfristen an einem Ort.</p>
+            </div>
+
+            <section class="content-panel">
+                <div class="content-toolbar">
+                    <div class="search-wrap">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+                        <input type="text" id="input-suche" class="search-input" placeholder="Abos durchsuchen oder filtern …">
+                    </div>
+                    <button type="button" id="btn-neues-abo" class="btn btn-primary btn-sm">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        Neues Abo
+                    </button>
+                </div>
+
+                <div id="filter-chips" class="filter-chips"></div>
+
+                <div id="stats-grid" class="stats-grid"></div>
+
+                <ul id="abo-liste" class="abo-list"></ul>
+            </section>
+
+            <div id="abo-modal-overlay" class="modal-overlay" hidden>
+                <div class="glass-strong modal-dialog">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Neues Abo hinzufügen</h2>
+                        <button type="button" id="btn-modal-schliessen" class="modal-close-btn" aria-label="Schließen">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>
+                    <form id="abo-form">
+                        <div class="form-group">
+                            <label for="input-name">Abo-Name</label>
+                            <input type="text" id="input-name" class="input-control" placeholder="z.B. Netflix">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="input-kosten">Kosten</label>
+                                <input type="text" inputmode="decimal" id="input-kosten" class="input-control" placeholder="z.B. 29,99">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-waehrung">Währung</label>
+                                <input type="text" id="input-waehrung" class="input-control" placeholder="z.B. EUR" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="input-turnus">Turnus</label>
+                                <select id="input-turnus" class="input-control select-control">
+                                    <option value="Monatlich">Monatlich</option>
+                                    <option value="Vierteljährlich">Vierteljährlich</option>
+                                    <option value="Halbjährlich">Halbjährlich</option>
+                                    <option value="Jährlich">Jährlich</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="input-kategorie">Kategorie</label>
+                                <select id="input-kategorie" class="input-control select-control">
+                                    <option value="Streaming">Streaming</option>
+                                    <option value="Sport">Sport</option>
+                                    <option value="Versicherung">Versicherung</option>
+                                    <option value="Sonstiges">Sonstiges</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group date-field">
+                                <label for="input-datum">Nächste Zahlung</label>
+                                <div class="date-input-wrap">
+                                    <input type="text" id="input-datum" class="input-control date-input" placeholder="Datum auswählen" readonly autocomplete="off">
+                                    <svg class="date-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                                    <div id="date-picker-popover" class="date-picker-popover" hidden></div>
+                                </div>
+                                <input type="hidden" id="input-datum-iso">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-frist">Frist (Tage)</label>
+                                <input type="number" id="input-frist" class="input-control">
+                            </div>
+                        </div>
+                        <button type="button" id="btn-speichern" class="btn btn-primary btn-lg btn-block">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                            Abo speichern
+                        </button>
+                        <p id="form-fehler" class="form-fehler" aria-live="polite"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
+                </div>
+                <span class="footer-brand-name">Abo-Warner Pro</span>
+                <span class="footer-copyright">© 2026</span>
+            </div>
+            <div class="footer-links">
+                <button type="button" id="btn-footer-datenschutz" class="footer-link-btn">Datenschutz</button>
+                <button type="button" id="btn-footer-impressum" class="footer-link-btn">Impressum</button>
+                <a href="mailto:huebi176@web.de">Kontakt</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="rechtliches-modal-overlay" class="modal-overlay" hidden>
+        <div class="glass-strong modal-dialog rechtliches-dialog">
+            <div class="modal-header">
+                <h2 class="modal-title" id="rechtliches-titel">Datenschutzerklärung</h2>
+                <button type="button" id="btn-rechtliches-schliessen" class="modal-close-btn" aria-label="Schließen">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <div id="rechtliches-datenschutz" class="rechtliches-inhalt">
+                <h3>1. Verantwortlicher</h3>
+                <p>Jens Hübeler, Holdruper Straße 19, 28325 Bremen</p>
+
+                <h3>2. Welche Daten werden verarbeitet?</h3>
+                <p>Abo-Warner Pro verarbeitet ausschließlich die Daten, die du selbst einträgst (Abo-Name, Kosten, Kategorie, Zahlungs- und Kündigungsfristen). Diese werden lokal in einer Datei auf deinem Gerät gespeichert (im nutzerspezifischen Anwendungsdatenverzeichnis deines Betriebssystems). Es findet keine Übertragung dieser Daten an den Anbieter oder an Dritte statt.</p>
+
+                <h3>3. Externe Dienste</h3>
+                <p>Beim Start lädt die App Schriftarten von Google Fonts (fonts.googleapis.com, fonts.gstatic.com) nach. Dabei wird die IP-Adresse deines Geräts an Google LLC (USA) übertragen. Es werden keine weiteren Analyse-, Tracking- oder Werbedienste eingebunden.</p>
+
+                <h3>4. Keine Analyse und kein Tracking</h3>
+                <p>Abo-Warner Pro verwendet keine Cookies, keine Analyse-Software und kein Nutzer-Tracking.</p>
+
+                <h3>5. Speicherdauer</h3>
+                <p>Deine Daten bleiben lokal gespeichert, bis du sie über die App löschst, bearbeitest oder exportierst, oder bis du die App deinstallierst.</p>
+
+                <h3>6. Deine Rechte</h3>
+                <p>Da alle Daten ausschließlich lokal auf deinem Gerät liegen, kannst du dein Recht auf Auskunft, Berichtigung und Löschung (Art. 15, 16, 17 DSGVO) jederzeit direkt über die Funktionen „Bearbeiten", „Löschen" und „Exportieren" in der App ausüben. Für weitergehende Anfragen wende dich an die im Impressum genannte Kontaktadresse.</p>
+            </div>
+
+            <div id="rechtliches-impressum" class="rechtliches-inhalt" hidden>
+                <h3>Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz)</h3>
+                <p>
+                    Jens Hübeler<br>
+                    Holdruper Straße 19<br>
+                    28325 Bremen
+                </p>
+
+                <h3>Kontakt</h3>
+                <p>
+                    E-Mail: huebi176@web.de<br>
+                    Telefon: 015154945728
+                </p>
+
+                <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+                <p>Jens Hübeler, Holdruper Straße 19, 28325 Bremen</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="index.js"></script>
+</body>
+</html>
