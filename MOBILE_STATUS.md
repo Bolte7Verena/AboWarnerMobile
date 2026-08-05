@@ -121,6 +121,17 @@ Auf Nutzerwunsch: konkreter, umsetzbarer Weg zur App-Store-Einreichung ohne eige
 - Kein automatischer Trigger auf `git push` konfiguriert (bewusst) — Builds werden anfangs manuell über das Codemagic-Dashboard gestartet, bis der Ablauf sich bewährt hat.
 - `APP_STORE_APPLE_ID` (die numerische App-Store-Connect-App-ID, nicht die Bundle-ID) ist noch ein Platzhalter (`0000000000`) — kann erst eingetragen werden, nachdem die App einmal in App Store Connect angelegt wurde (siehe manuelle Schritte).
 
+## Android-Release-Rebuild (2026-08-05)
+
+Vorheriger Audit hatte festgestellt: `builds/AboWarnerPro-release-signed-v1.apk`/`-v1.aab` waren vor der Impressum-Korrektur gebaut worden und enthielten noch den Platzhalter-Text samt Abmahn-Warnhinweis. Behoben:
+
+- `package.json`-Version `2.0.0` → `2.0.1` (`package-lock.json` mit `npm install --package-lock-only` synchron gehalten, keine Dependency-Änderung). Native Android-Versionsfelder (`versionCode 1`/`versionName "1.0"`) bewusst NICHT angetastet — es gab noch nie eine echte Play-Store-Einreichung, „1.0"/1 bleibt für den tatsächlichen Erst-Upload korrekt.
+- `npm run build` (esbuild) → `npx cap sync android` (5/5 Plugins erkannt) → `./gradlew clean` → `./gradlew bundleRelease assembleRelease` mit JDK 21 (`C:\dev-tools\jdk-extracted\jdk-21.0.12+8`) und Android SDK 36 Build-Tools — BUILD SUCCESSFUL, beide Artefakte frisch (2026-08-05 19:34).
+- **Verifiziert, nicht nur behauptet:** `apksigner verify` bestätigt gültige v2-Signatur mit dem bestehenden Upload-Keystore. `aapt dump badging` bestätigt `com.abowarner.pro`, `versionCode 1`/`versionName 1.0`, korrekte Permissions (`INTERNET`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK`, `POST_NOTIFICATIONS`). `index.html` direkt aus der neuen APK extrahiert (`unzip assets/public/index.html`) und geprüft: enthält jetzt die echten Betreiberdaten (Jens Hübeler, Holdruper Straße 19, 28325 Bremen), keine `[Platzhalter]`/„abmahnfähig"-Warnung mehr. CSP-Meta-Tag im gebauten `index.html` ebenfalls bestätigt vorhanden.
+- Alte, veraltete `builds/AboWarnerPro-release-signed-v1.apk`/`-v1.aab` durch die neuen Artefakte ersetzt (gleicher Dateiname, da `versionCode` unverändert `1` ist). `builds/AboWarnerPro-debug.apk` (Debug-Build vom 2026-08-01) bewusst nicht neu gebaut — Debug-Build wird ohnehin nicht eingereicht, kein Store-relevanter Blocker.
+- `npm audit`: 3 moderate Findings, ausschließlich in `@capacitor/cli`s transitiver Build-Zeit-Abhängigkeit `xcode`→`uuid` (nur beim `cap sync`-Tooling relevant, nicht im ausgelieferten App-Code) — nicht behoben, da ein Fix ein Downgrade von `@capacitor/cli` erzwingen würde; keine Auswirkung auf die App selbst.
+- Ergebnis: **Android-Release-Artefakte sind jetzt aktuell und store-tauglich**, technisch bereit für den Play-Console-Upload (sobald Entwickler-Account + Store-Listing stehen).
+
 **Kann von hier aus nicht verifiziert werden:** ob der erste echte Codemagic-Build tatsächlich grün durchläuft (Signing-Integration, Provisioning, Xcode-Kompatibilität der generierten CapApp-SPM-Swift-Package-Struktur) — die YAML-Konfiguration folgt dem offiziell dokumentierten Codemagic-Capacitor/Fastlane-losen Standardablauf, aber ein realer Build auf Apples/Codemagics Infrastruktur wurde noch nicht ausgelöst (fehlt: Apple-Developer-Account, App-Store-Connect-App-Eintrag, Codemagic-Account, GitHub-Remote — alles außerhalb dieser Sandbox).
 
 **Manuelle Schritte, die zwingend beim Nutzer liegen (keine davon technisch von hier aus möglich):**
