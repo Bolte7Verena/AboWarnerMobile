@@ -1,6 +1,6 @@
 {
   "name": "abo-warner-mobile",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Abo-Warner Pro — mobile Version (iOS & Android) auf Basis der bestehenden Windows-Electron-App, via Capacitor.",
   "private": true,
   "type": "module",
