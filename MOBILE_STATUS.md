@@ -195,3 +195,25 @@ Nutzer stellte ein fertiges Logo bereit (`C:\AboWarner\src\assets\logo.png`, dun
 - **Nicht verifizierbar von hier:** ob Xcode die neuen Bilder korrekt einliest (kein Mac) — Dateiformat/-namen/-pfade sind aber exakt identisch zu den zuvor funktionierenden, nur der Bildinhalt wurde ausgetauscht, strukturelles Risiko daher sehr gering.
 
 **Bewusst NICHT geändert (auf beiden Plattformen):** das In-App-UI-Logo im Header/Footer der gerenderten Oberfläche selbst (`src/index.html`) — war nicht Teil des Auftrags für diese Runde, zeigt weiterhin das alte Wallet-Icon.
+
+## In-App-UI-Logo nachgezogen + Release-Rebuild (2026-08-07, Folgeauftrag)
+
+Nutzer wollte auch das In-App-UI angleichen: `.brand-icon`/`.footer-brand-icon` (Header/Footer der gerenderten Oberfläche) zeigten weiterhin das alte, inline per SVG codierte Wallet-Icon.
+
+- Neue Datei `src/app-icon.png` (identisches 1024×1024-Quadrat-Master wie Desktop/iOS/Android-Icons, siehe oben) — flach in `src/` abgelegt, passend zur bestehenden flachen Projektstruktur (keine `assets/`-Unterordner in diesem Repo).
+- `src/index.html`: beide inline-SVG-Wallet-Vorkommen (Header + Footer) durch `<img src="app-icon.png">` ersetzt.
+- `src/style.css`: `.brand-icon`/`.footer-brand-icon` von `border-radius: var(--radius-lg/md)` + Gradient-Hintergrund auf `border-radius: 50%` + `overflow: hidden` umgestellt (Bild bringt seine eigene dunkle Kreisfüllung mit, kein Gradient-Box-Wrapper mehr nötig).
+- `build.mjs`: neue Zeile `cpSync('src/app-icon.png', 'www/app-icon.png')` — ohne diese hätte der Build das Bild nie nach `www/` kopiert und jede native/Web-Ausgabe hätte ein kaputtes `<img>` gezeigt.
+- `serve.mjs` (reines lokales Testwerkzeug, kein App-Bestandteil): `.png`-MIME-Type ergänzt — fehlte bisher, da bis jetzt nie ein Bild über diesen Server ausgeliefert wurde.
+
+**Bewusst NICHT angefasst:** `ICON_WALLET` in `app.js` (Stat-Kachel „Kosten/Monat" + Icon auf jeder Abo-Karte). Das ist kein Markenlogo-Rest, sondern Teil eines konsistenten, sieben Symbole umfassenden Lucide-Stil-Icon-Systems (`ICON_LAYERS`, `ICON_CALENDAR_CLOCK`, `ICON_ALARM_CLOCK`, `ICON_TRASH`, `ICON_EDIT`, `ICON_X_CIRCLE`, `ICON_DOWNLOAD` — alle 24×24, 2px-Stroke, kein Fill). Der Wallet-Shape steht dort rein semantisch für „Geld", genau wie die Glocke für „Erinnerung" steht. Ihn durch das fotorealistische Gradient-Logo zu ersetzen hätte das einheitliche Icon-System sichtbar gebrochen (drei Kacheln mit schlichten Strichsymbolen, eine mit Foto-Badge) — das Gegenteil von „sauber und konsistent". Betrifft `app.js` identisch in Desktop und Mobile.
+
+**Verifiziert:**
+- `npm test` — 25/25 grün (Logik unangetastet, reiner Marken-Swap).
+- Web-Build (`npm run build`) kopiert `app-icon.png` korrekt nach `www/`; per echtem Chromium-Browser (Playwright) gegen den gebauten Stand geladen — Header/Footer zeigen das neue Logo, keine echten JS-Fehler (einzige 404 war der browsereigene automatische `favicon.ico`-Request gegen den Test-Server, irrelevant für die native App).
+- Frischer Android-Release-Build: `npx cap sync android` → `gradlew bundleRelease` + `gradlew assembleRelease` — **BUILD SUCCESSFUL**. `apksigner verify` bestätigt gültige v2-Signatur. `aapt dump badging` bestätigt korrektes Manifest. `index.html` + `app-icon.png` direkt aus der fertigen APK extrahiert: HTML referenziert `app-icon.png` korrekt in Header/Footer, die eingebettete PNG-Datei ist byte-identisch (`cmp`) zum lokalen Quell-Master.
+- `builds/AboWarnerPro-release-signed-v1.apk`/`-v1.aab` mit den frischen, logo-aktuellen Artefakten überschrieben.
+
+**Repo-Stand:** Alle Änderungen (dieser Auftrag + der vorherige plattformweite Icon-Rollout) in einem Commit `"Logo konsistent überall eingebaut"` zusammengefasst.
+
+**Nicht Teil dieser Runde:** iOS-Release-Build (kein Mac hier — Asset-Austausch strukturell identisch zum vorherigen, verifizierten Muster, aber kein frischer `xcodebuild`-Lauf möglich).
