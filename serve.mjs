@@ -9,7 +9,7 @@ import path from 'path';
 const PORT = 4173;
 const WWW_DIR = path.resolve('www');
 
-const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json' };
+const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png' };
 
 createServer(async (req, res) => {
     let dateiPfad = req.url === '/' ? '/index.html' : req.url.split('?')[0];

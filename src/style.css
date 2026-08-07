@@ -128,12 +128,11 @@ p { margin: 0; }
     place-items: center;
     width: 2rem;
     height: 2rem;
-    border-radius: var(--radius-lg);
-    background-image: var(--gradient-primary);
-    color: var(--primary-foreground);
+    border-radius: 50%;
     box-shadow: var(--shadow-elegant);
+    overflow: hidden;
 }
-.brand-icon svg { width: 1rem; height: 1rem; }
+.brand-icon img { width: 100%; height: 100%; object-fit: cover; }
 .brand-name { font-family: var(--font-display); font-size: 1.125rem; font-weight: 600; letter-spacing: -0.02em; }
 
 /* Main / hero */
@@ -474,8 +473,8 @@ p { margin: 0; }
 .footer-inner { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
 @media (min-width: 640px) { .footer-inner { flex-direction: row; } }
 .footer-brand { display: flex; align-items: center; gap: 0.5rem; }
-.footer-brand-icon { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: var(--radius-md); background-image: var(--gradient-primary); color: var(--primary-foreground); }
-.footer-brand-icon svg { width: 0.75rem; height: 0.75rem; }
+.footer-brand-icon { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; overflow: hidden; }
+.footer-brand-icon img { width: 100%; height: 100%; object-fit: cover; }
 .footer-brand-name { font-family: var(--font-display); font-weight: 600; color: var(--foreground); }
 .footer-links { display: flex; align-items: center; gap: 1.5rem; }
 .footer-links a { color: inherit; text-decoration: none; transition: color 0.15s; }

@@ -177,3 +177,21 @@ Auf Nutzerwunsch: systematische Prüfung von Gradle, AndroidManifest und Capacit
 4. Store-Listing-Inhalte (Beschreibung, Screenshots, Feature-Grafik, Datenschutzerklärung-URL) pflegen — reine Content-/Marketing-Aufgabe, kein technischer Punkt.
 5. `versionName`/`versionCode` (aktuell `"1.0"`/`1`, unverändert aus der Vorlage) vor der ersten echten Veröffentlichung bewusst festlegen — bewusst nicht automatisch angepasst, da das eine Versionsentscheidung des Nutzers ist, kein technischer Fehler.
 6. Konnte nicht auf einem echten Gerät/Emulator laufzeit-getestet werden (kein `adb`-Gerät in dieser Umgebung angeschlossen) — Build/Signierung/Minifizierung sind strukturell vollständig verifiziert, ein finaler Rauchtest auf echtem Gerät vor Veröffentlichung wird trotzdem empfohlen.
+
+## Echtes Markenlogo eingeführt — plattformübergreifender Rollout (2026-08-07)
+
+Nutzer stellte ein fertiges Logo bereit (`C:\AboWarner\src\assets\logo.png`, dunkler Kreis-Badge mit "AWP"-Gradient-Monogramm), löst ab jetzt Wallet-Icon/Platzhalter auf allen Plattformen ab. Herleitung der Master-Assets (transparenter Kreis 320×320, opakes Vollflächen-Quadrat 1024×1024 auf `#131E34` — Farbe direkt aus dem Badge abgetastet) siehe `PROJECT_STATUS.md` im Desktop-Repo, identisch hier verwendet für plattformübergreifende Konsistenz.
+
+**Android — app-icon, splash-screen:**
+- Alle 15 Launcher-PNGs ersetzt (`ic_launcher`/`ic_launcher_round`/`ic_launcher_foreground` × mdpi/hdpi/xhdpi/xxhdpi/xxxhdpi): Legacy-Icons (`ic_launcher`/`_round`) aus dem opaken Quadrat-Master, adaptives Foreground-Layer aus dem transparenten Kreis (56 % Safe-Zone, zentriert).
+- `drawable/ic_launcher_background.xml`: alter Wallet-Gradient-Vektor ersetzt durch flaches `#131E34`-Shape (nahtlos zum neuen, bereits dunkel gefüllten Badge — kein Farbbruch an der adaptiven Maskenkante mehr).
+- Alle 11 Splash-PNGs (`drawable(-land/port)-*dpi/splash.png`) neu erzeugt: `#131E34`-Canvas + zentrierter Badge (40 % Kantenlänge).
+- `AndroidManifest.xml` unverändert (referenziert weiterhin korrekt `@mipmap/ic_launcher`/`ic_launcher_round`) — "manifest" damit automatisch konsistent, kein Text-Edit nötig.
+- **Nicht erneut gebaut/verifiziert:** kein frischer `gradlew bundleRelease` in dieser Runde (reiner Asset-Swap, gleiches Verfahren wie beim vorherigen Android-Rebuild bereits live bestätigt) — vor dem nächsten Play-Store-Upload zwingend `npm run build && npx cap sync android && gradlew bundleRelease` erneut ausführen, sonst landet wieder ein veralteter Stand in `builds/` (siehe Lektion vom 2026-08-05-Rebuild oben).
+
+**iOS — app-icon, launch-screen, asset-katalog:**
+- `Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png` durch das opake Quadrat ersetzt (gleicher Dateiname, keine `Contents.json`-/`pbxproj`-Änderung nötig, da nur bestehender, bereits korrekt verdrahteter Inhalt ausgetauscht wird).
+- Alle 6 `Splash.imageset`-Bilder (light + dark, @1x/2x/3x) durch ein einheitliches 2732×2732-Bild ersetzt (`#131E34`-Canvas + zentrierter Badge, 32 % Kantenlänge) — bewusst identisch für Light/Dark-Modus, da der Badge selbst schon dunkel/markentreu ist.
+- **Nicht verifizierbar von hier:** ob Xcode die neuen Bilder korrekt einliest (kein Mac) — Dateiformat/-namen/-pfade sind aber exakt identisch zu den zuvor funktionierenden, nur der Bildinhalt wurde ausgetauscht, strukturelles Risiko daher sehr gering.
+
+**Bewusst NICHT geändert (auf beiden Plattformen):** das In-App-UI-Logo im Header/Footer der gerenderten Oberfläche selbst (`src/index.html`) — war nicht Teil des Auftrags für diese Runde, zeigt weiterhin das alte Wallet-Icon.

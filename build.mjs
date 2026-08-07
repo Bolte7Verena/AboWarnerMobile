@@ -17,6 +17,7 @@ mkdirSync('www', { recursive: true });
 
 cpSync('src/index.html', 'www/index.html');
 cpSync('src/style.css', 'www/style.css');
+cpSync('src/app-icon.png', 'www/app-icon.png');
 
 await build({
     entryPoints: ['src/index.js'],
