@@ -88,14 +88,14 @@ window.api = {
     exportAbos: async () => {
         const abos = await ladeAbosVonDisk();
         const heute = new Date();
-        const dateiname = `abo-warner-backup-${heute.getFullYear()}-${pad(heute.getMonth() + 1)}-${pad(heute.getDate())}.json`;
+        const dateiname = `abo-warner-export-${heute.getFullYear()}-${pad(heute.getMonth() + 1)}-${pad(heute.getDate())}.json`;
         await Filesystem.writeFile({
             path: dateiname,
             directory: Directory.Cache,
             data: JSON.stringify(abos, null, 2),
             encoding: Encoding.UTF8
         });
-        return teileDatei(dateiname, 'Abo-Warner Backup');
+        return teileDatei(dateiname, 'Abo-Warner Export');
     },
 
     exportSchreiben: async (text, dateiname) => {

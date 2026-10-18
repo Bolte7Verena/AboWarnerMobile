@@ -5,12 +5,9 @@
     <!-- Analog zur Desktop-Härtung (Electron): explizite CSP für die WebView.
          Ohne 'unsafe-inline'/'unsafe-eval', da auch hier nur element.style.property
          verwendet wird statt <style>-Tags/style="..."-Attributen. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Abo-Warner Pro</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -129,12 +126,12 @@
                     <img src="app-icon.png" alt="Abo-Warner Pro">
                 </div>
                 <span class="footer-brand-name">Abo-Warner Pro</span>
-                <span class="footer-copyright">© 2026</span>
+                <span class="footer-copyright">© 2026 AppVektor</span>
             </div>
             <div class="footer-links">
                 <button type="button" id="btn-footer-datenschutz" class="footer-link-btn">Datenschutz</button>
                 <button type="button" id="btn-footer-impressum" class="footer-link-btn">Impressum</button>
-                <a href="mailto:huebi176@web.de">Kontakt</a>
+                <button type="button" id="btn-footer-kontakt" class="footer-link-btn">Kontakt</button>
             </div>
         </div>
     </footer>
@@ -150,13 +147,19 @@
 
             <div id="rechtliches-datenschutz" class="rechtliches-inhalt">
                 <h3>1. Verantwortlicher</h3>
-                <p>Jens Hübeler, Holdruper Straße 19, 28325 Bremen</p>
+                <p>
+                    AppVektor, Inhaber: Jens Hübeler<br>
+                    c/o Flexdienst – #21882, Kurt-Schumacher-Str. 74<br>
+                    67663 Kaiserslautern, Deutschland<br>
+                    E-Mail: kontakt@appvektor.com<br>
+                    Telefon: 0049 421 9899 1701
+                </p>
 
-                <h3>2. Welche Daten werden verarbeitet?</h3>
+                <h3>2. Zweck der Datenverarbeitung und verarbeitete Daten</h3>
                 <p>Abo-Warner Pro verarbeitet ausschließlich die Daten, die du selbst einträgst (Abo-Name, Kosten, Kategorie, Zahlungs- und Kündigungsfristen). Diese werden lokal in einer Datei auf deinem Gerät gespeichert (im nutzerspezifischen Anwendungsdatenverzeichnis deines Betriebssystems). Es findet keine Übertragung dieser Daten an den Anbieter oder an Dritte statt.</p>
 
-                <h3>3. Externe Dienste</h3>
-                <p>Beim Start lädt die App Schriftarten von Google Fonts (fonts.googleapis.com, fonts.gstatic.com) nach. Dabei wird die IP-Adresse deines Geräts an Google LLC (USA) übertragen. Es werden keine weiteren Analyse-, Tracking- oder Werbedienste eingebunden.</p>
+                <h3>3. Server-Logs, Hosting und externe Dienste</h3>
+                <p>AppVektor betreibt keinen Server, der Daten aus der App empfängt; entsprechend fallen bei AppVektor keine Server-Logs zu deiner Nutzung der App an. Die von der App verwendeten Schriftarten sind lokal in der App gespeichert; die App lädt keine Inhalte von externen Servern nach. Es werden keine Analyse-, Tracking- oder Werbedienste eingebunden. Beziehst du die App über einen App-Store (z. B. Apple App Store oder Google Play), verarbeitet dessen Betreiber die dabei anfallenden Daten in eigener Verantwortung.</p>
 
                 <h3>4. Keine Analyse und kein Tracking</h3>
                 <p>Abo-Warner Pro verwendet keine Cookies, keine Analyse-Software und kein Nutzer-Tracking.</p>
@@ -165,25 +168,43 @@
                 <p>Deine Daten bleiben lokal gespeichert, bis du sie über die App löschst, bearbeitest oder exportierst, oder bis du die App deinstallierst.</p>
 
                 <h3>6. Deine Rechte</h3>
-                <p>Da alle Daten ausschließlich lokal auf deinem Gerät liegen, kannst du dein Recht auf Auskunft, Berichtigung und Löschung (Art. 15, 16, 17 DSGVO) jederzeit direkt über die Funktionen „Bearbeiten", „Löschen" und „Exportieren" in der App ausüben. Für weitergehende Anfragen wende dich an die im Impressum genannte Kontaktadresse.</p>
+                <p>Da alle Daten ausschließlich lokal auf deinem Gerät liegen, kannst du dein Recht auf Auskunft, Berichtigung und Löschung (Art. 15, 16, 17 DSGVO) jederzeit direkt über die Funktionen „Bearbeiten", „Löschen" und „Exportieren" in der App ausüben. Für weitergehende Anfragen wende dich an die im Impressum genannte Kontaktadresse. Zudem steht dir ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu (Art. 77 DSGVO).</p>
+
+                <h3>7. Kontakt für Datenschutzanfragen</h3>
+                <p>Für Anfragen zum Datenschutz oder zur Ausübung deiner Rechte erreichst du uns unter kontakt@appvektor.com oder telefonisch unter 0049 421 9899 1701.</p>
             </div>
 
             <div id="rechtliches-impressum" class="rechtliches-inhalt" hidden>
                 <h3>Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz)</h3>
                 <p>
-                    Jens Hübeler<br>
-                    Holdruper Straße 19<br>
-                    28325 Bremen
+                    AppVektor<br>
+                    Inhaber: Jens Hübeler<br>
+                    c/o Flexdienst – #21882<br>
+                    Kurt-Schumacher-Str. 74<br>
+                    67663 Kaiserslautern<br>
+                    Deutschland
                 </p>
 
                 <h3>Kontakt</h3>
                 <p>
-                    E-Mail: huebi176@web.de<br>
-                    Telefon: 015154945728
+                    E-Mail: kontakt@appvektor.com<br>
+                    Telefon: 0049 421 9899 1701
                 </p>
 
                 <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
-                <p>Jens Hübeler, Holdruper Straße 19, 28325 Bremen</p>
+                <p>Jens Hübeler, c/o Flexdienst – #21882, Kurt-Schumacher-Str. 74, 67663 Kaiserslautern</p>
+            </div>
+
+            <div id="rechtliches-kontakt" class="rechtliches-inhalt" hidden>
+                <h3>Fragen, Feedback oder Datenschutzanfragen</h3>
+                <p>Schreib uns per E-Mail:</p>
+                <p class="kontakt-zeile">
+                    <a href="mailto:kontakt@appvektor.com" class="kontakt-mail">kontakt@appvektor.com</a>
+                    <button type="button" id="btn-kontakt-kopieren" class="kontakt-kopieren-btn">Adresse kopieren</button>
+                </p>
+                <p id="kontakt-hinweis" class="kontakt-hinweis" role="status" hidden></p>
+                <p>Öffnet sich kein Mail-Programm, kopiere die Adresse und schreib uns aus deinem gewohnten Mail-Dienst.</p>
+                <p>Telefon: 0049 421 9899 1701</p>
             </div>
         </div>
     </div>

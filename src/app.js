@@ -254,7 +254,7 @@ function verdrahteAboAnsicht(kachel, abo) {
 
 // Exportiert den kompletten aktuellen Abo-Bestand als eigenständige JSON-Sicherungskopie
 // (nicht nur das Abo der geklickten Kachel) — jede Kachel ist damit ein gleichwertiger,
-// überall verfügbarer Auslöser für ein Voll-Backup ("damit nichts verloren geht"),
+// überall verfügbarer Auslöser für einen Voll-Export ("damit nichts verloren geht"),
 // statt eines einzelnen globalen Buttons an nur einer Stelle der Oberfläche.
 async function exportiereAlsDatei(kachel) {
     const statusEl = kachel.querySelector('.karte-export-status');

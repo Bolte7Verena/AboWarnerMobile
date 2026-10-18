@@ -162,7 +162,7 @@ Auf Nutzerwunsch: systematische Prüfung von Gradle, AndroidManifest und Capacit
 - `minSdkVersion 24`, App-ID/Namespace `com.abowarner.pro` konsistent zwischen `capacitor.config.json`, `build.gradle` und `strings.xml`.
 - Alle Komponenten mit Intent-Filtern haben explizites `android:exported` (Pflicht seit API 31) — `MainActivity` (`true`, LAUNCHER), `FileProvider` (`false`).
 - `POST_NOTIFICATIONS`/`RECEIVE_BOOT_COMPLETED`/`WAKE_LOCK`-Berechtigungen werden korrekt automatisch vom `@capacitor/local-notifications`-Plugin-Manifest gemerged (per `aapt2 dump badging` an der fertigen Release-APK bestätigt); die Laufzeit-Berechtigungsanfrage (`LocalNotifications.requestPermissions()`) ist in `faelligkeitshinweis.js` bereits korrekt implementiert.
-- `android.permission.INTERNET` ist die einzige App-eigene Berechtigung und legitim begründet (Google-Fonts-Nachladung über die WebView) — für die Play-Console-„Data Safety"-Angabe: keine Nutzerdaten werden gesammelt/übertragen, alles bleibt lokal auf dem Gerät.
+- ~~`android.permission.INTERNET` … (Google-Fonts-Nachladung)~~ — **überholt (2026-09-20):** Schriften sind lokal gebündelt, `INTERNET` wurde aus dem AndroidManifest entfernt (siehe letztes Update unten). Für die Play-Console-„Data Safety"-Angabe gilt weiterhin: keine Nutzerdaten werden gesammelt/übertragen, alles bleibt lokal auf dem Gerät.
 - Kein Cleartext-Traffic (Capacitor liefert die App-Inhalte über das Standard-`https://`-Schema aus), kein `google-services.json`/Firebase (Plugin-Einbindung ist bereits defensiv per try/catch abgesichert, kein Fehler bei Abwesenheit).
 
 **Erzeugte, store-fertige Artefakte** (in `builds/`):
@@ -217,3 +217,25 @@ Nutzer wollte auch das In-App-UI angleichen: `.brand-icon`/`.footer-brand-icon` 
 **Repo-Stand:** Alle Änderungen (dieser Auftrag + der vorherige plattformweite Icon-Rollout) in einem Commit `"Logo konsistent überall eingebaut"` zusammengefasst.
 
 **Nicht Teil dieser Runde:** iOS-Release-Build (kein Mac hier — Asset-Austausch strukturell identisch zum vorherigen, verifizierten Muster, aber kein frischer `xcodebuild`-Lauf möglich).
+
+
+## Update 2026-09-20 — Betreiberdaten auf AppVektor umgestellt
+
+Impressum (§ 5 DDG) und Datenschutzerklärung nennen jetzt **AppVektor, Inhaber Jens Hübeler, c/o Flexdienst – #21882, Kurt-Schumacher-Str. 74, 67663 Kaiserslautern**, Tel. 0049 421 9899 1701, kontakt@appvektor.com (Einzelunternehmen). Die frühere Privatadresse/-mail/-telefonnummer ist entfernt. Gleiche Änderung in Web (C:\minimalist-landing-gen-main) und in der jeweils anderen App. Datenschutz neu gegliedert (Verantwortlicher, Zweck, Server-Logs/Hosting/externe Dienste, Cookies/Tracking, Speicherdauer, Rechte inkl. Beschwerderecht, Kontakt für Datenschutzanfragen).
+Hinweis Mobile: `src/index.html` geändert, `npm run build` und `npx cap copy android|ios` ausgeführt (Web-Assets in den nativen Projekten aktuell). **Noch NICHT neu gebaut/signiert:** `builds/*.apk|*.aab` enthalten noch die alten Privatdaten und dürfen nicht hochgeladen werden. Nächster Schritt (bewusst manuell vom Nutzer): `./gradlew clean bundleRelease assembleRelease` (JDK 21) mit bestehendem Keystore, danach `apksigner verify` und `index.html` aus der APK prüfen. iOS baut über Codemagic.
+
+
+## Update 2026-09-20 (2) — Schriften lokal, Copyright/Publisher
+
+- **Google Fonts entfernt, Schriften lokal gebündelt** (Space Grotesk + DM Sans, variable Latin-woff2, SIL OFL 1.1, Lizenztexte liegen im jeweiligen onts/-Ordner). CSP verschärft auf `style-src 'self'; font-src 'self'` — die App kontaktiert keine externen Server mehr. Datenschutz-Modal entsprechend angepasst (kein Google-Fonts-Absatz mehr).
+- Nicht als Laufzeittest verifiziert (Browser/Electron ließen sich in der Prüfumgebung nicht starten): Statisch bestätigt sind Dateipfade, woff2-Magic und keinerlei Google-Referenzen im Quellcode/Build-Output. Beim nächsten manuellen Start kurz prüfen, dass Überschriften/Text in Space Grotesk bzw. DM Sans erscheinen.- `build.mjs` kopiert jetzt zusätzlich `src/fonts` nach `www/fonts`; `npm run build` + `npx cap copy android|ios` wurden erneut ausgeführt (Assets in den nativen Projekten aktuell). Weiterhin NICHT neu gebaut/signiert.
+- Hinweis: Da die App nichts mehr aus dem Netz lädt, ist die `INTERNET`-Berechtigung im AndroidManifest (Capacitor-Template) voraussichtlich entbehrlich — siehe nächstes Update (entfernt).
+
+
+## Update 2026-09-20 (3) — INTERNET-Berechtigung entfernt, Copyright
+
+- **`android.permission.INTERNET` aus `android/app/src/main/AndroidManifest.xml` entfernt** (Entscheidung des Nutzers). Grundlage: Im App-Quellcode (`src/*.js|html|css`) gibt es keinen Netzwerkzugriff (kein `fetch`/XHR/WebSocket/externe URLs), Schriften sind lokal, die CSP erlaubt nur `'self'`, `capacitor.config.json` nutzt keinen `server.url`. Kein Capacitor-Plugin-Manifest in `node_modules/@capacitor` deklariert `INTERNET`; die verbleibenden Berechtigungen (`POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK`) stammen weiterhin vom local-notifications-Plugin.
+- **Nicht verifiziert:** Manifest-Merge und Laufzeitverhalten (WebView lädt lokale Assets über Capacitors interne Auslieferung ohne echte Netzwerkverbindung — laut Capacitor-Architektur nicht auf `INTERNET` angewiesen, aber ohne Gradle-Build/Gerät hier nicht geprüft). Vor dem Upload: nach dem Rebuild per `aapt dump badging` bestätigen, dass `INTERNET` nicht in der fertigen APK steht, und einen Rauchtest auf einem Gerät machen (App startet, Abos lassen sich anlegen, Erinnerungen funktionieren).
+- **Data Safety (Play Console) — Vorbereitungstext:** In diesem Repo ist kein Store-Listing-/Data-Safety-Text hinterlegt (nur der Hinweis oben), daher nichts weiter anzupassen. Für den Fragebogen gilt: keine Datenerhebung, keine Datenweitergabe, App verlangt keine Internetberechtigung; Datenverarbeitung ausschließlich lokal auf dem Gerät. Betreiber laut Impressum: AppVektor.
+- **Copyright** im Footer (`src/index.html`) jetzt „© 2026 AppVektor" (wie Web und frühere Windows-Variante). `npm run build` + `npx cap copy android|ios` erneut ausgeführt. Weiterhin NICHT neu gebaut/signiert — `builds/*.apk|*.aab` sind veraltet (alte Privatdaten, Google-Fonts-Anbindung, `INTERNET`) und dürfen nicht hochgeladen werden.
+- Historische Einträge weiter oben (u. a. Zeile zu `aapt dump badging` mit `INTERNET`) beschreiben den damaligen Stand und bleiben als Verlauf stehen.
