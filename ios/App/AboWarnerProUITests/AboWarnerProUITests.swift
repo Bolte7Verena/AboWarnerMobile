@@ -31,13 +31,28 @@ final class AboWarnerProUITests: XCTestCase {
         app.launchArguments += ["UITEST_SEED_DEMO_DATA"]
         app.launch()
 
+        // Diagnose: volle Accessibility-Hierarchie unbedingt ins Build-Log
+        // schreiben (läuft VOR jeder Prüfung, also auch wenn diese scheitert)
+        // — zeigt exakt, was XCUITest nach dem App-Start tatsächlich sieht,
+        // statt bei einem Fehlschlag erneut raten zu müssen.
+        print("=== ACCESSIBILITY-HIERARCHIE NACH APP-START ===")
+        print(app.debugDescription)
+        print("=== ENDE HIERARCHIE ===")
+
         // 01 — Übersicht: Stat-Kacheln + mehrere Demo-Abos mit allen vier
         // Status-Farben (Sicher/Bald fällig/Kritisch/Gekündigt).
-        let aboListe = app.otherElements["abo-liste"].exists
-            ? app.otherElements["abo-liste"]
-            : app.scrollViews.firstMatch
-        _ = aboListe.waitForExistence(timeout: 20)
-        XCTAssertTrue(app.staticTexts["Abo-Übersicht"].waitForExistence(timeout: 20))
+        //
+        // Absichtlich ein CONTAINS-Vergleich statt exaktem Textabgleich:
+        // WKWebView fasst benachbarte Textknoten (Überschrift + Unterzeile +
+        // Beschreibung in derselben .intro-Box) teils zu einem einzigen
+        // Accessibility-Element mit zusammengesetztem Label zusammen — eine
+        // Suche nach exakt "Abo-Übersicht" fände dann nichts, obwohl der
+        // Text sichtbar ist. Das ist eine begründete Vermutung, noch nicht
+        // bestätigt — die Hierarchie-Ausgabe oben zeigt es im nächsten Lauf.
+        let title = app.staticTexts.matching(
+            NSPredicate(format: "label CONTAINS[c] 'Abo-Übersicht'")
+        ).firstMatch
+        XCTAssertTrue(title.waitForExistence(timeout: 20))
         snapshot("01-Uebersicht")
 
         // Fälligkeits-Hinweis-Toast ("In 3 Tagen fällig") — von Netflix in
