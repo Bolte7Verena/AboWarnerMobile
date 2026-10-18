@@ -114,6 +114,7 @@
 				71C1FD2DD7E0BE00066FE904 /* AboWarnerProUITests.swift */,
 			);
 			name = AboWarnerProUITests;
+			path = AboWarnerProUITests;
 			sourceTree = "<group>";
 		};
 		A9A0EF6F571E1DB08C3E0EDE /* Frameworks */ = {
