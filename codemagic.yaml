@@ -119,10 +119,23 @@ workflows:
           cp "$HELPER" ios/App/AboWarnerProUITests/SnapshotHelper.swift
 
       - name: Screenshots mit Fastlane Snapshot erzeugen (iPhone 6.9" + iPad 13")
-        script: bundle exec fastlane screenshots
+        script: |
+          set +e
+          bundle exec fastlane screenshots
+          FASTLANE_EXIT=$?
+          echo "--- fastlane screenshots Exit-Code: $FASTLANE_EXIT ---"
+          echo "--- Inhalt von fastlane/screenshots (zur Diagnose, falls leer) ---"
+          find fastlane/screenshots -type f 2>/dev/null | sort
+          echo "--- Anzahl PNG-Dateien: $(find fastlane/screenshots -name '*.png' 2>/dev/null | wc -l) ---"
+          exit $FASTLANE_EXIT
 
     artifacts:
+      # Mehrere, sich überschneidende Muster — falls eines davon mit dem
+      # tatsächlich genutzten Glob-Verhalten von Codemagic keine
+      # verschachtelten Dateien erfasst, greift ein anderes.
       - fastlane/screenshots/**
+      - fastlane/screenshots/**/*.png
+      - fastlane/screenshots/*/*.png
 
     publishing:
       email:
