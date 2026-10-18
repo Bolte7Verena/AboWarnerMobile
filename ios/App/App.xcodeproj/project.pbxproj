@@ -22,16 +22,6 @@
 		D2B701BCD85B791CDB0CBE6E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51E991A7B243F5752387C86C /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		B9169EDDDF25CED08B931996 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 504EC3031FED79650016851F;
-			remoteInfo = App;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
@@ -147,7 +137,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				8772AEC3A03B7557FBEB18F6 /* PBXTargetDependency */,
 			);
 			name = AboWarnerProUITests;
 			productName = AboWarnerProUITests;
@@ -256,15 +245,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		8772AEC3A03B7557FBEB18F6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = App;
-			target = 504EC3031FED79650016851F /* App */;
-			targetProxy = B9169EDDDF25CED08B931996 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		504EC30B1FED79650016851F /* Main.storyboard */ = {
