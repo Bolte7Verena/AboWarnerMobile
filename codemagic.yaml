@@ -96,6 +96,9 @@ workflows:
           bundle config set --local path 'vendor/bundle'
           bundle install
 
+      - name: SnapshotHelper.swift auf installierte Fastlane-Version bringen
+        script: bundle exec fastlane snapshot update
+
       - name: Screenshots mit Fastlane Snapshot erzeugen (iPhone 6.9" + iPad 13")
         script: bundle exec fastlane screenshots
 
