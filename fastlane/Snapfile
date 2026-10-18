@@ -4,12 +4,14 @@
 
 # Pflichtgrößen für die App-Store-Connect-Einreichung: 6.9" (iPhone) und
 # 13" (iPad) — Letzteres, weil TARGETED_DEVICE_FAMILY = "1,2" (Universal).
-# Genaue Simulator-Namen können sich mit neuen Xcode-Versionen ändern; falls
-# ein Name beim ersten Lauf nicht gefunden wird, zeigt Fastlane die aktuell
-# verfügbaren Simulatoren an — dann hier den passenden Namen eintragen.
+# Diese Namen sind KEIN Rätselraten mehr, sondern stammen direkt aus der
+# Fehlermeldung eines echten Codemagic-Builds ("not in list of available
+# simulators" nannte die tatsächlich installierten Geräte). Falls ein
+# künftiges Xcode-Image die Namen wieder ändert, zeigt Fastlane erneut die
+# aktuell verfügbaren Simulatoren an — dann hier anpassen.
 devices([
-  "iPhone 16 Pro Max",
-  "iPad Pro 13-inch (M4)"
+  "iPhone 17 Pro Max",
+  "iPad Pro 13-inch (M5)"
 ])
 
 # Die App-Oberfläche ist ausschließlich auf Deutsch, daher nur eine Sprache.
