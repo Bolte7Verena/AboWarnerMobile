@@ -75,6 +75,12 @@ workflows:
     environment:
       # Reiner Simulator-Lauf — braucht kein Code-Signing/Provisioning,
       # anders als der ios-app-store-Workflow oben.
+      vars:
+        # Verhindert, dass Fastlanes Selbst-Update-Check beim Start jedes
+        # Befehls läuft (mögliche Ursache für den Bundler/Thor-Absturz
+        # weiter unten — sicherheitshalber deaktiviert, in CI-Umgebungen
+        # ohnehin Standardempfehlung von Fastlane).
+        FASTLANE_SKIP_UPDATE_CHECK: "1"
       node: latest
       xcode: latest
     cache:
@@ -97,7 +103,20 @@ workflows:
           bundle install
 
       - name: SnapshotHelper.swift auf installierte Fastlane-Version bringen
-        script: bundle exec fastlane snapshot update
+        # Bewusst NICHT "fastlane snapshot update" — dieser Unterbefehl stürzte
+        # in einem echten Build mit einem Bundler/Thor-internen Fehler ab
+        # (Bundler::CLI.dispatch), bevor Fastlane überhaupt lief. Stattdessen
+        # wird die Original-Vorlage direkt aus dem gerade von Bundler
+        # installierten fastlane-Gem kopiert — macht dasselbe, ohne über
+        # Bundlers Kommandozeilen-Dispatch zu laufen.
+        script: |
+          HELPER=$(find vendor/bundle -path '*/snapshot/lib/assets/SnapshotHelper.swift' | head -n1)
+          if [ -z "$HELPER" ]; then
+            echo "SnapshotHelper.swift-Vorlage nicht im installierten fastlane-Gem gefunden" >&2
+            exit 1
+          fi
+          echo "Kopiere aus: $HELPER"
+          cp "$HELPER" ios/App/AboWarnerProUITests/SnapshotHelper.swift
 
       - name: Screenshots mit Fastlane Snapshot erzeugen (iPhone 6.9" + iPad 13")
         script: bundle exec fastlane screenshots
