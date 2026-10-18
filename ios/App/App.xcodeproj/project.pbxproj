@@ -109,7 +109,6 @@
 		5C3DC308A72F2E1A32DBB3A9 /* AboWarnerProUITests */ = {
 			isa = PBXGroup;
 			children = (
-				ECC1CA37377A59F0D594B257 /* AboWarnerProUITests.xctest */,
 				EA0C70AB84789FA6A23DAE5C /* SnapshotHelper.swift */,
 				71C1FD2DD7E0BE00066FE904 /* AboWarnerProUITests.swift */,
 			);

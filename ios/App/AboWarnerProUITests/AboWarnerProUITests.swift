@@ -12,6 +12,13 @@
 // Screenshot-Läufe.
 import XCTest
 
+// @MainActor: Die aktuell von Codemagic installierte Fastlane-Version
+// markiert setupSnapshot()/snapshot() aus SnapshotHelper.swift als
+// MainActor-isoliert. Ohne diese Annotation hier verweigert der Compiler
+// den Aufruf aus einem synchronen, nicht-isolierten Kontext (Fehler "call
+// to main actor-isolated global function ... in a synchronous
+// nonisolated context", 6x beim Codemagic-Build vom 18.10.2026).
+@MainActor
 final class AboWarnerProUITests: XCTestCase {
 
     override func setUpWithError() throws {
