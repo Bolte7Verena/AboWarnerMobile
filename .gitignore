@@ -16,6 +16,18 @@ keystore.properties
 *.mobileprovision
 *.p12
 
+# Fastlane: generierte Screenshots und lokal gebündelte Ruby-Gems — beides
+# wird von Codemagic (ios-screenshots-Workflow) frisch erzeugt, nicht Teil
+# der Quelle.
+fastlane/screenshots/
+vendor/bundle/
+.bundle/
+
+# Sicherungskopie der Xcode-Projektdatei vor dem Hinzufügen des
+# UI-Test-Ziels (siehe MOBILE_STATUS.md) — zum Vergleich aufbewahrt, bis
+# der erste echte Codemagic-Build das neue Ziel bestätigt hat.
+*.pbxproj.bak-*
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

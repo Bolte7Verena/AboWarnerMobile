@@ -10,6 +10,7 @@ import { zeigeAbos, neuesAboSpeichern } from './app.js';
 import { initDatePicker } from './datepicker.js';
 import { zeigeFaelligkeitshinweisFallsNoetig, planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { initRechtliches } from './rechtliches.js';
+import { seedDemoDatenFallsNoetig } from './demo-seed.js';
 
 // Globales Binding für UI-Elemente
 window.zeigeAbos = zeigeAbos;
@@ -69,10 +70,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             formEl: document.getElementById('abo-form')
         });
 
-        // 4. Erst jetzt: App-UI rendern
+        // 4. Nur für automatisierte Store-Screenshots (siehe demo-seed.js):
+        // feste Demo-Abos anlegen, bevor die Liste gerendert wird. Das Flag
+        // wird ausschließlich von SceneDelegate.swift für Fastlane-Snapshot-
+        // Läufe gesetzt, für echte Nutzer bleibt dieser Zweig inaktiv.
+        if (window.__UITEST_SEED_DEMO_DATA__) {
+            await seedDemoDatenFallsNoetig();
+        }
+
+        // 5. Erst jetzt: App-UI rendern
         const alleAbos = await zeigeAbos();
 
-        // 5. Fälligkeitshinweis: bewusst in einem EIGENEN try/catch, getrennt
+        // 6. Fälligkeitshinweis: bewusst in einem EIGENEN try/catch, getrennt
         // vom restlichen Start-Ablauf. So kann ein Fehler an anderer Stelle
         // (z.B. bei der weiter unten folgenden nativen Benachrichtigungs-
         // Berechtigungsabfrage) den Hinweis niemals stillschweigend
@@ -84,7 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Fälligkeitshinweis konnte nicht angezeigt werden:', hinweisFehler);
         }
 
-        // 6. Native Benachrichtigungen (nur mobil) — läuft unabhängig vom
+        // 7. Native Benachrichtigungen (nur mobil) — läuft unabhängig vom
         // Toast oben und darf dessen Anzeige nicht beeinflussen können.
         planeFaelligkeitsBenachrichtigungen(alleAbos);
     } catch (error) {

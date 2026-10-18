@@ -1,0 +1,30 @@
+# Fastlane Snapshot — Konfiguration für automatisierte App-Store-Screenshots.
+# Läuft nur im iOS-Simulator auf macOS (Codemagic-Cloud-Build), hier unter
+# Windows nicht ausführbar, nur konfiguriert/vorbereitet.
+
+# Pflichtgrößen für die App-Store-Connect-Einreichung: 6.9" (iPhone) und
+# 13" (iPad) — Letzteres, weil TARGETED_DEVICE_FAMILY = "1,2" (Universal).
+# Genaue Simulator-Namen können sich mit neuen Xcode-Versionen ändern; falls
+# ein Name beim ersten Lauf nicht gefunden wird, zeigt Fastlane die aktuell
+# verfügbaren Simulatoren an — dann hier den passenden Namen eintragen.
+devices([
+  "iPhone 16 Pro Max",
+  "iPad Pro 13-inch (M4)"
+])
+
+# Die App-Oberfläche ist ausschließlich auf Deutsch, daher nur eine Sprache.
+languages(["de-DE"])
+
+project("ios/App/App.xcodeproj")
+scheme("App")
+
+output_directory("./fastlane/screenshots")
+clear_previous_screenshots(true)
+
+# Setzt eine einheitliche, saubere iOS-Statusleiste (volle Akkuanzeige, feste
+# Uhrzeit, WLAN) in allen Screenshots — wichtig, damit nichts vom zuvor
+# genutzten Android-Gerät durchscheint.
+override_status_bar(true)
+
+stop_after_first_error(false)
+concurrent_simulators(false)

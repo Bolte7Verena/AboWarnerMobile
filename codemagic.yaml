@@ -67,3 +67,45 @@ workflows:
         # Connect einreichen).
         submit_to_testflight: true
         submit_to_app_store: false
+
+  ios-screenshots:
+    name: iOS – App-Store-Screenshots (Fastlane Snapshot)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      # Reiner Simulator-Lauf — braucht kein Code-Signing/Provisioning,
+      # anders als der ios-app-store-Workflow oben.
+      node: latest
+      xcode: latest
+    cache:
+      cache_paths:
+        - $HOME/.npm
+        - vendor/bundle
+    scripts:
+      - name: Install npm dependencies
+        script: npm ci
+
+      - name: Web-Assets bauen (src/ -> www/)
+        script: npm run build
+
+      - name: Capacitor iOS-Projekt synchronisieren
+        script: npx cap sync ios
+
+      - name: Fastlane installieren
+        script: |
+          bundle config set --local path 'vendor/bundle'
+          bundle install
+
+      - name: Screenshots mit Fastlane Snapshot erzeugen (iPhone 6.9" + iPad 13")
+        script: bundle exec fastlane screenshots
+
+    artifacts:
+      - fastlane/screenshots/**
+
+    publishing:
+      email:
+        recipients:
+          - bolte7verena@gmail.com
+        notify:
+          success: true
+          failure: true
