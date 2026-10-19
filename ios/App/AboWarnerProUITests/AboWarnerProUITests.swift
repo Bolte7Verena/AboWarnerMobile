@@ -72,6 +72,14 @@ final class AboWarnerProUITests: XCTestCase {
             app.buttons["Schließen"].tap()
         }
 
+        // Diagnose: Hierarchie an GENAU der Stelle, an der die Screens 04/05
+        // bisher ins Leere liefen (unbedingt, auch wenn beide darunter
+        // nichts finden) — zeigt, ob überhaupt Abo-Karten/Kategorie-Chips
+        // existieren, oder ob z.B. die Demo-Daten-Seed hier schon fehlte.
+        print("=== ACCESSIBILITY-HIERARCHIE VOR SCREEN 04/05 ===")
+        print(app.debugDescription)
+        print("=== ENDE HIERARCHIE ===")
+
         // 04 — Kündigungsschreiben: Vorschau-Modal zum ersten "Kündigen"-Button.
         let kuendigenButton = app.buttons["Kündigen"].firstMatch
         if kuendigenButton.waitForExistence(timeout: 10) {
