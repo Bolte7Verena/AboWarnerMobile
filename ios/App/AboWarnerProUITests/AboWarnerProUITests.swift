@@ -61,6 +61,20 @@ final class AboWarnerProUITests: XCTestCase {
         // den ganzen Testlauf scheitern zu lassen.
         if app.staticTexts["In 3 Tagen fällig"].waitForExistence(timeout: 5) {
             snapshot("02-Erinnerung")
+
+            // WICHTIG: Den Toast hier aktiv schließen. Sein Schließen-Button
+            // hat denselben aria-label="Schließen" wie der Schließen-Button
+            // des gleich folgenden "Neues Abo"-Formulars — bleibt der Toast
+            // offen, ist "Schließen" doppelt vorhanden (mehrdeutige Abfrage),
+            // sobald das Formular ebenfalls offen ist. Das erklärt, warum
+            // bisher ausgerechnet die Screens NACH dem Formular-Schließen
+            // (04, 05) fehlschlugen, obwohl die Daten nachweislich da waren
+            // (siehe Screenshots vom 19.10.2026). Hier ist "Schließen" noch
+            // eindeutig, da das Formular noch gar nicht offen ist.
+            let toastCloseButton = app.buttons["Schließen"].firstMatch
+            if toastCloseButton.waitForExistence(timeout: 3) {
+                toastCloseButton.tap()
+            }
         }
 
         // 03 — Neues Abo: Hinzufügen-Formular.
@@ -68,8 +82,8 @@ final class AboWarnerProUITests: XCTestCase {
         XCTAssertTrue(app.textFields["input-name"].waitForExistence(timeout: 10)
                       || app.staticTexts["Neues Abo hinzufügen"].waitForExistence(timeout: 10))
         snapshot("03-NeuesAbo")
-        if app.buttons["Schließen"].exists {
-            app.buttons["Schließen"].tap()
+        if app.buttons["Schließen"].firstMatch.exists {
+            app.buttons["Schließen"].firstMatch.tap()
         }
 
         // Diagnose: Hierarchie an GENAU der Stelle, an der die Screens 04/05
@@ -86,8 +100,8 @@ final class AboWarnerProUITests: XCTestCase {
             kuendigenButton.tap()
             _ = app.staticTexts["Kündigungsschreiben"].waitForExistence(timeout: 10)
             snapshot("04-Kuendigungsschreiben")
-            if app.buttons["Schließen"].exists {
-                app.buttons["Schließen"].tap()
+            if app.buttons["Schließen"].firstMatch.exists {
+                app.buttons["Schließen"].firstMatch.tap()
             }
         }
 
