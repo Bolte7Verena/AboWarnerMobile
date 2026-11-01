@@ -116,10 +116,10 @@ Auf Nutzerwunsch: konkreter, umsetzbarer Weg zur App-Store-Einreichung ohne eige
 **3. Git-Repository lokal initialisiert** (`C:\AboWarnerMobile` war bis dahin gar nicht unter Versionskontrolle — Voraussetzung für jeden Cloud-CI-Dienst, der von einem Git-Host baut). Neues Top-Level-`.gitignore` (node_modules, `www/`-Build-Output, `builds/`, alle Signing-Artefakte `*.jks`/`*.keystore`/`keystore.properties`/`*.p8`/`*.mobileprovision`/`*.p12` — verifiziert vor dem ersten Commit, dass keine dieser Dateien im Staging landet). Erster Commit lokal erstellt. **Noch kein Remote/Push** — dafür fehlt ein GitHub/GitLab-Repo, siehe manuelle Schritte unten.
 
 **4. `codemagic.yaml` (Workflow `ios-app-store`) im Repo-Root angelegt** — deklarativer Build/Sign/Publish-Workflow für Codemagic:
-- `npm ci` → `npm run build` (esbuild, `src/` → `www/`) → `npx cap sync ios` (synct `www/` ins native Projekt, führt `pod install` automatisch aus) → `xcode-project use-profiles` (holt/erzeugt Zertifikat + Provisioning-Profil vollautomatisch über die App-Store-Connect-API-Integration, kein manuelles Zertifikats-Handling) → Build-Nummer automatisch hochgezählt (`app-store-connect get-latest-build-number` + `agvtool`, verhindert „Build-Nummer bereits vergeben"-Fehler bei wiederholten Uploads) → `xcode-project build-ipa`.
+- `npm ci` → `npm run build` (esbuild, `src/` → `www/`) → `npx cap sync ios` (synct `www/` ins native Projekt, führt `pod install` automatisch aus) → `xcode-project use-profiles` (wendet Zertifikat + Provisioning-Profil an; **korrigiert 2026-11-01:** nicht vollautomatisch, `ios_signing` holt nur Dateien, die vorher in Codemagic unter „Code signing identities" angelegt wurden, siehe manuelle Schritte) → Build-Nummer automatisch hochgezählt (`app-store-connect get-latest-build-number` + `agvtool`, verhindert „Build-Nummer bereits vergeben"-Fehler bei wiederholten Uploads; liefert die Abfrage keine Zahl, weil bei Apple noch kein Build liegt, beginnt der Zähler bei 1) → `xcode-project build-ipa`.
 - Publishing bewusst konservativ: `submit_to_testflight: true`, `submit_to_app_store: false` — jeder erfolgreiche Build landet automatisch in TestFlight, geht aber NICHT automatisch in die echte Apple-Review. Erst nach eigenem Test in TestFlight bewusst auf `submit_to_app_store: true` umstellen oder manuell in App Store Connect einreichen.
 - Kein automatischer Trigger auf `git push` konfiguriert (bewusst) — Builds werden anfangs manuell über das Codemagic-Dashboard gestartet, bis der Ablauf sich bewährt hat.
-- `APP_STORE_APPLE_ID` (die numerische App-Store-Connect-App-ID, nicht die Bundle-ID) ist noch ein Platzhalter (`0000000000`) — kann erst eingetragen werden, nachdem die App einmal in App Store Connect angelegt wurde (siehe manuelle Schritte).
+- `APP_STORE_APPLE_ID` (die numerische App-Store-Connect-App-ID, nicht die Bundle-ID) ist eingetragen: `6824655836` (2026-11-01).
 
 ## Android-Release-Rebuild (2026-08-05)
 
@@ -140,9 +140,10 @@ Vorheriger Audit hatte festgestellt: `builds/AboWarnerPro-release-signed-v1.apk`
 3. App-Store-Connect-API-Key erzeugen: App Store Connect → Users and Access → Integrations → App Store Connect API → Key mit Rolle „App Manager" erzeugen, `.p8`-Datei herunterladen (nur einmalig möglich!), Key-ID + Issuer-ID notieren.
 4. GitHub-Repo für `C:\AboWarnerMobile` anlegen (privat empfohlen) und den bestehenden lokalen Commit dorthin pushen (`git remote add origin ...`, `git push -u origin main`).
 5. Codemagic-Account erstellen (codemagic.io, kostenloses Kontingent reicht für gelegentliche Releases), das GitHub-Repo verbinden/autorisieren.
-6. In Codemagic unter Teams → Integrations → App Store Connect: die Daten aus Schritt 3 (.p8, Key-ID, Issuer-ID) eintragen, Integration **exakt** `appstore_credentials` nennen (muss zum Namen in `codemagic.yaml` passen).
-7. `APP_STORE_APPLE_ID` in `codemagic.yaml` mit der echten App-ID aus Schritt 2 ersetzen, committen, pushen.
-8. Ersten Build im Codemagic-Dashboard manuell starten (Workflow „iOS – Build, Sign & TestFlight"), Ergebnis in TestFlight prüfen.
+6. In Codemagic unter Teams → Integrations → App Store Connect: die Daten aus Schritt 3 (.p8, Key-ID, Issuer-ID) eintragen. Erledigt 2026-11-01, die Integration heißt `Codemagic` (muss zum Namen in `codemagic.yaml` passen).
+7. `APP_STORE_APPLE_ID` in `codemagic.yaml` mit der echten App-ID aus Schritt 2 ersetzen, committen, pushen. Erledigt 2026-11-01.
+8. In Codemagic unter codemagic.yaml settings → Code signing identities: Apple-Distribution-Zertifikat erzeugen (iOS certificates → Generate certificate) und das App-Store-Profil für `com.abowarner.pro` holen (iOS provisioning profiles → Fetch profiles → Download selected).
+9. Ersten Build im Codemagic-Dashboard manuell starten (Workflow „iOS – Build, Sign & TestFlight"), Ergebnis in TestFlight prüfen.
 
 ## Android / Google-Play-Store-Audit (2026-08-01)
 

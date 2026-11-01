@@ -6,16 +6,14 @@ workflows:
     integrations:
       # Name muss exakt mit der App-Store-Connect-Integration übereinstimmen,
       # die im Codemagic-Dashboard unter Teams > Integrations angelegt wird.
-      app_store_connect: appstore_credentials
+      app_store_connect: Codemagic
     environment:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.abowarner.pro
       vars:
-        # Numerische App-Store-Connect-App-ID (NICHT die Bundle-ID) —
-        # erst bekannt, nachdem die App in App Store Connect angelegt wurde.
-        # Bis dahin bricht der "Increment build number"-Schritt unten ab.
-        APP_STORE_APPLE_ID: 0000000000
+        # Numerische App-Store-Connect-App-ID (NICHT die Bundle-ID).
+        APP_STORE_APPLE_ID: 6824655836
       node: latest
       xcode: latest
       cocoapods: default
@@ -39,7 +37,13 @@ workflows:
       - name: Build-Nummer hochzählen
         script: |
           cd ios/App
-          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID")
+          # Rückfallwert: Solange bei Apple noch kein Build liegt, liefert die
+          # Abfrage keine Zahl, dann beginnt der Zähler bei 1.
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID" || true)
+          if ! [[ "$LATEST_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
+            echo "Keine bisherige Build-Nummer gefunden, beginne bei 1"
+            LATEST_BUILD_NUMBER=0
+          fi
           agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
 
       - name: IPA bauen

@@ -1,6 +1,6 @@
 # Einrichtung für den App Store – Schritt für Schritt (nur du kannst das)
 
-Stand: 2026-10-19. Alles hier passiert in deinen Konten im Browser. Nichts davon kann ich für dich tun. Geheimnisse (Passwörter, die `.p8`-Datei, Tokens) niemals in einen Chat oder in Git legen.
+Stand: 2026-11-01. Alles hier passiert in deinen Konten im Browser. Nichts davon kann ich für dich tun. Geheimnisse (Passwörter, die `.p8`-Datei, Tokens) niemals in einen Chat oder in Git legen.
 
 ## ✅ Bereits erledigt (nicht mehr nötig)
 
@@ -13,15 +13,18 @@ Stand: 2026-10-19. Alles hier passiert in deinen Konten im Browser. Nichts davon
 2. Entscheiden: **Einzelperson oder Organisation.** Bei einer Einzelperson zeigt der Store deinen persönlichen Namen als Verkäufer, „AppVektor" als Firmenname geht nur mit einem Organisationskonto (dafür braucht Apple u. a. eine D-U-N-S-Nummer). Für EU-Händler zeigt Apple außerdem Adresse, Telefon und E-Mail öffentlich an. Bitte vorher klären, ob du damit einverstanden bist.
 3. Auf developer.apple.com → „Certificates, Identifiers & Profiles" → „Identifiers" → neue App-ID mit der Bundle-ID **`com.abowarner.pro`** anlegen.
 4. In App Store Connect (appstoreconnect.apple.com) → „Apps" → „+" → „Neue App": Plattform iOS, Name „Abo-Warner Pro", Sprache Deutsch, Bundle-ID `com.abowarner.pro`, SKU frei wählbar (z. B. `abowarnerpro`).
-5. Die **numerische App-ID** der neuen App notieren (steht in App Store Connect bei „App-Informationen" als „Apple-ID"). Sie ersetzt später den Platzhalter `0000000000` in `codemagic.yaml`.
+5. Die **numerische App-ID** der neuen App notieren (steht in App Store Connect bei „App-Informationen" als „Apple-ID"). Erledigt: `6824655836`, steht in `codemagic.yaml`.
 6. **Bezahlen:** Unter „Vereinbarungen, Steuern und Bankverbindung" die Vereinbarung für kostenpflichtige Apps annehmen und Bank- und Steuerangaben eintragen. Einfachster Weg für „Einmalkauf": die App als **bezahlte App** anbieten (unter „Preise und Verfügbarkeit" eine Preisstufe wählen). Dafür ist kein eigener Kaufcode nötig.
 7. **App-Store-Connect-API-Schlüssel** erzeugen: App Store Connect → „Benutzer und Zugriff" → „Integrationen" → „App Store Connect API" → Schlüssel mit der Rolle **„App-Manager"**. Die `.p8`-Datei sofort herunterladen (geht nur einmal!), Key-ID und Issuer-ID notieren. Datei sicher aufbewahren, nicht ins Repo, nicht in den Chat.
 
 ## D. Codemagic — Rest (A und B oben sind schon erledigt)
 
-1. Im Codemagic-Dashboard unter „Teams" → „Integrations" → „App Store Connect" eine Verbindung anlegen: `.p8`-Datei, Key-ID und Issuer-ID aus Schritt C7 eintragen. Name der Verbindung **genau `appstore_credentials`** (so steht es in `codemagic.yaml`).
-2. In `codemagic.yaml` bei `APP_STORE_APPLE_ID` die echte Zahl aus Schritt C5 eintragen (statt `0000000000`). Sag mir Bescheid, dann mache ich diese eine Zeile für dich und du musst nur noch committen/pushen (oder ich pushe, wenn du magst).
-3. Im Codemagic-Dashboard den Workflow **„iOS – Build, Sign & TestFlight"** manuell starten. Er baut die App, signiert sie und lädt sie nach TestFlight hoch. Reicht sie **nicht** automatisch bei Apple zur Prüfung ein (bewusst so eingestellt).
+1. Im Codemagic-Dashboard unter „Teams" → „Integrations" → „App Store Connect" eine Verbindung anlegen: `.p8`-Datei, Key-ID und Issuer-ID aus Schritt C7 eintragen. Erledigt: Die Verbindung heißt **genau `Codemagic`** (so steht es in `codemagic.yaml`).
+2. In `codemagic.yaml` bei `APP_STORE_APPLE_ID` die echte Zahl aus Schritt C5 eintragen. Erledigt.
+3. **Zertifikat und Profil in Codemagic anlegen.** Die API-Verbindung macht das nicht von selbst, und `ios_signing` holt nur Dateien, die dort schon liegen. Unter „codemagic.yaml settings" → „Code signing identities":
+   - „iOS certificates" → „Generate certificate", Typ Apple Distribution, die Verbindung `Codemagic` auswählen.
+   - „iOS provisioning profiles" → „Fetch profiles", das App-Store-Profil für `com.abowarner.pro` auswählen → „Download selected". Steht dort keines, muss es zuerst auf developer.apple.com unter „Profiles" angelegt werden.
+4. Im Codemagic-Dashboard den Workflow **„iOS – Build, Sign & TestFlight"** manuell starten. Er baut die App, signiert sie und lädt sie nach TestFlight hoch. Reicht sie **nicht** automatisch bei Apple zur Prüfung ein (bewusst so eingestellt).
 
 ## E. Testen
 
