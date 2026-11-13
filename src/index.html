@@ -19,6 +19,9 @@
                 </div>
                 <span class="brand-name">Abo-Warner Pro</span>
             </div>
+            <button type="button" id="btn-hilfe" class="hilfe-btn" aria-label="Hilfe">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            </button>
         </div>
     </header>
 
@@ -249,6 +252,64 @@
                 <p id="kontakt-hinweis" class="kontakt-hinweis" role="status" hidden></p>
                 <p>Öffnet sich kein Mail-Programm, kopiere die Adresse und schreib uns aus deinem gewohnten Mail-Dienst.</p>
                 <p>Telefon: 0049 421 9899 1701</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="hilfe-modal-overlay" class="modal-overlay" hidden>
+        <div class="glass-strong modal-dialog rechtliches-dialog" role="dialog" aria-modal="true" aria-labelledby="hilfe-titel">
+            <div class="modal-header">
+                <h2 class="modal-title" id="hilfe-titel">Hilfe</h2>
+                <button type="button" id="btn-hilfe-schliessen" class="modal-close-btn" aria-label="Schließen">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="rechtliches-inhalt hilfe-inhalt">
+                <h3>Was kann die App?</h3>
+                <p>Abo-Warner Pro behält deine Abos und Verträge im Blick: was sie kosten, wann du zahlst und bis wann du kündigen kannst. Drei Tage vor einer Zahlung erinnert dich die App, wenn du Mitteilungen erlaubst. Alle Daten bleiben nur auf deinem Handy.</p>
+
+                <h3>Wie lege ich ein Abo an?</h3>
+                <ol>
+                    <li>Tippe auf „Neues Abo“.</li>
+                    <li>Trag den Namen, die Kosten und den Turnus ein (wie oft du zahlst, z.B. monatlich).</li>
+                    <li>Wähle das Datum der nächsten Zahlung.</li>
+                    <li>Trag die Kündigungsfrist in Tagen ein (siehe unten).</li>
+                    <li>Wenn du willst: Unter „Weitere Angaben“ Vertragsnummer, Kundennummer und Anschrift des Anbieters eintragen. Die stehen dann automatisch im Kündigungsschreiben.</li>
+                    <li>Tippe auf „Abo speichern“.</li>
+                </ol>
+                <p>Ändern kannst du alles später mit „Bearbeiten“ auf der Karte.</p>
+
+                <h3>Was bedeutet die Frist?</h3>
+                <p>Die Kündigungsfrist sagt, wie viele Tage vor der nächsten Zahlung deine Kündigung beim Anbieter sein muss. Du findest sie in deinem Vertrag. Steht dort z.B. „3 Monate“, trag rund 90 Tage ein, im Zweifel lieber etwas mehr.</p>
+                <p>Die App rechnet daraus das Datum aus und zeigt es auf jeder Karte: „Kündigung möglich bis …“. Ist das Datum vorbei, zeigt sie dir die nächste Möglichkeit.</p>
+
+                <h3>Was bedeuten Rot, Gelb und Grün?</h3>
+                <ul class="hilfe-farben">
+                    <li><span class="hilfe-punkt rot" aria-hidden="true"></span><strong>Rot:</strong> Nur noch 7 Tage oder weniger bis zum Kündigungsdatum. Jetzt handeln, wenn du das Abo nicht mehr willst.</li>
+                    <li><span class="hilfe-punkt gelb" aria-hidden="true"></span><strong>Gelb:</strong> Noch höchstens 30 Tage Zeit.</li>
+                    <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Grün:</strong> Noch mehr als 30 Tage Zeit.</li>
+                    <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Grau:</strong> Das Abo ist gekündigt.</li>
+                </ul>
+
+                <h3>Wie kündige ich?</h3>
+                <ol>
+                    <li>Tippe auf der Karte auf „Kündigen“.</li>
+                    <li>Die App schreibt dir ein fertiges Kündigungsschreiben. Deinen Namen und deine Anschrift trägst du nur einmal ein.</li>
+                    <li>Kopiere das Schreiben oder teile es als Datei und schick es an den Anbieter. Die App verschickt nichts selbst. Am besten so, dass du einen Nachweis hast (z.B. E-Mail mit Eingangsbestätigung oder Einschreiben).</li>
+                    <li>Tippe auf „Abo als gekündigt markieren“ und wähle das Vertragsende. Bis dahin bleibt das Abo in der Liste, denn so lange zahlst du noch. Am letzten Tag bekommst du eine Mitteilung: „… endet heute.“</li>
+                </ol>
+
+                <h3>Wie sichere ich meine Daten?</h3>
+                <p>Deine Abos sind nur auf diesem Handy gespeichert. Wenn du die App löschst oder das Handy verlierst, sind sie weg. Deshalb ganz unten unter „Daten sichern“:</p>
+                <ul>
+                    <li><strong>Sicherung erstellen:</strong> speichert alle Abos in einer Datei. Leg sie an einem sicheren Ort ab, z.B. in deiner Cloud oder per E-Mail an dich selbst.</li>
+                    <li><strong>Sicherung wiederherstellen:</strong> liest so eine Datei wieder ein, z.B. auf einem neuen Handy. Achtung: Die Abos auf dem Handy werden dabei ersetzt.</li>
+                    <li><strong>Übersicht als PDF:</strong> eine Liste zum Ausdrucken oder Weitergeben. Das ist keine Sicherung.</li>
+                </ul>
+
+                <h3>Noch Fragen?</h3>
+                <p>Tippe ganz unten auf „Kontakt“ und schreib uns.</p>
             </div>
         </div>
     </div>

@@ -10,6 +10,7 @@ import { zeigeAbos, neuesAboSpeichern, initDatenSichern } from './app.js';
 import { initDatePicker } from './datepicker.js';
 import { zeigeFaelligkeitshinweisFallsNoetig, planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { initRechtliches } from './rechtliches.js';
+import { initHilfe } from './hilfe.js';
 import { seedDemoDatenFallsNoetig } from './demo-seed.js';
 
 // Globales Binding für UI-Elemente
@@ -68,6 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('input-suche').addEventListener('input', () => zeigeAbos());
         initRechtliches();
         initDatenSichern();
+        initHilfe();
 
         initDatePicker({
             inputEl: document.getElementById('input-datum'),
