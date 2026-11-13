@@ -1,16 +1,33 @@
 /**
  * kuendigungsschreiben.js | Modal mit fertigem Kündigungsschreiben.
- * Öffnet sich beim Klick auf "Kündigen" einer Abo-Karte. Die Absenderdaten
- * (Name/Adresse/Kundennummer/E-Mail) werden lokal gemerkt (localStorage),
- * damit spätere Kündigungen ohne erneutes Ausfüllen startklar sind.
+ * Öffnet sich beim Klick auf "Kündigen" einer Abo-Karte.
+ *
+ * Ab 2.0.2 bewusst kurz gehalten:
+ * - Absenderdaten (Name/Anschrift/E-Mail) werden lokal gemerkt
+ *   (localStorage) und sind beim nächsten Mal schon ausgefüllt — sind sie
+ *   vollständig, werden sie zu einer Zeile eingeklappt.
+ * - Vertragsdaten (Vertragspartner, Vertragsnummer, Kundennummer) kommen
+ *   automatisch aus dem Abo (Bearbeiten-Formular), nichts doppelt eintippen.
+ * - Leere optionale Angaben fallen im Schreiben weg, statt als
+ *   [Platzhalter] stehen zu bleiben.
  */
 
-import { ermittleEffektivesZahlungsdatum } from './calculator.js';
+import { ermittleKuendigungsfrist, formatiereDatumDE } from './calculator.js';
 
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>';
 
 const ABSENDER_STORAGE_KEY = 'abo-warner:absender-daten';
+// Pflichtangaben für einen versandfertigen Brief (E-Mail ist optional).
+const ABSENDER_PFLICHTFELDER = ['name', 'strasse', 'plzOrt'];
+
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
 
 function ladeAbsenderDaten() {
     try {
@@ -21,14 +38,15 @@ function ladeAbsenderDaten() {
 }
 
 function speichereAbsenderDaten(absender) {
-    localStorage.setItem(ABSENDER_STORAGE_KEY, JSON.stringify(absender));
+    try {
+        localStorage.setItem(ABSENDER_STORAGE_KEY, JSON.stringify(absender));
+    } catch (error) {
+        // Speichern ist Komfort — ohne localStorage funktioniert das Schreiben trotzdem.
+    }
 }
 
-function heuteFormatiert() {
-    const heute = new Date();
-    const tag = String(heute.getDate()).padStart(2, '0');
-    const monat = String(heute.getMonth() + 1).padStart(2, '0');
-    return `${tag}.${monat}.${heute.getFullYear()}`;
+function absenderVollstaendig(absender) {
+    return ABSENDER_PFLICHTFELDER.every((feld) => String(absender[feld] || '').trim().length > 0);
 }
 
 function heuteIsoKompakt() {
@@ -46,104 +64,107 @@ function zuDateiSicheremNamen(text) {
     return bereinigt || 'Abo';
 }
 
-// Letzter Tag, an dem eine fristgerechte Kündigung noch ankommen muss
-// (nächste Zahlung minus Kündigungsfrist). Liegt dieser Tag bereits in der
-// Vergangenheit, ist "zum nächstmöglichen Termin" die einzig ehrliche Aussage.
-function berechneFristDatum(abo) {
-    // Erst turnusgerecht auf das tatsächlich nächste Zahlungsdatum vorrücken —
-    // sonst würde ein längst überfälliges, aber weiterhin laufendes Abo hier
-    // einen Fristtermin liefern, der noch weiter in der Vergangenheit liegt.
-    const effektivesZahlungsdatum = ermittleEffektivesZahlungsdatum(abo.naechsteZahlung, abo.turnus);
-    const zielDatum = new Date(effektivesZahlungsdatum);
-    zielDatum.setDate(zielDatum.getDate() - abo.kuendigungsfristTage);
-    const heute = new Date();
-    heute.setHours(0, 0, 0, 0);
-    if (isNaN(zielDatum) || zielDatum < heute) return null;
+// Reiner Text ohne DOM-Zugriff — exportiert, damit er per Unit-Test
+// prüfbar ist.
+export function erzeugeSchreibenText(abo, absender, heute = new Date()) {
+    const text = (wert) => String(wert || '').trim();
+    const name = text(absender.name) || '[Dein Name]';
+    const strasse = text(absender.strasse) || '[Straße und Hausnummer]';
+    const plzOrt = text(absender.plzOrt) || '[PLZ und Ort]';
+    const email = text(absender.email);
 
-    const tag = String(zielDatum.getDate()).padStart(2, '0');
-    const monat = String(zielDatum.getMonth() + 1).padStart(2, '0');
-    return `${tag}.${monat}.${zielDatum.getFullYear()}`;
+    const empfaenger = text(abo.vertragspartner) || abo.name;
+    const vertragsnummer = text(abo.vertragsnummer);
+    const kundennummer = text(abo.kundennummer);
+
+    const absenderBlock = [name, strasse, plzOrt, email].filter(Boolean).join('\n');
+    const bezugBlock = [
+        `Kündigung: ${abo.name}`,
+        vertragsnummer && `Vertragsnummer: ${vertragsnummer}`,
+        kundennummer && `Kundennummer: ${kundennummer}`
+    ].filter(Boolean).join('\n');
+    const bestaetigung = email
+        ? `Bitte bestätigen Sie mir die Kündigung und das Vertragsende per E-Mail an ${email}.`
+        : 'Bitte bestätigen Sie mir die Kündigung und das Vertragsende schriftlich.';
+
+    return [
+        absenderBlock,
+        empfaenger,
+        formatiereDatumDE(heute),
+        bezugBlock,
+        'Sehr geehrte Damen und Herren,',
+        'hiermit kündige ich den oben genannten Vertrag fristgerecht zum nächstmöglichen Zeitpunkt.',
+        bestaetigung,
+        'Mit freundlichen Grüßen',
+        name
+    ].join('\n\n');
 }
 
-function erzeugeSchreibenText(abo, absender) {
-    const name = absender.name || '[Ihr Name]';
-    const strasse = absender.strasse || '[Ihre Straße und Hausnummer]';
-    const plzOrt = absender.plzOrt || '[PLZ und Ort]';
-    const email = absender.email || '[Ihre E-Mail-Adresse]';
-    const kundennummer = absender.kundennummer || '[Ihre Kundennummer, falls vorhanden]';
+function erzeugeFristHinweis(abo) {
+    const frist = ermittleKuendigungsfrist(abo);
+    if (!frist) return '';
+    return `Damit die Kündigung rechtzeitig wirkt, muss sie bis zum <strong>${formatiereDatumDE(frist.fristDatum)}</strong> beim Anbieter sein.`;
+}
 
-    const fristDatum = berechneFristDatum(abo);
-    const fristZeile = fristDatum ? `fristgerecht zum ${fristDatum}` : 'zum nächstmöglichen Termin';
-
-    return `${name}
-${strasse}
-${plzOrt}
-${email}
-
-${abo.name}
-[Adresse des Anbieters, falls bekannt]
-
-${heuteFormatiert()}
-
-Kündigung meines Vertrags – Kundennummer: ${kundennummer}
-
-Sehr geehrte Damen und Herren,
-
-hiermit kündige ich meinen Vertrag über „${abo.name}" ${fristZeile}.
-
-Bitte bestätigen Sie mir den Erhalt dieser Kündigung sowie das Vertragsende schriftlich per E-Mail an ${email}.
-
-Mit freundlichen Grüßen
-
-_______________________
-${name}`;
+function erzeugeVertragsdatenHinweis(abo) {
+    const fehlend = [];
+    if (!String(abo.vertragspartner || '').trim()) fehlend.push('Anschrift des Anbieters');
+    if (!String(abo.vertragsnummer || '').trim()) fehlend.push('Vertragsnummer');
+    if (!String(abo.kundennummer || '').trim()) fehlend.push('Kundennummer');
+    if (fehlend.length === 0) return '';
+    return `Tipp: ${fehlend.join(', ')} kannst du beim Abo unter „Bearbeiten“ hinterlegen. Dann stehen sie automatisch im Schreiben.`;
 }
 
 export function oeffneKuendigungsschreibenModal(abo) {
     const gespeicherterAbsender = ladeAbsenderDaten();
+    const fristHinweis = erzeugeFristHinweis(abo);
+    const vertragsdatenHinweis = erzeugeVertragsdatenHinweis(abo);
 
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.innerHTML = `
         <div class="glass-strong modal-dialog">
             <div class="modal-header">
-                <h2 class="modal-title">Kündigungsschreiben — ${abo.name}</h2>
+                <h2 class="modal-title">Kündigungsschreiben — ${escapeHtml(abo.name)}</h2>
                 <button type="button" class="modal-close-btn" aria-label="Schließen">${ICON_X}</button>
             </div>
-            <p class="modal-subline">Felder ausfüllen aktualisiert das Schreiben automatisch. Danach kopieren und versenden.</p>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Ihr Name</label>
-                    <input type="text" class="input-control" data-absender-feld="name" placeholder="Max Mustermann">
+            ${fristHinweis ? `<p class="modal-subline">${fristHinweis}</p>` : ''}
+            <details class="absender-details" ${absenderVollstaendig(gespeicherterAbsender) ? '' : 'open'}>
+                <summary class="absender-summary">
+                    <span class="absender-summary-label">Dein Absender:</span>
+                    <span class="absender-summary-text"></span>
+                </summary>
+                <div class="absender-felder">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="input-control" data-absender-feld="name" placeholder="Max Mustermann" autocomplete="name">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Straße und Hausnummer</label>
+                            <input type="text" class="input-control" data-absender-feld="strasse" placeholder="Musterstraße 1" autocomplete="street-address">
+                        </div>
+                        <div class="form-group">
+                            <label>PLZ und Ort</label>
+                            <input type="text" class="input-control" data-absender-feld="plzOrt" placeholder="12345 Musterstadt">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>E-Mail <span class="label-hinweis">(optional, für die Bestätigung)</span></label>
+                        <input type="email" class="input-control" data-absender-feld="email" placeholder="optional" autocomplete="email">
+                    </div>
+                    <p class="absender-merk-hinweis">Wird auf diesem Gerät gemerkt und beim nächsten Mal automatisch eingesetzt.</p>
                 </div>
-                <div class="form-group">
-                    <label>Kundennummer</label>
-                    <input type="text" class="input-control" data-absender-feld="kundennummer" placeholder="optional">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Straße und Hausnummer</label>
-                    <input type="text" class="input-control" data-absender-feld="strasse" placeholder="Musterstraße 1">
-                </div>
-                <div class="form-group">
-                    <label>PLZ und Ort</label>
-                    <input type="text" class="input-control" data-absender-feld="plzOrt" placeholder="12345 Musterstadt">
-                </div>
-            </div>
+            </details>
+            ${vertragsdatenHinweis ? `<p class="vertragsdaten-hinweis">${escapeHtml(vertragsdatenHinweis)}</p>` : ''}
             <div class="form-group">
-                <label>Ihre E-Mail-Adresse</label>
-                <input type="email" class="input-control" data-absender-feld="email" placeholder="optional">
-            </div>
-            <div class="form-group">
-                <label>Schreiben</label>
+                <label>Dein Schreiben <span class="label-hinweis">(kannst du hier noch anpassen)</span></label>
                 <textarea class="input-control modal-letter-textarea" rows="14"></textarea>
             </div>
             <div class="modal-aktionen">
                 <button type="button" class="btn btn-primary btn-sm copy-btn">In Zwischenablage kopieren</button>
-                <button type="button" class="btn btn-outline btn-sm export-schreiben-btn">${ICON_DOWNLOAD} Als Datei exportieren</button>
+                <button type="button" class="btn btn-outline btn-sm export-schreiben-btn">${ICON_DOWNLOAD} Als Datei teilen</button>
                 <button type="button" class="btn btn-outline btn-sm mark-cancelled-btn">Abo als gekündigt markieren</button>
-                <button type="button" class="btn btn-outline btn-sm close-btn">Schließen</button>
             </div>
             <p class="modal-copy-status" aria-live="polite"></p>
         </div>
@@ -157,6 +178,7 @@ export function oeffneKuendigungsschreibenModal(abo) {
 
     const textarea = overlay.querySelector('.modal-letter-textarea');
     const copyStatus = overlay.querySelector('.modal-copy-status');
+    const summaryText = overlay.querySelector('.absender-summary-text');
 
     function aktualisiereSchreiben() {
         const aktuellerAbsender = {};
@@ -164,6 +186,9 @@ export function oeffneKuendigungsschreibenModal(abo) {
             aktuellerAbsender[feld.dataset.absenderFeld] = feld.value.trim();
         });
         speichereAbsenderDaten(aktuellerAbsender);
+        summaryText.textContent = absenderVollstaendig(aktuellerAbsender)
+            ? `${aktuellerAbsender.name}, ${aktuellerAbsender.plzOrt} (ändern)`
+            : 'bitte ausfüllen';
         textarea.value = erzeugeSchreibenText(abo, aktuellerAbsender);
     }
 
@@ -184,7 +209,6 @@ export function oeffneKuendigungsschreibenModal(abo) {
         if (e.target === overlay) schliessen();
     });
     overlay.querySelector('.modal-close-btn').addEventListener('click', schliessen);
-    overlay.querySelector('.close-btn').addEventListener('click', schliessen);
 
     overlay.querySelector('.copy-btn').addEventListener('click', async () => {
         try {

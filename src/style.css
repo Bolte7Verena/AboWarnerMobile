@@ -458,6 +458,16 @@ p { margin: 0; }
 .modal-aktionen { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .modal-copy-status { font-size: 0.75rem; color: var(--accent-lime); min-height: 1rem; }
 
+/* Kündigungsschreiben: eingeklappter Absender + Hinweise */
+.absender-details { border: 1px solid var(--input); border-radius: var(--radius-md); padding: 0.625rem 0.75rem; }
+.absender-summary { cursor: pointer; font-size: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.375rem; align-items: baseline; }
+.absender-summary-label { font-weight: 600; color: var(--foreground); }
+.absender-summary-text { color: var(--muted-foreground); overflow-wrap: anywhere; }
+.absender-details[open] .absender-summary { margin-bottom: 0.75rem; }
+.absender-felder { display: flex; flex-direction: column; gap: 0.75rem; }
+.absender-merk-hinweis, .vertragsdaten-hinweis { font-size: 0.75rem; color: var(--muted-foreground); }
+.label-hinweis { font-weight: 400; color: var(--muted-foreground); }
+
 /* Bestätigungsdialog (z.B. "Wirklich löschen?") */
 .bestaetigung-overlay { z-index: 110; }
 .bestaetigung-dialog { max-width: 24rem; }
