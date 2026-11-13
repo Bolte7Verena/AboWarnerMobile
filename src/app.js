@@ -4,10 +4,10 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumDE, ermittleKuendigungsfrist } from './calculator.js';
+import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumDE, formatiereDatumISO, ermittleKuendigungsfrist, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
-import { frageBestaetigung } from './bestaetigung.js';
+import { frageBestaetigung, frageDatum } from './bestaetigung.js';
 
 const ICON_WALLET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>';
 const ICON_LAYERS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>';
@@ -121,8 +121,11 @@ function erzeugeStatTile(icon, label, value, tone) {
 // API geladenen Daten berechnet, nie aus lokal fortgeschriebenem UI-Zustand —
 // so kann die Anzeige nie von der tatsächlichen Datenlage abweichen.
 function berechneStatistiken(alleAbos) {
-    const aktiveAbos = alleAbos.filter((abo) => !abo.gekuendigt);
-    const kritischeAnzahl = aktiveAbos.filter(
+    // Gekündigte Abos zählen bis zu ihrem Vertragsende weiter mit — bis dahin
+    // wird ja noch gezahlt (z.B. Miete). Für "Fristen fällig" sind sie egal,
+    // da bereits gekündigt.
+    const aktiveAbos = alleAbos.filter((abo) => !istVertragBeendet(abo));
+    const kritischeAnzahl = aktiveAbos.filter((abo) => !abo.gekuendigt).filter(
         (abo) => tageBisNaechsterZahlung(abo) <= abo.kuendigungsfristTage
     ).length;
 
@@ -159,9 +162,32 @@ function ermittleAboStatus(abo, tageBisZahlung) {
 // kann. Die Farbe des Etiketts (rot/gelb/grün) bleibt unverändert die
 // Dringlichkeitsstufe aus ermittleAboStatus.
 function erzeugeStatusText(abo, status) {
-    if (status === 'gekuendigt') return STATUS_LABEL.gekuendigt;
+    if (status === 'gekuendigt') {
+        // Ältere, vor 2.0.2 gekündigte Abos haben kein Vertragsende hinterlegt.
+        return abo.gekuendigtZum ? `Gekündigt zum ${formatiereDatumDE(abo.gekuendigtZum)}` : STATUS_LABEL.gekuendigt;
+    }
     const frist = ermittleKuendigungsfrist(abo);
     return frist ? `Kündigung möglich bis ${formatiereDatumDE(frist.fristDatum)}` : STATUS_LABEL[status];
+}
+
+// Zeile unter dem Preis. Bei gekündigten Abos, deren Vertragsende vor der
+// nächsten regulären Zahlung liegt, gibt es keine weitere Zahlung mehr.
+function erzeugeZahlungsZeile(abo, effektivesZahlungsdatum) {
+    const ende = parseDatumISO(abo.gekuendigtZum);
+    if (abo.gekuendigt && ende && parseDatumISO(effektivesZahlungsdatum) > ende) return 'Keine weitere Zahlung';
+    return `Nächste Zahlung: ${formatiereDatumDE(effektivesZahlungsdatum)}`;
+}
+
+// Grauer Hinweis neben dem Etikett.
+function erzeugeStatusPill(abo, tageBisZahlung) {
+    if (!abo.gekuendigt) {
+        return `<span class="abo-status-pill">${tageBisZahlung} Tage bis Zahlung · Frist ${abo.kuendigungsfristTage} Tage</span>`;
+    }
+    if (istGekuendigtLaufend(abo)) {
+        const tage = berechneTageBisZahlung(parseDatumISO(abo.gekuendigtZum));
+        return `<span class="abo-status-pill">${tage === 0 ? 'Läuft heute aus' : `Läuft noch ${tage} ${tage === 1 ? 'Tag' : 'Tage'}`}</span>`;
+    }
+    return '';
 }
 
 function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
@@ -184,13 +210,13 @@ function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
             </div>
             <div class="abo-right">
                 <p class="abo-price">${formatiereBetrag(abo.kosten, abo.waehrung)}</p>
-                <p class="abo-price-sub">Nächste Zahlung: ${formatiereDatumDE(effektivesZahlungsdatum)}</p>
+                <p class="abo-price-sub">${erzeugeZahlungsZeile(abo, effektivesZahlungsdatum)}</p>
             </div>
         </div>
         <div class="abo-bottom">
             <div class="abo-bottom-info">
                 ${statusBadge}
-                <span class="abo-status-pill">${tageBisZahlung} Tage bis Zahlung · Frist ${abo.kuendigungsfristTage} Tage</span>
+                ${erzeugeStatusPill(abo, tageBisZahlung)}
             </div>
             <div class="abo-aktionen">
                 <button type="button" class="btn btn-outline btn-sm edit-btn">${ICON_EDIT} Bearbeiten</button>
@@ -252,6 +278,16 @@ function erzeugeAboBearbeitenFormular(abo) {
                     <input type="number" class="input-control" data-feld="kuendigungsfristTage" value="${escapeAttr(abo.kuendigungsfristTage)}">
                 </div>
             </div>
+            ${abo.gekuendigt ? `
+            <div class="form-group date-field">
+                <label>Gekündigt zum (Vertragsende)</label>
+                <div class="date-input-wrap">
+                    <input type="text" class="input-control date-input" data-datum-anzeige="gekuendigtZum" placeholder="Datum auswählen" readonly autocomplete="off">
+                    ${ICON_KALENDER}
+                    <div class="date-picker-popover" hidden></div>
+                </div>
+                <input type="hidden" data-feld="gekuendigtZum" value="${escapeAttr(abo.gekuendigtZum || '')}">
+            </div>` : ''}
             <fieldset class="vertragsdaten">
                 <legend>Vertragsdaten <span class="legend-hinweis">(optional, für das Kündigungsschreiben)</span></legend>
                 <div class="form-row">
@@ -342,6 +378,7 @@ function verdrahteDatumsfeld(form, feldName) {
 function zeigeBearbeitenModus(kachel, abo) {
     kachel.innerHTML = erzeugeAboBearbeitenFormular(abo);
     verdrahteDatumsfeld(kachel.querySelector('.abo-edit-form'), 'naechsteZahlung');
+    if (abo.gekuendigt) verdrahteDatumsfeld(kachel.querySelector('.abo-edit-form'), 'gekuendigtZum');
 
     kachel.querySelector('.cancel-edit-btn').addEventListener('click', () => zeigeAbos());
 
@@ -365,6 +402,11 @@ function zeigeBearbeitenModus(kachel, abo) {
             kundennummer: feld('kundennummer').trim(),
             vertragspartner: feld('vertragspartner').trim()
         };
+        if (abo.gekuendigt) {
+            const gekuendigtZum = feld('gekuendigtZum');
+            // Leer lassen ist erlaubt (dann gilt das Abo wie bisher als beendet).
+            if (gekuendigtZum) aktualisiertesAbo.gekuendigtZum = gekuendigtZum;
+        }
 
         if (!Calculator.istGueltig(aktualisiertesAbo)) {
             if (fehlerEl) fehlerEl.textContent = 'Bitte alle Felder korrekt ausfüllen (inkl. Datum).';
@@ -381,7 +423,9 @@ function erzeugeAboKachel(abo) {
     const tageBisZahlung = berechneTageBisZahlung(effektivesZahlungsdatum);
 
     const kachel = document.createElement('li');
-    kachel.className = `glass abo-karte ${ermittleAboStatus(abo, tageBisZahlung)}`;
+    // "laufend": gekündigt, aber Vertragsende noch nicht erreicht — wird nicht
+    // ausgegraut, da bis dahin weiter gezahlt wird.
+    kachel.className = `glass abo-karte ${ermittleAboStatus(abo, tageBisZahlung)}${istGekuendigtLaufend(abo) ? ' laufend' : ''}`;
     kachel.innerHTML = erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum);
     verdrahteAboAnsicht(kachel, abo);
     return kachel;
@@ -409,9 +453,12 @@ export async function zeigeAbos() {
         .filter((abo) => abo.name.toLowerCase().includes(suchBegriff))
         .filter((abo) => aktiverKategorieFilter === 'Alle' || abo.kategorie === aktiverKategorieFilter)
         .sort((a, b) => {
-            // Gekündigte Abos sind für die Kündigungsfrist irrelevant — sie sollen
-            // nicht zwischen dringenden aktiven Abos auftauchen, sondern ans Ende.
-            if (!!a.gekuendigt !== !!b.gekuendigt) return a.gekuendigt ? 1 : -1;
+            // Beendete Verträge ans Ende. Gekündigte Abos, deren Vertragsende
+            // noch nicht erreicht ist, bleiben an ihrem gewohnten Platz (es wird
+            // bis dahin weiter gezahlt) und rutschen erst danach nach unten.
+            const aBeendet = istVertragBeendet(a);
+            const bBeendet = istVertragBeendet(b);
+            if (aBeendet !== bBeendet) return aBeendet ? 1 : -1;
             return tageBisNaechsterZahlung(a) - tageBisNaechsterZahlung(b);
         });
 
@@ -443,7 +490,17 @@ window.aboKuendigen = async (id) => {
     const alleAbos = await window.api.loadAbos();
     const abo = alleAbos.find((a) => a.id === id);
     if (!abo) return;
-    await window.api.updateAbo({ ...abo, gekuendigt: true });
+    // Vertragsende abfragen — vorbelegt mit dem berechneten Vorschlag, änderbar
+    // (z.B. laut Kündigungsbestätigung des Anbieters).
+    const gekuendigtZum = await frageDatum({
+        titel: 'Gekündigt zum',
+        text: `Bis zu welchem Datum läuft „${abo.name}“ noch? Bis dahin bleibt das Abo in der Liste und in den Kosten. Den Vorschlag kannst du ändern, z.B. laut Bestätigung des Anbieters.`,
+        label: 'Vertragsende',
+        vorschlagISO: formatiereDatumISO(schlageVertragsendeVor(abo)),
+        bestaetigenText: 'Als gekündigt speichern'
+    });
+    if (!gekuendigtZum) return;
+    await window.api.updateAbo({ ...abo, gekuendigt: true, gekuendigtZum });
     zeigeAbos();
 };
 

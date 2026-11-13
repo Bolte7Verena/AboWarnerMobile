@@ -85,6 +85,38 @@ export function ermittleKuendigungsfrist(abo, heute = new Date()) {
     return null;
 }
 
+// --- Gekündigte Verträge (ab 2.0.2) ---
+// Ein gekündigtes Abo kann noch bis zu seinem Vertragsende laufen (z.B. Miete:
+// bis dahin wird weiter gezahlt). Gespeichert wird das Vertragsende als
+// abo.gekuendigtZum (ISO). Abos, die vor 2.0.2 gekündigt wurden, haben kein
+// Datum und gelten — wie bisher — als beendet.
+
+// true, solange ein gekündigtes Abo noch läuft (bis einschließlich Vertragsende).
+export function istGekuendigtLaufend(abo, heute = new Date()) {
+    if (!abo.gekuendigt) return false;
+    const ende = parseDatumISO(abo.gekuendigtZum);
+    const stichtag = parseDatumISO(heute);
+    return !!ende && !!stichtag && ende >= stichtag;
+}
+
+// true, wenn das Abo gekündigt ist und das Vertragsende hinter uns liegt
+// (oder kein Vertragsende hinterlegt ist, z.B. bei alten Daten).
+export function istVertragBeendet(abo, heute = new Date()) {
+    return !!abo.gekuendigt && !istGekuendigtLaufend(abo, heute);
+}
+
+// Vorschlag für das Vertragsende, wenn heute gekündigt wird: der Tag vor der
+// ersten Zahlung, die durch eine heute rechtzeitig ankommende Kündigung
+// wegfällt (siehe ermittleKuendigungsfrist). Nur ein Vorschlag — der Nutzer
+// kann ihn ändern (z.B. laut Bestätigung des Anbieters).
+export function schlageVertragsendeVor(abo, heute = new Date()) {
+    const frist = ermittleKuendigungsfrist(abo, heute);
+    if (!frist) return null;
+    const ende = new Date(frist.zahlungsDatum);
+    ende.setDate(ende.getDate() - 1);
+    return ende;
+}
+
 // Parst einen Betrag aus einer Nutzereingabe — akzeptiert sowohl deutsches
 // Format (Komma als Dezimaltrennzeichen, "29,99", optional mit Punkt als
 // Tausendertrennzeichen wie "1.299,99") als auch englisches Format mit Punkt

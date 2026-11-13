@@ -11,7 +11,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Calculator, TURNUS_MONATE, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereZahlDE, formatiereBetrag, formatiereDatumDE, formatiereDatumISO, parseDatumISO, ermittleKuendigungsfrist } from '../src/calculator.js';
+import { Calculator, TURNUS_MONATE, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereZahlDE, formatiereBetrag, formatiereDatumDE, formatiereDatumISO, parseDatumISO, ermittleKuendigungsfrist, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor } from '../src/calculator.js';
 
 function heutePlusTage(tage) {
     const d = new Date();
@@ -230,4 +230,32 @@ test('ermittleKuendigungsfrist: lange Frist bei jährlichem Turnus', () => {
 test('ermittleKuendigungsfrist: ungültige Daten liefern null statt Absturz', () => {
     assert.equal(ermittleKuendigungsfrist({ naechsteZahlung: 'kein-datum', turnus: 'Monatlich', kuendigungsfristTage: 30 }), null);
     assert.equal(ermittleKuendigungsfrist({ naechsteZahlung: zuISO(heutePlusTage(5)), turnus: 'Monatlich', kuendigungsfristTage: NaN }), null);
+});
+
+// --- Gekündigte Verträge: laufen bis zum Vertragsende weiter ---
+
+test('istGekuendigtLaufend: gekündigt mit Vertragsende in der Zukunft läuft noch', () => {
+    const abo = { gekuendigt: true, gekuendigtZum: zuISO(heutePlusTage(20)) };
+    assert.equal(istGekuendigtLaufend(abo), true);
+    assert.equal(istVertragBeendet(abo), false);
+});
+
+test('istGekuendigtLaufend: am Tag des Vertragsendes läuft es noch, am Tag danach ist es beendet', () => {
+    assert.equal(istGekuendigtLaufend({ gekuendigt: true, gekuendigtZum: zuISO(heutePlusTage(0)) }), true);
+    assert.equal(istVertragBeendet({ gekuendigt: true, gekuendigtZum: zuISO(heutePlusTage(-1)) }), true);
+});
+
+test('istVertragBeendet: altes gekündigtes Abo ohne Datum (vor 2.0.2) gilt wie bisher als beendet', () => {
+    assert.equal(istVertragBeendet({ gekuendigt: true }), true);
+    assert.equal(istGekuendigtLaufend({ gekuendigt: true }), false);
+});
+
+test('istVertragBeendet: nicht gekündigtes Abo ist nie beendet', () => {
+    assert.equal(istVertragBeendet({ gekuendigt: false, gekuendigtZum: zuISO(heutePlusTage(-5)) }), false);
+    assert.equal(istVertragBeendet({}), false);
+});
+
+test('schlageVertragsendeVor: Tag vor der ersten Zahlung, die durch rechtzeitige Kündigung wegfällt', () => {
+    const abo = { naechsteZahlung: zuISO(heutePlusTage(40)), turnus: 'Monatlich', kuendigungsfristTage: 30 };
+    assert.equal(zuISO(schlageVertragsendeVor(abo)), zuISO(heutePlusTage(39)));
 });

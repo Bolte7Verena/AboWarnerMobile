@@ -8,6 +8,10 @@
  * Kündigungsschreiben und liefert ein Promise<boolean>.
  */
 
+import { initDatePicker } from './datepicker.js';
+
+const ICON_KALENDER = '<svg class="date-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>';
+
 function escapeHtml(text) {
     return String(text)
         .replace(/&/g, '&amp;')
@@ -51,5 +55,74 @@ export function frageBestaetigung({ titel, text, bestaetigenText = 'OK', abbrech
 
         // Fokus auf "Abbrechen": ein versehentliches Enter/Tippen löscht nichts.
         overlay.querySelector('.bestaetigung-abbrechen-btn').focus();
+    });
+}
+
+// Dialog mit einem Datumsfeld (deutscher Kalender), z.B. "Gekündigt zum".
+// Liefert das gewählte Datum als ISO-String ("2026-12-31") oder null bei Abbruch.
+export function frageDatum({ titel, text, label, vorschlagISO = '', bestaetigenText = 'Speichern', abbrechenText = 'Abbrechen' }) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay bestaetigung-overlay';
+        overlay.innerHTML = `
+            <div class="glass-strong modal-dialog bestaetigung-dialog" role="dialog" aria-modal="true" aria-labelledby="datum-dialog-titel">
+                <h2 class="modal-title" id="datum-dialog-titel">${escapeHtml(titel)}</h2>
+                ${text ? `<p class="bestaetigung-text">${escapeHtml(text)}</p>` : ''}
+                <div class="form-group date-field">
+                    <label>${escapeHtml(label)}</label>
+                    <div class="date-input-wrap">
+                        <input type="text" class="input-control date-input" placeholder="Datum auswählen" readonly autocomplete="off">
+                        ${ICON_KALENDER}
+                        <div class="date-picker-popover" hidden></div>
+                    </div>
+                    <input type="hidden" class="datum-dialog-iso" value="${escapeHtml(vorschlagISO)}">
+                </div>
+                <p class="edit-fehler datum-dialog-fehler" aria-live="polite"></p>
+                <div class="modal-aktionen bestaetigung-aktionen">
+                    <button type="button" class="btn btn-outline btn-sm bestaetigung-abbrechen-btn">${escapeHtml(abbrechenText)}</button>
+                    <button type="button" class="btn btn-primary btn-sm bestaetigung-ok-btn">${escapeHtml(bestaetigenText)}</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const wrapEl = overlay.querySelector('.date-input-wrap');
+        const hiddenEl = overlay.querySelector('.datum-dialog-iso');
+        const popoverEl = wrapEl.querySelector('.date-picker-popover');
+        const kalender = initDatePicker({
+            inputEl: wrapEl.querySelector('.date-input'),
+            hiddenEl,
+            wrapEl,
+            popoverEl
+        });
+
+        function beenden(ergebnis) {
+            document.removeEventListener('keydown', escHandler, true);
+            kalender.zerstoeren();
+            overlay.remove();
+            resolve(ergebnis);
+        }
+
+        function escHandler(e) {
+            // Escape schließt zuerst nur einen offenen Kalender (das erledigt der
+            // Datepicker selbst), erst beim nächsten Escape den ganzen Dialog.
+            // Capture-Phase: läuft VOR dem Handler des Datepickers, sieht also
+            // noch, ob der Kalender gerade offen ist.
+            if (e.key !== 'Escape' || !popoverEl.hidden) return;
+            beenden(null);
+        }
+        document.addEventListener('keydown', escHandler, true);
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) beenden(null);
+        });
+        overlay.querySelector('.bestaetigung-abbrechen-btn').addEventListener('click', () => beenden(null));
+        overlay.querySelector('.bestaetigung-ok-btn').addEventListener('click', () => {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(hiddenEl.value)) {
+                overlay.querySelector('.datum-dialog-fehler').textContent = 'Bitte ein Datum auswählen.';
+                return;
+            }
+            beenden(hiddenEl.value);
+        });
     });
 }
