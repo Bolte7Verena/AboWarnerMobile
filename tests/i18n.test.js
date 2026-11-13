@@ -56,3 +56,28 @@ test('Deutsche Sprachdatei: keine leeren Texte, Kalender vollständig', () => {
     assert.equal(SPRACHEN.de['kalender.wochentage'].split(',').length, 7);
     assert.equal(SPRACHEN.de['kalender.monate'].split(',').length, 12);
 });
+
+// --- Englisch ---
+
+const platzhalter = (text) => [...String(text).matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort().join(',');
+
+test('Englisch: nur Schlüssel, die es auch auf Deutsch gibt, mit gleichen Platzhaltern', () => {
+    for (const [k, v] of Object.entries(SPRACHEN.en)) {
+        assert.ok(k in SPRACHEN.de, `unbekannter Schlüssel in en.js: ${k}`);
+        assert.equal(platzhalter(v), platzhalter(SPRACHEN.de[k]), `Platzhalter in ${k}`);
+    }
+});
+
+test('Englisch: Texte und Einzahl', () => {
+    setzeSprache('en');
+    assert.equal(t('karte.moeglichBis', { datum: '11/15/2026' }), 'Cancel by 11/15/2026');
+    assert.equal(tAnzahl('anzahl.abos', 1), '1 subscription');
+    assert.equal(tAnzahl('anzahl.abos', 4), '4 subscriptions');
+    assert.equal(tAnzahl('karte.laeuftNoch', 1), 'Ends in 1 day');
+    assert.equal(tWert('turnus', 'Vierteljährlich'), 'Quarterly');
+    assert.equal(tWert('kategorie', 'Versicherung'), 'Insurance');
+    assert.equal(tWert('kategorie', 'Eigene Kategorie'), 'Eigene Kategorie');
+    assert.equal(SPRACHEN.en['kalender.wochentage'].split(',').length, 7);
+    assert.equal(SPRACHEN.en['kalender.monate'].split(',').length, 12);
+    setzeSprache('de');
+});
