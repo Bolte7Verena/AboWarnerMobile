@@ -59,6 +59,17 @@ function escapeAttr(text) {
     return String(text).replace(/"/g, '&quot;');
 }
 
+// Vollständiges Maskieren für Freitext-Felder (z.B. Vertragspartner-Anschrift
+// in einer <textarea>), damit eingetippte Zeichen wie < > & nie als HTML
+// interpretiert werden.
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
 function berechneTageBisZahlung(datum) {
     const heute = new Date();
     heute.setHours(0, 0, 0, 0);
@@ -241,6 +252,23 @@ function erzeugeAboBearbeitenFormular(abo) {
                     <input type="number" class="input-control" data-feld="kuendigungsfristTage" value="${escapeAttr(abo.kuendigungsfristTage)}">
                 </div>
             </div>
+            <fieldset class="vertragsdaten">
+                <legend>Vertragsdaten <span class="legend-hinweis">(optional, für das Kündigungsschreiben)</span></legend>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Vertragsnummer</label>
+                        <input type="text" class="input-control" data-feld="vertragsnummer" value="${escapeHtml(abo.vertragsnummer || '')}" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>Kundennummer</label>
+                        <input type="text" class="input-control" data-feld="kundennummer" value="${escapeHtml(abo.kundennummer || '')}" autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Vertragspartner (Firmenname und Anschrift)</label>
+                    <textarea class="input-control textarea-control" data-feld="vertragspartner" rows="4" placeholder="z.B. Musterfirma GmbH&#10;Kundenservice&#10;Musterstraße 1&#10;12345 Musterstadt">${escapeHtml(abo.vertragspartner || '')}</textarea>
+                </div>
+            </fieldset>
             <div class="abo-edit-aktionen">
                 <button type="button" class="btn btn-primary btn-sm save-btn">Speichern</button>
                 <button type="button" class="btn btn-outline btn-sm cancel-edit-btn">Abbrechen</button>
@@ -330,7 +358,12 @@ function zeigeBearbeitenModus(kachel, abo) {
             turnus: feld('turnus'),
             kategorie: feld('kategorie'),
             naechsteZahlung: feld('naechsteZahlung'),
-            kuendigungsfristTage: parseInt(feld('kuendigungsfristTage'), 10)
+            kuendigungsfristTage: parseInt(feld('kuendigungsfristTage'), 10),
+            // Neue, optionale Vertragsdaten (ab 2.0.2). Ältere Abos haben diese
+            // Felder nicht — überall wird dann mit '' gerechnet.
+            vertragsnummer: feld('vertragsnummer').trim(),
+            kundennummer: feld('kundennummer').trim(),
+            vertragspartner: feld('vertragspartner').trim()
         };
 
         if (!Calculator.istGueltig(aktualisiertesAbo)) {
