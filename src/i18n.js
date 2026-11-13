@@ -94,14 +94,15 @@ export function tAnzahl(schluessel, anzahl, params = {}) {
 
 // Anzeige eines Datums. Deutsch: immer TT.MM.JJJJ. Andere Sprachen: Format
 // der Geräte-Region (z.B. en-US 11/15/2026, en-GB 15/11/2026), immer mit
-// lateinischen Ziffern und ohne Steuerzeichen (wichtig auch für die PDF).
+// lateinischen Ziffern, gregorianischem Kalender (sonst z.B. Iran: Jahr 1405,
+// Thailand: 2569) und ohne Steuerzeichen (wichtig auch für die PDF).
 export function formatiereDatum(datum, locale) {
     if (aktiv === 'de') return formatiereDatumDE(datum);
     const d = parseDatumISO(datum);
     if (!d) return '';
     const ziel = locale || geraeteSprachen().find(Boolean) || 'en-US';
     try {
-        return new Intl.DateTimeFormat(ziel, { year: 'numeric', month: '2-digit', day: '2-digit', numberingSystem: 'latn' })
+        return new Intl.DateTimeFormat(ziel, { year: 'numeric', month: '2-digit', day: '2-digit', numberingSystem: 'latn', calendar: 'gregory' })
             .format(d)
             .replace(/[‎‏؜]/g, '');
     } catch (error) {

@@ -5,7 +5,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { t, tAnzahl, tWert, setzeSprache, ermittleSprache, SPRACHEN } from '../src/i18n.js';
+import { t, tAnzahl, tWert, setzeSprache, ermittleSprache, formatiereDatum, SPRACHEN } from '../src/i18n.js';
 
 test('t(): Platzhalter werden ersetzt', () => {
     setzeSprache('de');
@@ -79,5 +79,40 @@ test('Englisch: Texte und Einzahl', () => {
     assert.equal(tWert('kategorie', 'Eigene Kategorie'), 'Eigene Kategorie');
     assert.equal(SPRACHEN.en['kalender.wochentage'].split(',').length, 7);
     assert.equal(SPRACHEN.en['kalender.monate'].split(',').length, 12);
+    setzeSprache('de');
+});
+
+// --- Datumsformat je Sprache/Region ---
+
+test('Datum Deutsch: immer TT.MM.JJJJ, unabhängig von der Region', () => {
+    setzeSprache('de');
+    assert.equal(formatiereDatum('2026-11-15', 'en-US'), '15.11.2026');
+    assert.equal(formatiereDatum('2026-11-15', 'fr-FR'), '15.11.2026');
+});
+
+test('Datum Englisch: Format der Geräte-Region', () => {
+    setzeSprache('en');
+    assert.equal(formatiereDatum('2026-11-05', 'en-US'), '11/05/2026');
+    assert.equal(formatiereDatum('2026-11-05', 'en-GB'), '05/11/2026');
+    assert.equal(formatiereDatum('2026-11-05', 'fr-FR'), '05/11/2026');
+    assert.equal(formatiereDatum('2026-11-05', 'de-DE'), '05.11.2026');
+    assert.equal(formatiereDatum('2026-11-05', 'ja-JP'), '2026/11/05');
+    setzeSprache('de');
+});
+
+test('Datum Englisch: nur lateinische Ziffern, keine Steuerzeichen (auch für die PDF)', () => {
+    setzeSprache('en');
+    for (const region of ['ar-EG', 'fa-IR', 'hi-IN', 'he-IL', 'th-TH', 'ja-JP-u-ca-japanese', 'ar-SA']) {
+        const text = formatiereDatum('2026-11-05', region);
+        assert.match(text, /^[0-9./\- ]+$/, `${region}: ${JSON.stringify(text)}`);
+        assert.ok(text.includes('2026'), `${region}: gregorianisches Jahr erwartet, war ${text}`);
+    }
+    setzeSprache('de');
+});
+
+test('Datum: ungültige Eingabe liefert leeren Text, ungültige Region fällt zurück', () => {
+    setzeSprache('en');
+    assert.equal(formatiereDatum('kaputt', 'en-US'), '');
+    assert.equal(formatiereDatum('2026-11-05', 'xx-INVALID-###'), '05.11.2026');
     setzeSprache('de');
 });
