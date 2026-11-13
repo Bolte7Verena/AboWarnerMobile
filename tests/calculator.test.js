@@ -11,7 +11,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Calculator, TURNUS_MONATE, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereZahlDE, formatiereBetrag } from '../src/calculator.js';
+import { Calculator, TURNUS_MONATE, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereZahlDE, formatiereBetrag, formatiereDatumDE, formatiereDatumISO, parseDatumISO } from '../src/calculator.js';
 
 function heutePlusTage(tage) {
     const d = new Date();
@@ -166,4 +166,31 @@ test('formatiereBetrag: fehlende Währung fällt auf EUR zurück', () => {
 test('Round-Trip: parseBetrag(formatiereZahlDE(x)) liefert wieder x', () => {
     const wert = 1234.56;
     assert.equal(parseBetrag(formatiereZahlDE(wert)), wert);
+});
+
+// --- Datumsformat: Anzeige überall deutsch (TT.MM.JJJJ), Speicherung weiter ISO ---
+
+test('formatiereDatumDE: ISO-String wird als TT.MM.JJJJ angezeigt', () => {
+    assert.equal(formatiereDatumDE('2026-11-15'), '15.11.2026');
+    assert.equal(formatiereDatumDE('2027-01-05'), '05.01.2027');
+});
+
+test('formatiereDatumDE: Date-Objekt wird als TT.MM.JJJJ angezeigt', () => {
+    assert.equal(formatiereDatumDE(new Date(2026, 1, 3)), '03.02.2026');
+});
+
+test('formatiereDatumDE: ungültige Eingabe liefert leeren Text statt "NaN"', () => {
+    assert.equal(formatiereDatumDE('kein-datum'), '');
+    assert.equal(formatiereDatumDE(undefined), '');
+});
+
+test('parseDatumISO: liefert lokales Datum ohne Zeitzonen-Verschiebung auf den Vortag', () => {
+    const d = parseDatumISO('2026-03-01');
+    assert.equal(d.getFullYear(), 2026);
+    assert.equal(d.getMonth(), 2);
+    assert.equal(d.getDate(), 1);
+});
+
+test('formatiereDatumISO: Round-Trip mit parseDatumISO', () => {
+    assert.equal(formatiereDatumISO(parseDatumISO('2026-12-31')), '2026-12-31');
 });

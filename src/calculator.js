@@ -33,6 +33,33 @@ export function ermittleEffektivesZahlungsdatum(naechsteZahlung, turnus) {
     return datum;
 }
 
+// Wandelt ein ISO-Datum ("2026-11-15") in ein Date um — als LOKALES Datum
+// (Mitternacht Ortszeit). new Date("2026-11-15") würde dagegen UTC-Mitternacht
+// liefern, was in Zeitzonen westlich von UTC auf den Vortag fallen kann.
+// Akzeptiert auch bereits fertige Date-Objekte (Kopie). Ungültig -> null.
+export function parseDatumISO(wert) {
+    if (wert instanceof Date) return isNaN(wert) ? null : new Date(wert.getFullYear(), wert.getMonth(), wert.getDate());
+    if (typeof wert !== 'string') return null;
+    const treffer = /^(\d{4})-(\d{2})-(\d{2})/.exec(wert.trim());
+    if (!treffer) return null;
+    const datum = new Date(Number(treffer[1]), Number(treffer[2]) - 1, Number(treffer[3]));
+    return isNaN(datum) ? null : datum;
+}
+
+// Date -> "2026-11-15" (Speicherformat, lokale Ortszeit).
+export function formatiereDatumISO(datum) {
+    const d = parseDatumISO(datum);
+    if (!d) return '';
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// Anzeigeformat überall in der App: "15.11.2026". Nimmt Date oder ISO-String.
+export function formatiereDatumDE(datum) {
+    const d = parseDatumISO(datum);
+    if (!d) return '';
+    return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+}
+
 // Parst einen Betrag aus einer Nutzereingabe — akzeptiert sowohl deutsches
 // Format (Komma als Dezimaltrennzeichen, "29,99", optional mit Punkt als
 // Tausendertrennzeichen wie "1.299,99") als auch englisches Format mit Punkt

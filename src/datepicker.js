@@ -31,6 +31,14 @@ export function initDatePicker({ inputEl, hiddenEl, wrapEl, popoverEl, formEl })
     let sichtMonat = heute.getMonth();
     let ausgewaehltesDatum = null;
 
+    // Vorbelegung (z.B. im Bearbeiten-Formular): steht im versteckten Feld
+    // bereits ein ISO-Datum, wird es übernommen und deutsch angezeigt.
+    const vorbelegt = /^(\d{4})-(\d{2})-(\d{2})/.exec(hiddenEl.value || '');
+    if (vorbelegt) {
+        ausgewaehltesDatum = new Date(Number(vorbelegt[1]), Number(vorbelegt[2]) - 1, Number(vorbelegt[3]));
+        inputEl.value = zuDeutschemFormat(ausgewaehltesDatum);
+    }
+
     function istOffen() {
         return !popoverEl.hidden;
     }
@@ -182,16 +190,18 @@ export function initDatePicker({ inputEl, hiddenEl, wrapEl, popoverEl, formEl })
     // Nav-Klick über render() das DOM (und damit e.target) verändern kann.
     // Prüft explizit gegen inputEl und popoverEl — landet der Klick in keinem
     // von beiden, wird sofort geschlossen.
-    document.addEventListener('pointerdown', (e) => {
+    function pointerdownHandler(e) {
         const klickWarInnerhalb = inputEl.contains(e.target) || popoverEl.contains(e.target);
         if (istOffen() && !klickWarInnerhalb) {
             schliessen();
         }
-    });
+    }
+    document.addEventListener('pointerdown', pointerdownHandler);
 
-    document.addEventListener('keydown', (e) => {
+    function keydownHandler(e) {
         if (e.key === 'Escape' && istOffen()) schliessen();
-    });
+    }
+    document.addEventListener('keydown', keydownHandler);
 
     if (formEl) {
         formEl.addEventListener('reset', () => {
@@ -205,4 +215,15 @@ export function initDatePicker({ inputEl, hiddenEl, wrapEl, popoverEl, formEl })
             schliessen();
         });
     }
+
+    // Für Kalender, die mit ihrem Formular wieder verschwinden (Bearbeiten-
+    // Formular auf der Karte): globale Listener und das an <body> gehängte
+    // Popover wieder entfernen, damit nichts liegen bleibt.
+    return {
+        zerstoeren() {
+            document.removeEventListener('pointerdown', pointerdownHandler);
+            document.removeEventListener('keydown', keydownHandler);
+            popoverEl.remove();
+        }
+    };
 }

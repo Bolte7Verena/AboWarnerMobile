@@ -4,7 +4,8 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE } from './calculator.js';
+import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumDE } from './calculator.js';
+import { initDatePicker } from './datepicker.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung } from './bestaetigung.js';
 
@@ -15,6 +16,7 @@ const ICON_ALARM_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 const ICON_TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
 const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.986L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>';
 const ICON_X_CIRCLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>';
+const ICON_KALENDER = '<svg class="date-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>';
 const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>';
 
 // Kategorie-Farbzuordnung 1:1 aus AboActionView.tsx (CATEGORY_STYLES)
@@ -69,13 +71,6 @@ function berechneTageBisZahlung(datum) {
 // ermittleEffektivesZahlungsdatum in calculator.js.
 function tageBisNaechsterZahlung(abo) {
     return berechneTageBisZahlung(ermittleEffektivesZahlungsdatum(abo.naechsteZahlung, abo.turnus));
-}
-
-function formatiereDatumISO(datum) {
-    const jahr = datum.getFullYear();
-    const monat = String(datum.getMonth() + 1).padStart(2, '0');
-    const tag = String(datum.getDate()).padStart(2, '0');
-    return `${jahr}-${monat}-${tag}`;
 }
 
 function erzeugeFilterChips(alleAbos) {
@@ -168,7 +163,7 @@ function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
             </div>
             <div class="abo-right">
                 <p class="abo-price">${formatiereBetrag(abo.kosten, abo.waehrung)}</p>
-                <p class="abo-price-sub">Nächste Zahlung: ${formatiereDatumISO(effektivesZahlungsdatum)}</p>
+                <p class="abo-price-sub">Nächste Zahlung: ${formatiereDatumDE(effektivesZahlungsdatum)}</p>
             </div>
         </div>
         <div class="abo-bottom">
@@ -222,9 +217,14 @@ function erzeugeAboBearbeitenFormular(abo) {
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-group">
+                <div class="form-group date-field">
                     <label>Nächste Zahlung</label>
-                    <input type="date" class="input-control" data-feld="naechsteZahlung" value="${escapeAttr(abo.naechsteZahlung)}">
+                    <div class="date-input-wrap">
+                        <input type="text" class="input-control date-input" data-datum-anzeige="naechsteZahlung" placeholder="Datum auswählen" readonly autocomplete="off">
+                        ${ICON_KALENDER}
+                        <div class="date-picker-popover" hidden></div>
+                    </div>
+                    <input type="hidden" data-feld="naechsteZahlung" value="${escapeAttr(abo.naechsteZahlung)}">
                 </div>
                 <div class="form-group">
                     <label>Frist (Tage)</label>
@@ -281,8 +281,29 @@ async function exportiereAlsDatei(kachel) {
     }
 }
 
+// Kalender-Instanzen offener Bearbeiten-Formulare. Werden bei jedem
+// Neuzeichnen der Liste (zeigeAbos) abgeräumt, da ihre Formulare dann
+// verschwinden.
+let offeneEditKalender = [];
+
+function raeumeEditKalenderAuf() {
+    offeneEditKalender.forEach((kalender) => kalender.zerstoeren());
+    offeneEditKalender = [];
+}
+
+function verdrahteDatumsfeld(form, feldName) {
+    const wrapEl = form.querySelector(`[data-datum-anzeige="${feldName}"]`).closest('.date-input-wrap');
+    offeneEditKalender.push(initDatePicker({
+        inputEl: wrapEl.querySelector('.date-input'),
+        hiddenEl: form.querySelector(`input[type="hidden"][data-feld="${feldName}"]`),
+        wrapEl,
+        popoverEl: wrapEl.querySelector('.date-picker-popover')
+    }));
+}
+
 function zeigeBearbeitenModus(kachel, abo) {
     kachel.innerHTML = erzeugeAboBearbeitenFormular(abo);
+    verdrahteDatumsfeld(kachel.querySelector('.abo-edit-form'), 'naechsteZahlung');
 
     kachel.querySelector('.cancel-edit-btn').addEventListener('click', () => zeigeAbos());
 
@@ -332,6 +353,7 @@ export async function zeigeAbos() {
 
     // 1. Daten sicher über die API-Bridge holen
     const alleAbos = await window.api.loadAbos();
+    raeumeEditKalenderAuf();
 
     // Kategorie existiert nach dem Löschen von Abos evtl. nicht mehr — dann
     // zurück auf "Alle" springen statt eine leere Liste anzuzeigen.
