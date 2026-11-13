@@ -139,6 +139,18 @@ export function schlageVertragsendeVor(abo, heute = new Date()) {
     return ende;
 }
 
+// Reihenfolge der Abos in Liste und PDF-Übersicht: beendete Verträge ans
+// Ende; alle anderen (auch gekündigte, die noch laufen) nach dem Datum der
+// nächsten Zahlung. Liefert eine neue, sortierte Liste.
+export function sortiereAbos(abos, heute = new Date()) {
+    return [...abos].sort((a, b) => {
+        const aBeendet = istVertragBeendet(a, heute);
+        const bBeendet = istVertragBeendet(b, heute);
+        if (aBeendet !== bBeendet) return aBeendet ? 1 : -1;
+        return ermittleEffektivesZahlungsdatum(a.naechsteZahlung, a.turnus) - ermittleEffektivesZahlungsdatum(b.naechsteZahlung, b.turnus);
+    });
+}
+
 // Parst einen Betrag aus einer Nutzereingabe — akzeptiert sowohl deutsches
 // Format (Komma als Dezimaltrennzeichen, "29,99", optional mit Punkt als
 // Tausendertrennzeichen wie "1.299,99") als auch englisches Format mit Punkt

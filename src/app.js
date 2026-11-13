@@ -4,12 +4,13 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumDE, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO } from './calculator.js';
+import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumDE, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung, frageDatum } from './bestaetigung.js';
 import { planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { pruefeSicherung, MAX_DATEIGROESSE_BYTES } from './sicherung.js';
+import { erzeugeUebersichtPdf, dateinameUebersicht } from './uebersicht-pdf.js';
 
 // Nach jeder Datenänderung: Liste neu zeichnen UND die nativen
 // Benachrichtigungen neu planen — sonst blieben z.B. nach einer Kündigung
@@ -84,13 +85,6 @@ function berechneTageBisZahlung(datum) {
     heute.setHours(0, 0, 0, 0);
     const ziel = new Date(datum);
     return Math.round((ziel - heute) / (1000 * 60 * 60 * 24));
-}
-
-// Tage bis zur tatsächlich nächsten (turnusgerecht vorgerückten) Zahlung eines
-// Abos — nie negativ für ein weiterhin laufendes Abo, siehe
-// ermittleEffektivesZahlungsdatum in calculator.js.
-function tageBisNaechsterZahlung(abo) {
-    return berechneTageBisZahlung(ermittleEffektivesZahlungsdatum(abo.naechsteZahlung, abo.turnus));
 }
 
 function erzeugeFilterChips(alleAbos) {
@@ -416,9 +410,27 @@ async function stelleSicherungWiederHer(datei) {
     zeigeDatenStatus(`Sicherung wiederhergestellt: ${anzahlText(pruefung.abos.length)}.`, 'erfolg');
 }
 
+// "Übersicht als PDF": wird komplett auf dem Gerät erzeugt (uebersicht-pdf.js),
+// danach Teilen-Menü. Keine Sicherung, nur zum Lesen/Ausdrucken.
+async function erstelleUebersichtPdf() {
+    try {
+        const abos = await window.api.loadAbos();
+        const bytes = erzeugeUebersichtPdf(abos);
+        const ergebnis = await window.api.exportPdf(bytes, dateinameUebersicht());
+        if (ergebnis.abgebrochen) {
+            zeigeDatenStatus('');
+            return;
+        }
+        zeigeDatenStatus(`PDF erstellt: ${ergebnis.pfad}`, 'erfolg');
+    } catch (error) {
+        zeigeDatenStatus('PDF konnte nicht erstellt werden — bitte erneut versuchen.', 'fehler');
+    }
+}
+
 export function initDatenSichern() {
     const dateiInput = document.getElementById('input-sicherung-datei');
     document.getElementById('btn-sicherung-erstellen').addEventListener('click', erstelleSicherung);
+    document.getElementById('btn-uebersicht-pdf').addEventListener('click', erstelleUebersichtPdf);
     document.getElementById('btn-sicherung-wiederherstellen').addEventListener('click', () => {
         zeigeDatenStatus('');
         dateiInput.click();
@@ -525,18 +537,11 @@ export async function zeigeAbos() {
         aktiverKategorieFilter = 'Alle';
     }
 
-    const sichtbareAbos = alleAbos
+    // Beendete Verträge ans Ende; gekündigte, die noch laufen, bleiben an
+    // ihrem gewohnten Platz (siehe sortiereAbos in calculator.js).
+    const sichtbareAbos = sortiereAbos(alleAbos
         .filter((abo) => abo.name.toLowerCase().includes(suchBegriff))
-        .filter((abo) => aktiverKategorieFilter === 'Alle' || abo.kategorie === aktiverKategorieFilter)
-        .sort((a, b) => {
-            // Beendete Verträge ans Ende. Gekündigte Abos, deren Vertragsende
-            // noch nicht erreicht ist, bleiben an ihrem gewohnten Platz (es wird
-            // bis dahin weiter gezahlt) und rutschen erst danach nach unten.
-            const aBeendet = istVertragBeendet(a);
-            const bBeendet = istVertragBeendet(b);
-            if (aBeendet !== bBeendet) return aBeendet ? 1 : -1;
-            return tageBisNaechsterZahlung(a) - tageBisNaechsterZahlung(b);
-        });
+        .filter((abo) => aktiverKategorieFilter === 'Alle' || abo.kategorie === aktiverKategorieFilter));
 
     filterChipsDiv.innerHTML = '';
     filterChipsDiv.appendChild(erzeugeFilterChips(alleAbos));

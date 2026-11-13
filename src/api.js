@@ -115,6 +115,18 @@ window.api = {
         return neueAbos;
     },
 
+    // "Übersicht als PDF": bytes ist die lokal erzeugte PDF-Datei (Uint8Array).
+    // Binärdaten erwartet Capacitor Filesystem als Base64 (ohne encoding).
+    exportPdf: async (bytes, dateiname) => {
+        let binaer = '';
+        const BLOCK = 0x8000;
+        for (let i = 0; i < bytes.length; i += BLOCK) {
+            binaer += String.fromCharCode.apply(null, bytes.subarray(i, i + BLOCK));
+        }
+        await Filesystem.writeFile({ path: dateiname, directory: Directory.Cache, data: btoa(binaer) });
+        return teileDatei(dateiname, 'Abo-Übersicht');
+    },
+
     exportSchreiben: async (text, dateiname) => {
         await Filesystem.writeFile({ path: dateiname, directory: Directory.Cache, data: text, encoding: Encoding.UTF8 });
         return teileDatei(dateiname, 'Kündigungsschreiben');
