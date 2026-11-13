@@ -6,6 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { erzeugeSchreibenText } from '../src/kuendigungsschreiben.js';
+import { setzeSprache } from '../src/i18n.js';
 
 const HEUTE = new Date(2026, 10, 13); // 13.11.2026, nur für die Datumszeile
 
@@ -51,4 +52,41 @@ test('Fehlende Absenderdaten werden als Platzhalter markiert', () => {
 test('Kündigung zum nächstmöglichen Zeitpunkt (kein falsches Vertragsende-Datum)', () => {
     const text = erzeugeSchreibenText({ name: 'X' }, ABSENDER, HEUTE);
     assert.ok(text.includes('fristgerecht zum nächstmöglichen Zeitpunkt'));
+});
+
+// --- Englische Fassung ---
+
+test('Englisch: neutrale Fassung mit Vertragsdaten, Kernsatz, Bestätigung und Unterschriftszeile', () => {
+    setzeSprache('en');
+    const abo = { name: 'FitLife', vertragspartner: 'FitLife Ltd\n5 Gym Road\nLondon SW1A 1AA', vertragsnummer: 'V-123', kundennummer: 'K-987' };
+    const text = erzeugeSchreibenText(abo, { name: 'Jane Doe', strasse: '1 High Street', plzOrt: 'Oxford OX1 1AA', email: '' }, HEUTE);
+    assert.equal(text, [
+        'Jane Doe\n1 High Street\nOxford OX1 1AA',
+        'FitLife Ltd\n5 Gym Road\nLondon SW1A 1AA',
+        text.split('\n\n')[2], // Datum im Format der Geräte-Region
+        'Cancellation: FitLife\nContract number: V-123\nCustomer number: K-987',
+        'Dear Sir or Madam,',
+        'I hereby cancel my contract referred to above at the earliest possible date.',
+        'Please confirm the cancellation in writing.',
+        'Kind regards,',
+        '_______________________\nJane Doe'
+    ].join('\n\n'));
+    assert.match(text.split('\n\n')[2], /2026/);
+    setzeSprache('de');
+});
+
+test('Englisch: kein deutsches Recht, keine Paragraphen, keine deutschen Wörter', () => {
+    setzeSprache('en');
+    const text = erzeugeSchreibenText({ name: 'X' }, { email: 'a@b.c' }, HEUTE);
+    assert.ok(!/§|BGB|fristgerecht|Kündigung|Sehr geehrte|Grüßen/.test(text), text);
+    assert.ok(text.includes('[Your name]') && text.includes('[Street and house number]') && text.includes('[Postcode and city]'));
+    assert.ok(text.includes('Please confirm the cancellation in writing by email to a@b.c.'));
+    setzeSprache('de');
+});
+
+test('Deutsch bleibt ohne Unterschriftszeile (unverändert)', () => {
+    setzeSprache('de');
+    const text = erzeugeSchreibenText({ name: 'X' }, ABSENDER, HEUTE);
+    assert.ok(text.endsWith('Mit freundlichen Grüßen\n\nMax Mustermann'));
+    assert.ok(!text.includes('____'));
 });

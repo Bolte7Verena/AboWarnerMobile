@@ -170,6 +170,20 @@ export default {
     'brief.gespeichert': 'Saved as: {pfad}',
     'brief.speichernFehler': 'Saving failed — please try again.',
 
+    // --- Cancellation letter: text (neutral, no reference to German law) ---
+    'brief.platzhalterName': '[Your name]',
+    'brief.platzhalterStrasse': '[Street and house number]',
+    'brief.platzhalterPlzOrt': '[Postcode and city]',
+    'brief.betreff': 'Cancellation: {name}',
+    'brief.vertragsnummer': 'Contract number: {nummer}',
+    'brief.kundennummer': 'Customer number: {nummer}',
+    'brief.anrede': 'Dear Sir or Madam,',
+    'brief.kern': 'I hereby cancel my contract referred to above at the earliest possible date.',
+    'brief.bestaetigungMail': 'Please confirm the cancellation in writing by email to {email}.',
+    'brief.bestaetigung': 'Please confirm the cancellation in writing.',
+    'brief.gruss': 'Kind regards,',
+    'brief.unterschriftslinie': '_______________________',
+
     // --- PDF overview ---
     'pdf.titel': 'Subscription overview',
     'pdf.untertitel': 'Abo-Warner Pro · created on {datum} · {anzahl}',
