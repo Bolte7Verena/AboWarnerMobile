@@ -184,6 +184,14 @@ export default {
     'brief.gruss': 'Kind regards,',
     'brief.unterschriftslinie': '_______________________',
 
+    // --- Notice at app start and notifications ---
+    'hinweis.titel': 'Cancellation deadline ending soon',
+    'hinweis.zeile': 'cancel by {datum}',
+    'mitteilung.fristTitel': 'Cancellation deadline',
+    'mitteilung.fristText': '{name}: cancellation is only possible until {datum}.',
+    'mitteilung.endeTitel': 'Contract ends',
+    'mitteilung.endeText': '{name} ends today.',
+
     // --- PDF overview ---
     'pdf.titel': 'Subscription overview',
     'pdf.untertitel': 'Abo-Warner Pro · created on {datum} · {anzahl}',

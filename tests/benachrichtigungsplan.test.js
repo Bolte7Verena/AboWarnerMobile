@@ -6,7 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { berechneBenachrichtigungsPlan, hasheZuId, MAX_BENACHRICHTIGUNGEN, ermittleAbosImRotenBereich } from '../src/benachrichtigungsplan.js';
-import { t } from '../src/i18n.js';
+import { t, setzeSprache } from '../src/i18n.js';
 
 function heutePlusTage(tage) {
     const d = new Date();
@@ -124,4 +124,30 @@ test('Hinweis beim Start: nur nicht gekündigte Abos im roten Bereich (≤ 7 Tag
 
 test('Hinweis beim Start: Titel für den Screenshot-Test unverändert', () => {
     assert.equal(t('hinweis.titel'), 'Kündigungsfrist endet bald');
+});
+
+// --- Sprache der Mitteilungen ---
+
+test('Mitteilungen auf Englisch (gewählte Sprache)', () => {
+    setzeSprache('en');
+    const plan = berechneBenachrichtigungsPlan([
+        { ...BASIS, id: 'a', name: 'Gym', naechsteZahlung: zuISO(heutePlusTage(60)), kuendigungsfristTage: 30 },
+        { ...BASIS, id: 'g', name: 'Rent', naechsteZahlung: zuISO(heutePlusTage(30)), kuendigungsfristTage: 7, gekuendigt: true, gekuendigtZum: zuISO(heutePlusTage(29)) }
+    ]);
+    const frist = plan.find((n) => n.body.startsWith('Gym'));
+    const ende = plan.find((n) => n.body.startsWith('Rent'));
+    assert.equal(frist.title, 'Cancellation deadline');
+    assert.match(frist.body, /^Gym: cancellation is only possible until \S+\.$/);
+    assert.ok(!/Kündigung|möglich/.test(frist.body));
+    assert.equal(ende.title, 'Contract ends');
+    assert.equal(ende.body, 'Rent ends today.');
+    assert.equal(t('hinweis.titel'), 'Cancellation deadline ending soon');
+    setzeSprache('de');
+});
+
+test('Mitteilungen auf Deutsch unverändert', () => {
+    setzeSprache('de');
+    const plan = berechneBenachrichtigungsPlan([{ ...BASIS, id: 'a', name: 'Gym', naechsteZahlung: zuISO(heutePlusTage(60)), kuendigungsfristTage: 30 }]);
+    assert.equal(plan[0].title, 'Kündigungsfrist');
+    assert.equal(plan[0].body, `Gym: Kündigung nur noch bis ${zuDE(heutePlusTage(30))} möglich.`);
 });

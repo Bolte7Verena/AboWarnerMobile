@@ -132,3 +132,16 @@ test('Englisch: Hilfe hat dieselbe Gliederung wie Deutsch', () => {
         assert.equal(anzahl(SPRACHEN.en['hilfe.inhalt'], tag), anzahl(SPRACHEN.de['hilfe.inhalt'], tag), tag);
     }
 });
+
+// --- Vollständigkeit ---
+
+test('Englisch ist vollständig: jeder deutsche Schlüssel hat eine englische Übersetzung', () => {
+    const fehlend = Object.keys(SPRACHEN.de).filter((k) => !(k in SPRACHEN.en));
+    assert.deepEqual(fehlend, []);
+});
+
+test('Englisch: keine deutschen Umlaute (Ausnahme: Name des Inhabers)', () => {
+    for (const [k, v] of Object.entries(SPRACHEN.en)) {
+        assert.ok(!/[äöüÄÖÜß]/.test(v.replace(/Jens Hübeler/g, '')), `${k}: ${v.slice(0, 80)}`);
+    }
+});
