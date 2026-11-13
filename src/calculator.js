@@ -60,6 +60,31 @@ export function formatiereDatumDE(datum) {
     return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
 }
 
+// Letzter Tag, an dem die Kündigung noch rechtzeitig vor einer Zahlung beim
+// Anbieter sein muss: Zahlungsdatum minus Kündigungsfrist (in Tagen).
+// Liegt dieser Tag für die nächste Zahlung bereits in der Vergangenheit, ist
+// diese Zahlung nicht mehr abwendbar — dann zählt die Frist vor der darauf
+// folgenden Zahlung (turnusgerecht weitergerückt). So wird nie ein bereits
+// verstrichenes Datum als "möglich bis" angezeigt.
+// Rückgabe: { fristDatum, zahlungsDatum } (beide Date, lokale Mitternacht)
+// oder null bei ungültigen Daten. `heute` nur für Tests überschreibbar.
+export function ermittleKuendigungsfrist(abo, heute = new Date()) {
+    const stichtag = parseDatumISO(heute);
+    const fristTage = Number(abo.kuendigungsfristTage);
+    const start = parseDatumISO(ermittleEffektivesZahlungsdatum(abo.naechsteZahlung, abo.turnus));
+    if (!stichtag || !start || !Number.isFinite(fristTage) || fristTage < 0) return null;
+
+    const monate = TURNUS_MONATE[abo.turnus] || 1;
+    const zahlung = new Date(start);
+    for (let i = 0; i < 1000; i++) {
+        const frist = new Date(zahlung);
+        frist.setDate(frist.getDate() - fristTage);
+        if (frist >= stichtag) return { fristDatum: frist, zahlungsDatum: new Date(zahlung) };
+        zahlung.setMonth(zahlung.getMonth() + monate);
+    }
+    return null;
+}
+
 // Parst einen Betrag aus einer Nutzereingabe — akzeptiert sowohl deutsches
 // Format (Komma als Dezimaltrennzeichen, "29,99", optional mit Punkt als
 // Tausendertrennzeichen wie "1.299,99") als auch englisches Format mit Punkt

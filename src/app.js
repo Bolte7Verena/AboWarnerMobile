@@ -4,7 +4,7 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumDE } from './calculator.js';
+import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumDE, ermittleKuendigungsfrist } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung } from './bestaetigung.js';
@@ -143,11 +143,21 @@ function ermittleAboStatus(abo, tageBisZahlung) {
     return 'sicher';
 }
 
+// Text im Status-Etikett der Karte. Für laufende Abos statt "Kritisch"/
+// "Bald fällig"/"Sicher" das konkrete Datum, bis zu dem gekündigt werden
+// kann. Die Farbe des Etiketts (rot/gelb/grün) bleibt unverändert die
+// Dringlichkeitsstufe aus ermittleAboStatus.
+function erzeugeStatusText(abo, status) {
+    if (status === 'gekuendigt') return STATUS_LABEL.gekuendigt;
+    const frist = ermittleKuendigungsfrist(abo);
+    return frist ? `Kündigung möglich bis ${formatiereDatumDE(frist.fristDatum)}` : STATUS_LABEL[status];
+}
+
 function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
     const status = ermittleAboStatus(abo, tageBisZahlung);
     const kategorieKlasse = KATEGORIE_BADGE_KLASSE[abo.kategorie] || 'badge-cat-muted';
 
-    const statusBadge = `<span class="badge ${STATUS_BADGE_KLASSE[status]}">${STATUS_LABEL[status]}</span>`;
+    const statusBadge = `<span class="badge ${STATUS_BADGE_KLASSE[status]}">${erzeugeStatusText(abo, status)}</span>`;
 
     return `
         <div class="abo-top">

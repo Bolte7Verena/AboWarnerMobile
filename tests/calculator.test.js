@@ -11,7 +11,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Calculator, TURNUS_MONATE, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereZahlDE, formatiereBetrag, formatiereDatumDE, formatiereDatumISO, parseDatumISO } from '../src/calculator.js';
+import { Calculator, TURNUS_MONATE, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereZahlDE, formatiereBetrag, formatiereDatumDE, formatiereDatumISO, parseDatumISO, ermittleKuendigungsfrist } from '../src/calculator.js';
 
 function heutePlusTage(tage) {
     const d = new Date();
@@ -193,4 +193,41 @@ test('parseDatumISO: liefert lokales Datum ohne Zeitzonen-Verschiebung auf den V
 
 test('formatiereDatumISO: Round-Trip mit parseDatumISO', () => {
     assert.equal(formatiereDatumISO(parseDatumISO('2026-12-31')), '2026-12-31');
+});
+
+// --- ermittleKuendigungsfrist: "Kündigung möglich bis [Datum]" ---
+
+test('ermittleKuendigungsfrist: Frist = nächste Zahlung minus Kündigungsfrist', () => {
+    const abo = { naechsteZahlung: zuISO(heutePlusTage(40)), turnus: 'Monatlich', kuendigungsfristTage: 30 };
+    const ergebnis = ermittleKuendigungsfrist(abo);
+    assert.equal(zuISO(ergebnis.fristDatum), zuISO(heutePlusTage(10)));
+    assert.equal(zuISO(ergebnis.zahlungsDatum), zuISO(heutePlusTage(40)));
+});
+
+test('ermittleKuendigungsfrist: Frist heute zählt noch als möglich', () => {
+    const abo = { naechsteZahlung: zuISO(heutePlusTage(14)), turnus: 'Monatlich', kuendigungsfristTage: 14 };
+    assert.equal(zuISO(ermittleKuendigungsfrist(abo).fristDatum), zuISO(heutePlusTage(0)));
+});
+
+test('ermittleKuendigungsfrist: verpasste Frist rückt auf die Frist vor der übernächsten Zahlung (nie Vergangenheit)', () => {
+    const naechste = heutePlusTage(20);
+    const abo = { naechsteZahlung: zuISO(naechste), turnus: 'Monatlich', kuendigungsfristTage: 30 };
+    const ergebnis = ermittleKuendigungsfrist(abo);
+    const erwarteteZahlung = new Date(naechste);
+    erwarteteZahlung.setMonth(erwarteteZahlung.getMonth() + 1);
+    const erwarteteFrist = new Date(erwarteteZahlung);
+    erwarteteFrist.setDate(erwarteteFrist.getDate() - 30);
+    assert.equal(zuISO(ergebnis.zahlungsDatum), zuISO(erwarteteZahlung));
+    assert.equal(zuISO(ergebnis.fristDatum), zuISO(erwarteteFrist));
+    assert.ok(ergebnis.fristDatum >= heutePlusTage(0));
+});
+
+test('ermittleKuendigungsfrist: lange Frist bei jährlichem Turnus', () => {
+    const abo = { naechsteZahlung: zuISO(heutePlusTage(200)), turnus: 'Jährlich', kuendigungsfristTage: 90 };
+    assert.equal(zuISO(ermittleKuendigungsfrist(abo).fristDatum), zuISO(heutePlusTage(110)));
+});
+
+test('ermittleKuendigungsfrist: ungültige Daten liefern null statt Absturz', () => {
+    assert.equal(ermittleKuendigungsfrist({ naechsteZahlung: 'kein-datum', turnus: 'Monatlich', kuendigungsfristTage: 30 }), null);
+    assert.equal(ermittleKuendigungsfrist({ naechsteZahlung: zuISO(heutePlusTage(5)), turnus: 'Monatlich', kuendigungsfristTage: NaN }), null);
 });
