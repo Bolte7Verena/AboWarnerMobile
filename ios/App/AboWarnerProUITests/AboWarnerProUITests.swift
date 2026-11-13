@@ -55,11 +55,12 @@ final class AboWarnerProUITests: XCTestCase {
         XCTAssertTrue(title.waitForExistence(timeout: 20))
         snapshot("01-Uebersicht")
 
-        // Fälligkeits-Hinweis-Toast ("In 3 Tagen fällig") — von Netflix in
-        // den Demo-Daten ausgelöst. Falls er noch sichtbar ist, eigene
-        // Aufnahme davon; sonst überspringen wir diesen einen Screen, statt
-        // den ganzen Testlauf scheitern zu lassen.
-        if app.staticTexts["In 3 Tagen fällig"].waitForExistence(timeout: 5) {
+        // Hinweis beim App-Start ("Kündigungsfrist endet bald", seit 2.0.2;
+        // Text = HINWEIS_TITEL in src/benachrichtigungsplan.js) — von Netflix
+        // in den Demo-Daten ausgelöst (Kündigung nur noch wenige Tage möglich).
+        // Falls er noch sichtbar ist, eigene Aufnahme davon; sonst überspringen
+        // wir diesen einen Screen, statt den ganzen Testlauf scheitern zu lassen.
+        if app.staticTexts["Kündigungsfrist endet bald"].waitForExistence(timeout: 5) {
             snapshot("02-Erinnerung")
 
             // WICHTIG: Den Toast hier aktiv schließen. Sein Schließen-Button

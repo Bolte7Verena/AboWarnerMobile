@@ -20,7 +20,23 @@
  *   ersetzt statt zu verdoppeln.
  */
 
-import { ermittleKuendigungsfrist, formatiereDatumDE, formatiereDatumISO, parseDatumISO, KRITISCH_SCHWELLE_TAGE } from './calculator.js';
+import { ermittleKuendigungsfrist, ermittleFristStatus, formatiereDatumDE, formatiereDatumISO, parseDatumISO, KRITISCH_SCHWELLE_TAGE } from './calculator.js';
+
+// Titel der Einblendung beim App-Start. Der automatische Screenshot-Test
+// (ios/App/AboWarnerProUITests) sucht exakt diesen Text — bei Änderung dort
+// mit anpassen.
+export const HINWEIS_TITEL = 'Kündigungsfrist endet bald';
+
+// Für die Einblendung beim App-Start: alle laufenden, nicht gekündigten Abos
+// im roten Bereich (Kündigung nur noch höchstens 7 Tage möglich — gleiche
+// Regel wie die rote Karte), früheste Frist zuerst.
+// Rückgabe: [{ abo, fristDatum }]
+export function ermittleAbosImRotenBereich(alleAbos, heute = new Date()) {
+    return alleAbos
+        .filter((abo) => !abo.gekuendigt && ermittleFristStatus(abo, heute) === 'kritisch')
+        .map((abo) => ({ abo, fristDatum: ermittleKuendigungsfrist(abo, heute).fristDatum }))
+        .sort((a, b) => a.fristDatum - b.fristDatum);
+}
 
 export const TAGE_VOR_FRISTENDE = KRITISCH_SCHWELLE_TAGE; // 7 — passend zu "rot"
 export const FRISTEN_JE_ABO = 3;

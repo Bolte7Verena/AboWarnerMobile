@@ -5,7 +5,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { berechneBenachrichtigungsPlan, hasheZuId, MAX_BENACHRICHTIGUNGEN } from '../src/benachrichtigungsplan.js';
+import { berechneBenachrichtigungsPlan, hasheZuId, MAX_BENACHRICHTIGUNGEN, ermittleAbosImRotenBereich, HINWEIS_TITEL } from '../src/benachrichtigungsplan.js';
 
 function heutePlusTage(tage) {
     const d = new Date();
@@ -105,4 +105,22 @@ test(`Höchstens ${MAX_BENACHRICHTIGUNGEN} Benachrichtigungen (iOS-Grenze 64), d
 
 test('Ungültige Daten: keine Benachrichtigung, kein Absturz', () => {
     assert.deepEqual(berechneBenachrichtigungsPlan([{ ...BASIS, id: 'b', name: 'B', naechsteZahlung: 'kaputt', kuendigungsfristTage: 3 }]), []);
+});
+
+// --- Einblendung beim App-Start: Abos im roten Bereich ---
+
+test('Hinweis beim Start: nur nicht gekündigte Abos im roten Bereich (≤ 7 Tage), früheste Frist zuerst', () => {
+    const abos = [
+        { ...BASIS, id: 'r7', name: 'Rot7', naechsteZahlung: zuISO(heutePlusTage(14)), kuendigungsfristTage: 7 },   // möglich bis +7
+        { ...BASIS, id: 'r2', name: 'Rot2', naechsteZahlung: zuISO(heutePlusTage(9)), kuendigungsfristTage: 7 },    // +2
+        { ...BASIS, id: 'g8', name: 'Gelb8', naechsteZahlung: zuISO(heutePlusTage(15)), kuendigungsfristTage: 7 },  // +8 -> gelb
+        { ...BASIS, id: 'gk', name: 'Gekündigt', naechsteZahlung: zuISO(heutePlusTage(9)), kuendigungsfristTage: 7, gekuendigt: true, gekuendigtZum: zuISO(heutePlusTage(30)) }
+    ];
+    const rot = ermittleAbosImRotenBereich(abos);
+    assert.deepEqual(rot.map((r) => r.abo.name), ['Rot2', 'Rot7']);
+    assert.equal(zuDE(rot[0].fristDatum), zuDE(heutePlusTage(2)));
+});
+
+test('Hinweis beim Start: Titel für den Screenshot-Test unverändert', () => {
+    assert.equal(HINWEIS_TITEL, 'Kündigungsfrist endet bald');
 });

@@ -12,9 +12,9 @@
  */
 
 const DEMO_ABOS = [
-    // Fällig in genau 3 Tagen -> löst zugleich den "In 3 Tagen fällig"-Hinweis
-    // aus (siehe faelligkeitshinweis.js, TAGE_SCHWELLE = 3) und zeigt den
-    // "Kritisch"-Status.
+    // Zahlung in 3 Tagen, Frist 30 -> nächste mögliche Kündigung in wenigen
+    // Tagen: rote Karte und Hinweis "Kündigungsfrist endet bald" beim Start
+    // (siehe faelligkeitshinweis.js / benachrichtigungsplan.js).
     {
         id: 'demo-netflix',
         name: 'Netflix',
@@ -25,7 +25,7 @@ const DEMO_ABOS = [
         naechsteZahlung: inTagen(3),
         kuendigungsfristTage: 30
     },
-    // "Bald fällig" (Warnschwelle).
+    // Gelb: Kündigung möglich bis in 20 Tagen (Zahlung in 50 Tagen, Frist 30).
     {
         id: 'demo-fitlife',
         name: 'Fitnessstudio FitLife',
@@ -33,10 +33,10 @@ const DEMO_ABOS = [
         waehrung: 'EUR',
         turnus: 'Monatlich',
         kategorie: 'Sport',
-        naechsteZahlung: inTagen(35),
+        naechsteZahlung: inTagen(50),
         kuendigungsfristTage: 30
     },
-    // "Sicher".
+    // Grün: Kündigung möglich bis in 110 Tagen.
     {
         id: 'demo-haftpflicht',
         name: 'Haftpflichtversicherung',
