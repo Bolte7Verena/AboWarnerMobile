@@ -14,13 +14,12 @@
  */
 
 import { Calculator, TURNUS_MONATE, parseBetrag, parseDatumISO, formatiereDatumISO } from './calculator.js';
+import { t } from './i18n.js';
 
 export const MAX_DATEIGROESSE_BYTES = 5 * 1024 * 1024;
 
-const NICHTS_GEAENDERT = 'Deine vorhandenen Abos bleiben unverändert.';
-
 function fehler(text) {
-    return { ok: false, meldung: `${text} ${NICHTS_GEAENDERT}` };
+    return { ok: false, meldung: `${text} ${t('sicherung.nichtsGeaendert')}` };
 }
 
 function optionalerText(wert) {
@@ -70,38 +69,38 @@ export function normalisiereAbo(roh) {
 //   { ok: false, meldung }        — verständliche Ablehnung, nichts geändert
 export function pruefeSicherung(text) {
     if (typeof text !== 'string' || text.trim() === '') {
-        return fehler('Die Datei ist leer.');
+        return fehler(t('sicherung.leer'));
     }
     if (text.length > MAX_DATEIGROESSE_BYTES) {
-        return fehler('Die Datei ist zu groß für eine Abo-Warner-Sicherung.');
+        return fehler(t('sicherung.zuGross'));
     }
 
     let daten;
     try {
         daten = JSON.parse(text.replace(/^﻿/, ''));
     } catch (error) {
-        return fehler('Diese Datei ist keine Abo-Warner-Sicherung (Inhalt nicht lesbar).');
+        return fehler(t('sicherung.unlesbar'));
     }
 
     const liste = Array.isArray(daten) ? daten : (daten && Array.isArray(daten.abos) ? daten.abos : null);
     if (!liste) {
-        return fehler('Diese Datei ist keine Abo-Warner-Sicherung.');
+        return fehler(t('sicherung.fremd'));
     }
     if (liste.length === 0) {
-        return fehler('Die Sicherung enthält keine Abos.');
+        return fehler(t('sicherung.keineAbos'));
     }
 
     const abos = liste.map(normalisiereAbo);
     const ungueltig = abos.filter((abo) => abo === null).length;
     if (ungueltig > 0) {
         return fehler(ungueltig === liste.length
-            ? 'Diese Datei ist keine Abo-Warner-Sicherung.'
-            : `Die Sicherung ist beschädigt: ${ungueltig} von ${liste.length} Einträgen sind unvollständig.`);
+            ? t('sicherung.fremd')
+            : t('sicherung.beschaedigt', { ungueltig, gesamt: liste.length }));
     }
 
     const ids = new Set(abos.map((abo) => abo.id));
     if (ids.size !== abos.length) {
-        return fehler('Die Sicherung ist beschädigt (doppelte Einträge).');
+        return fehler(t('sicherung.doppelt'));
     }
 
     return { ok: true, abos };

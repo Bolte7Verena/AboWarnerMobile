@@ -12,7 +12,8 @@
  *   [Platzhalter] stehen zu bleiben.
  */
 
-import { ermittleKuendigungsfrist, formatiereDatumDE } from './calculator.js';
+import { ermittleKuendigungsfrist } from './calculator.js';
+import { t, formatiereDatum } from './i18n.js';
 
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>';
@@ -68,9 +69,9 @@ function zuDateiSicheremNamen(text) {
 // prüfbar ist.
 export function erzeugeSchreibenText(abo, absender, heute = new Date()) {
     const text = (wert) => String(wert || '').trim();
-    const name = text(absender.name) || '[Dein Name]';
-    const strasse = text(absender.strasse) || '[Straße und Hausnummer]';
-    const plzOrt = text(absender.plzOrt) || '[PLZ und Ort]';
+    const name = text(absender.name) || t('brief.platzhalterName');
+    const strasse = text(absender.strasse) || t('brief.platzhalterStrasse');
+    const plzOrt = text(absender.plzOrt) || t('brief.platzhalterPlzOrt');
     const email = text(absender.email);
 
     const empfaenger = text(abo.vertragspartner) || abo.name;
@@ -79,40 +80,43 @@ export function erzeugeSchreibenText(abo, absender, heute = new Date()) {
 
     const absenderBlock = [name, strasse, plzOrt, email].filter(Boolean).join('\n');
     const bezugBlock = [
-        `Kündigung: ${abo.name}`,
-        vertragsnummer && `Vertragsnummer: ${vertragsnummer}`,
-        kundennummer && `Kundennummer: ${kundennummer}`
+        t('brief.betreff', { name: abo.name }),
+        vertragsnummer && t('brief.vertragsnummer', { nummer: vertragsnummer }),
+        kundennummer && t('brief.kundennummer', { nummer: kundennummer })
     ].filter(Boolean).join('\n');
     const bestaetigung = email
-        ? `Bitte bestätigen Sie mir die Kündigung und das Vertragsende per E-Mail an ${email}.`
-        : 'Bitte bestätigen Sie mir die Kündigung und das Vertragsende schriftlich.';
+        ? t('brief.bestaetigungMail', { email })
+        : t('brief.bestaetigung');
+    // Optionale Unterschriftslinie (je Sprache; Deutsch: keine).
+    const linie = t('brief.unterschriftslinie');
+    const unterschrift = linie ? `${linie}\n${name}` : name;
 
     return [
         absenderBlock,
         empfaenger,
-        formatiereDatumDE(heute),
+        formatiereDatum(heute),
         bezugBlock,
-        'Sehr geehrte Damen und Herren,',
-        'hiermit kündige ich den oben genannten Vertrag fristgerecht zum nächstmöglichen Zeitpunkt.',
+        t('brief.anrede'),
+        t('brief.kern'),
         bestaetigung,
-        'Mit freundlichen Grüßen',
-        name
+        t('brief.gruss'),
+        unterschrift
     ].join('\n\n');
 }
 
 function erzeugeFristHinweis(abo) {
     const frist = ermittleKuendigungsfrist(abo);
     if (!frist) return '';
-    return `Damit die Kündigung rechtzeitig wirkt, muss sie bis zum <strong>${formatiereDatumDE(frist.fristDatum)}</strong> beim Anbieter sein.`;
+    return t('brief.fristHinweis', { datum: formatiereDatum(frist.fristDatum) });
 }
 
 function erzeugeVertragsdatenHinweis(abo) {
     const fehlend = [];
-    if (!String(abo.vertragspartner || '').trim()) fehlend.push('Anschrift des Anbieters');
-    if (!String(abo.vertragsnummer || '').trim()) fehlend.push('Vertragsnummer');
-    if (!String(abo.kundennummer || '').trim()) fehlend.push('Kundennummer');
+    if (!String(abo.vertragspartner || '').trim()) fehlend.push(t('brief.tippAnschrift'));
+    if (!String(abo.vertragsnummer || '').trim()) fehlend.push(t('brief.tippVertragsnummer'));
+    if (!String(abo.kundennummer || '').trim()) fehlend.push(t('brief.tippKundennummer'));
     if (fehlend.length === 0) return '';
-    return `Tipp: ${fehlend.join(', ')} kannst du beim Abo unter „Bearbeiten“ hinterlegen. Dann stehen sie automatisch im Schreiben.`;
+    return t('brief.tipp', { liste: fehlend.join(', ') });
 }
 
 export function oeffneKuendigungsschreibenModal(abo) {
@@ -125,46 +129,46 @@ export function oeffneKuendigungsschreibenModal(abo) {
     overlay.innerHTML = `
         <div class="glass-strong modal-dialog">
             <div class="modal-header">
-                <h2 class="modal-title">Kündigungsschreiben — ${escapeHtml(abo.name)}</h2>
-                <button type="button" class="modal-close-btn" aria-label="Schließen">${ICON_X}</button>
+                <h2 class="modal-title">${escapeHtml(t('brief.titel', { name: abo.name }))}</h2>
+                <button type="button" class="modal-close-btn" aria-label="${escapeHtml(t('knopf.schliessen'))}">${ICON_X}</button>
             </div>
             ${fristHinweis ? `<p class="modal-subline">${fristHinweis}</p>` : ''}
             <details class="absender-details" ${absenderVollstaendig(gespeicherterAbsender) ? '' : 'open'}>
                 <summary class="absender-summary">
-                    <span class="absender-summary-label">Dein Absender:</span>
+                    <span class="absender-summary-label">${t('brief.absender')}</span>
                     <span class="absender-summary-text"></span>
                 </summary>
                 <div class="absender-felder">
                     <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" class="input-control" data-absender-feld="name" placeholder="Max Mustermann" autocomplete="name">
+                        <label>${t('brief.feldName')}</label>
+                        <input type="text" class="input-control" data-absender-feld="name" placeholder="${escapeHtml(t('brief.feldNamePlatzhalter'))}" autocomplete="name">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Straße und Hausnummer</label>
-                            <input type="text" class="input-control" data-absender-feld="strasse" placeholder="Musterstraße 1" autocomplete="street-address">
+                            <label>${t('brief.feldStrasse')}</label>
+                            <input type="text" class="input-control" data-absender-feld="strasse" placeholder="${escapeHtml(t('brief.feldStrassePlatzhalter'))}" autocomplete="street-address">
                         </div>
                         <div class="form-group">
-                            <label>PLZ und Ort</label>
-                            <input type="text" class="input-control" data-absender-feld="plzOrt" placeholder="12345 Musterstadt">
+                            <label>${t('brief.feldPlzOrt')}</label>
+                            <input type="text" class="input-control" data-absender-feld="plzOrt" placeholder="${escapeHtml(t('brief.feldPlzOrtPlatzhalter'))}">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>E-Mail <span class="label-hinweis">(optional, für die Bestätigung)</span></label>
-                        <input type="email" class="input-control" data-absender-feld="email" placeholder="optional" autocomplete="email">
+                        <label>${t('brief.feldEmail')} <span class="label-hinweis">${t('brief.feldEmailHinweis')}</span></label>
+                        <input type="email" class="input-control" data-absender-feld="email" placeholder="${escapeHtml(t('brief.optional'))}" autocomplete="email">
                     </div>
-                    <p class="absender-merk-hinweis">Wird auf diesem Gerät gemerkt und beim nächsten Mal automatisch eingesetzt.</p>
+                    <p class="absender-merk-hinweis">${t('brief.merkHinweis')}</p>
                 </div>
             </details>
             ${vertragsdatenHinweis ? `<p class="vertragsdaten-hinweis">${escapeHtml(vertragsdatenHinweis)}</p>` : ''}
             <div class="form-group">
-                <label>Dein Schreiben <span class="label-hinweis">(kannst du hier noch anpassen)</span></label>
+                <label>${t('brief.schreiben')} <span class="label-hinweis">${t('brief.schreibenHinweis')}</span></label>
                 <textarea class="input-control modal-letter-textarea" rows="14"></textarea>
             </div>
             <div class="modal-aktionen">
-                <button type="button" class="btn btn-primary btn-sm copy-btn">In Zwischenablage kopieren</button>
-                <button type="button" class="btn btn-outline btn-sm export-schreiben-btn">${ICON_DOWNLOAD} Als Datei teilen</button>
-                <button type="button" class="btn btn-outline btn-sm mark-cancelled-btn">Abo als gekündigt markieren</button>
+                <button type="button" class="btn btn-primary btn-sm copy-btn">${t('brief.kopieren')}</button>
+                <button type="button" class="btn btn-outline btn-sm export-schreiben-btn">${ICON_DOWNLOAD} ${t('brief.teilen')}</button>
+                <button type="button" class="btn btn-outline btn-sm mark-cancelled-btn">${t('brief.markieren')}</button>
             </div>
             <p class="modal-copy-status" aria-live="polite"></p>
         </div>
@@ -187,8 +191,8 @@ export function oeffneKuendigungsschreibenModal(abo) {
         });
         speichereAbsenderDaten(aktuellerAbsender);
         summaryText.textContent = absenderVollstaendig(aktuellerAbsender)
-            ? `${aktuellerAbsender.name}, ${aktuellerAbsender.plzOrt} (ändern)`
-            : 'bitte ausfüllen';
+            ? t('brief.absenderKurz', { name: aktuellerAbsender.name, ort: aktuellerAbsender.plzOrt })
+            : t('brief.bitteAusfuellen');
         textarea.value = erzeugeSchreibenText(abo, aktuellerAbsender);
     }
 
@@ -213,23 +217,23 @@ export function oeffneKuendigungsschreibenModal(abo) {
     overlay.querySelector('.copy-btn').addEventListener('click', async () => {
         try {
             await navigator.clipboard.writeText(textarea.value);
-            copyStatus.textContent = 'In die Zwischenablage kopiert.';
+            copyStatus.textContent = t('brief.kopiert');
         } catch (error) {
-            copyStatus.textContent = 'Kopieren fehlgeschlagen — bitte Text manuell markieren und kopieren.';
+            copyStatus.textContent = t('brief.kopierenFehler');
         }
     });
 
     overlay.querySelector('.export-schreiben-btn').addEventListener('click', async () => {
-        const dateiname = `Kuendigung-${zuDateiSicheremNamen(abo.name)}-${heuteIsoKompakt()}.txt`;
+        const dateiname = `${t('datei.schreiben')}-${zuDateiSicheremNamen(abo.name)}-${heuteIsoKompakt()}.txt`;
         try {
             const ergebnis = await window.api.exportSchreiben(textarea.value, dateiname);
             if (ergebnis.abgebrochen) {
                 copyStatus.textContent = '';
                 return;
             }
-            copyStatus.textContent = `Gespeichert unter: ${ergebnis.pfad}`;
+            copyStatus.textContent = t('brief.gespeichert', { pfad: ergebnis.pfad });
         } catch (error) {
-            copyStatus.textContent = 'Speichern fehlgeschlagen — bitte erneut versuchen.';
+            copyStatus.textContent = t('brief.speichernFehler');
         }
     });
 

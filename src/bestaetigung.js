@@ -9,6 +9,7 @@
  */
 
 import { initDatePicker } from './datepicker.js';
+import { t } from './i18n.js';
 
 const ICON_KALENDER = '<svg class="date-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>';
 
@@ -20,7 +21,7 @@ function escapeHtml(text) {
         .replace(/"/g, '&quot;');
 }
 
-export function frageBestaetigung({ titel, text, bestaetigenText = 'OK', abbrechenText = 'Abbrechen', gefaehrlich = false }) {
+export function frageBestaetigung({ titel, text, bestaetigenText = t('knopf.ok'), abbrechenText = t('knopf.abbrechen'), gefaehrlich = false }) {
     return new Promise((resolve) => {
         const overlay = document.createElement('div');
         overlay.className = 'modal-overlay bestaetigung-overlay';
@@ -60,7 +61,7 @@ export function frageBestaetigung({ titel, text, bestaetigenText = 'OK', abbrech
 
 // Dialog mit einem Datumsfeld (deutscher Kalender), z.B. "Gekündigt zum".
 // Liefert das gewählte Datum als ISO-String ("2026-12-31") oder null bei Abbruch.
-export function frageDatum({ titel, text, label, vorschlagISO = '', bestaetigenText = 'Speichern', abbrechenText = 'Abbrechen' }) {
+export function frageDatum({ titel, text, label, vorschlagISO = '', bestaetigenText = t('knopf.speichern'), abbrechenText = t('knopf.abbrechen') }) {
     return new Promise((resolve) => {
         const overlay = document.createElement('div');
         overlay.className = 'modal-overlay bestaetigung-overlay';
@@ -71,7 +72,7 @@ export function frageDatum({ titel, text, label, vorschlagISO = '', bestaetigenT
                 <div class="form-group date-field">
                     <label>${escapeHtml(label)}</label>
                     <div class="date-input-wrap">
-                        <input type="text" class="input-control date-input" placeholder="Datum auswählen" readonly autocomplete="off">
+                        <input type="text" class="input-control date-input" placeholder="${escapeHtml(t('feld.datumPlatzhalter'))}" readonly autocomplete="off">
                         ${ICON_KALENDER}
                         <div class="date-picker-popover" hidden></div>
                     </div>
@@ -119,7 +120,7 @@ export function frageDatum({ titel, text, label, vorschlagISO = '', bestaetigenT
         overlay.querySelector('.bestaetigung-abbrechen-btn').addEventListener('click', () => beenden(null));
         overlay.querySelector('.bestaetigung-ok-btn').addEventListener('click', () => {
             if (!/^\d{4}-\d{2}-\d{2}$/.test(hiddenEl.value)) {
-                overlay.querySelector('.datum-dialog-fehler').textContent = 'Bitte ein Datum auswählen.';
+                overlay.querySelector('.datum-dialog-fehler').textContent = t('datum.fehlt');
                 return;
             }
             beenden(hiddenEl.value);

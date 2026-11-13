@@ -5,7 +5,8 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { berechneBenachrichtigungsPlan, hasheZuId, MAX_BENACHRICHTIGUNGEN, ermittleAbosImRotenBereich, HINWEIS_TITEL } from '../src/benachrichtigungsplan.js';
+import { berechneBenachrichtigungsPlan, hasheZuId, MAX_BENACHRICHTIGUNGEN, ermittleAbosImRotenBereich } from '../src/benachrichtigungsplan.js';
+import { t } from '../src/i18n.js';
 
 function heutePlusTage(tage) {
     const d = new Date();
@@ -122,5 +123,5 @@ test('Hinweis beim Start: nur nicht gekündigte Abos im roten Bereich (≤ 7 Tag
 });
 
 test('Hinweis beim Start: Titel für den Screenshot-Test unverändert', () => {
-    assert.equal(HINWEIS_TITEL, 'Kündigungsfrist endet bald');
+    assert.equal(t('hinweis.titel'), 'Kündigungsfrist endet bald');
 });

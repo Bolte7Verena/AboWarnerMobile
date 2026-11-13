@@ -20,12 +20,13 @@
  *   ersetzt statt zu verdoppeln.
  */
 
-import { ermittleKuendigungsfrist, ermittleFristStatus, formatiereDatumDE, formatiereDatumISO, parseDatumISO, KRITISCH_SCHWELLE_TAGE } from './calculator.js';
+import { ermittleKuendigungsfrist, ermittleFristStatus, formatiereDatumISO, parseDatumISO, KRITISCH_SCHWELLE_TAGE } from './calculator.js';
+import { t, formatiereDatum } from './i18n.js';
 
-// Titel der Einblendung beim App-Start. Der automatische Screenshot-Test
-// (ios/App/AboWarnerProUITests) sucht exakt diesen Text — bei Änderung dort
-// mit anpassen.
-export const HINWEIS_TITEL = 'Kündigungsfrist endet bald';
+// Titel der Einblendung beim App-Start: Schlüssel 'hinweis.titel' in der
+// Sprachdatei. Der automatische Screenshot-Test (ios/App/AboWarnerProUITests,
+// läuft auf Deutsch) sucht exakt den deutschen Text — bei Änderung dort mit
+// anpassen.
 
 // Für die Einblendung beim App-Start: alle laufenden, nicht gekündigten Abos
 // im roten Bereich (Kündigung nur noch höchstens 7 Tage möglich — gleiche
@@ -66,8 +67,8 @@ function vertragsendeMeldung(abo, jetzt) {
     if (termin <= jetzt) return [];
     return [{
         id: hasheZuId(`${abo.id}#vertragsende`),
-        title: 'Vertragsende',
-        body: `${abo.name} endet heute.`,
+        title: t('mitteilung.endeTitel'),
+        body: t('mitteilung.endeText', { name: abo.name }),
         at: termin
     }];
 }
@@ -87,8 +88,8 @@ function fristErinnerungen(abo, jetzt) {
         if (termin > jetzt) {
             ergebnis.push({
                 id: hasheZuId(`${abo.id}#frist#${formatiereDatumISO(frist.fristDatum)}`),
-                title: 'Kündigungsfrist',
-                body: `${abo.name}: Kündigung nur noch bis ${formatiereDatumDE(frist.fristDatum)} möglich.`,
+                title: t('mitteilung.fristTitel'),
+                body: t('mitteilung.fristText', { name: abo.name, datum: formatiereDatum(frist.fristDatum) }),
                 at: termin
             });
         }

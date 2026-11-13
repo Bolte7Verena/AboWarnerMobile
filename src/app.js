@@ -4,8 +4,9 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumDE, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
+import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
+import { t, tAnzahl, tWert, formatiereDatum } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung, frageDatum } from './bestaetigung.js';
 import { planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
@@ -49,13 +50,6 @@ const KATEGORIE_BADGE_KLASSE = {
 
 let aktiverKategorieFilter = 'Alle';
 
-const STATUS_LABEL = {
-    kritisch: 'Kritisch',
-    warnung: 'Bald fällig',
-    sicher: 'Sicher',
-    gekuendigt: 'Gekündigt'
-};
-
 const STATUS_BADGE_KLASSE = {
     kritisch: 'badge-status-critical',
     warnung: 'badge-status-warnung',
@@ -93,7 +87,7 @@ function erzeugeFilterChips(alleAbos) {
     const chipsDiv = document.createElement('div');
     chipsDiv.className = 'filter-chips';
     chipsDiv.innerHTML = kategorien.map((kat) => `
-        <button type="button" class="filter-chip ${kat === aktiverKategorieFilter ? 'active' : ''}" data-kategorie="${escapeHtml(kat)}">${escapeHtml(kat)}</button>
+        <button type="button" class="filter-chip ${kat === aktiverKategorieFilter ? 'active' : ''}" data-kategorie="${escapeHtml(kat)}">${escapeHtml(kat === 'Alle' ? t('filter.alle') : tWert('kategorie', kat))}</button>
     `).join('');
 
     chipsDiv.querySelectorAll('.filter-chip').forEach((chip) => {
@@ -143,10 +137,10 @@ function berechneStatistiken(alleAbos) {
 
 function renderStatistiken(statsGrid, statistiken) {
     statsGrid.innerHTML = [
-        erzeugeStatTile(ICON_LAYERS, 'Aktive Abos', String(statistiken.aktiveAnzahl), 'primary'),
-        erzeugeStatTile(ICON_WALLET, 'Kosten / Monat', `${formatiereZahlDE(statistiken.kostenProMonat)} €`, 'neutral'),
-        erzeugeStatTile(ICON_CALENDAR_CLOCK, 'Kosten / Jahr', `${formatiereZahlDE(statistiken.kostenProJahr)} €`, 'primary'),
-        erzeugeStatTile(ICON_ALARM_CLOCK, 'Fristen fällig', String(statistiken.kritischeAnzahl), statistiken.kritischeAnzahl > 0 ? 'warning' : 'neutral')
+        erzeugeStatTile(ICON_LAYERS, t('stat.aktiv'), String(statistiken.aktiveAnzahl), 'primary'),
+        erzeugeStatTile(ICON_WALLET, t('stat.monat'), `${formatiereZahlDE(statistiken.kostenProMonat)} €`, 'neutral'),
+        erzeugeStatTile(ICON_CALENDAR_CLOCK, t('stat.jahr'), `${formatiereZahlDE(statistiken.kostenProJahr)} €`, 'primary'),
+        erzeugeStatTile(ICON_ALARM_CLOCK, t('stat.fristen'), String(statistiken.kritischeAnzahl), statistiken.kritischeAnzahl > 0 ? 'warning' : 'neutral')
     ].join('');
 }
 
@@ -164,28 +158,28 @@ function ermittleAboStatus(abo) {
 function erzeugeStatusText(abo, status) {
     if (status === 'gekuendigt') {
         // Ältere, vor 2.0.2 gekündigte Abos haben kein Vertragsende hinterlegt.
-        return abo.gekuendigtZum ? `Gekündigt zum ${formatiereDatumDE(abo.gekuendigtZum)}` : STATUS_LABEL.gekuendigt;
+        return abo.gekuendigtZum ? t('karte.gekuendigtZum', { datum: formatiereDatum(abo.gekuendigtZum) }) : t('status.gekuendigt');
     }
     const frist = ermittleKuendigungsfrist(abo);
-    return frist ? `Kündigung möglich bis ${formatiereDatumDE(frist.fristDatum)}` : STATUS_LABEL[status];
+    return frist ? t('karte.moeglichBis', { datum: formatiereDatum(frist.fristDatum) }) : t(`status.${status}`);
 }
 
 // Zeile unter dem Preis. Bei gekündigten Abos, deren Vertragsende vor der
 // nächsten regulären Zahlung liegt, gibt es keine weitere Zahlung mehr.
 function erzeugeZahlungsZeile(abo, effektivesZahlungsdatum) {
     const ende = parseDatumISO(abo.gekuendigtZum);
-    if (abo.gekuendigt && ende && parseDatumISO(effektivesZahlungsdatum) > ende) return 'Keine weitere Zahlung';
-    return `Nächste Zahlung: ${formatiereDatumDE(effektivesZahlungsdatum)}`;
+    if (abo.gekuendigt && ende && parseDatumISO(effektivesZahlungsdatum) > ende) return t('karte.keineZahlung');
+    return t('karte.naechsteZahlung', { datum: formatiereDatum(effektivesZahlungsdatum) });
 }
 
 // Grauer Hinweis neben dem Etikett.
 function erzeugeStatusPill(abo, tageBisZahlung) {
     if (!abo.gekuendigt) {
-        return `<span class="abo-status-pill">${tageBisZahlung} Tage bis Zahlung · Frist ${abo.kuendigungsfristTage} Tage</span>`;
+        return `<span class="abo-status-pill">${t('karte.tageBisZahlung', { tage: tageBisZahlung, frist: abo.kuendigungsfristTage })}</span>`;
     }
     if (istGekuendigtLaufend(abo)) {
         const tage = berechneTageBisZahlung(parseDatumISO(abo.gekuendigtZum));
-        return `<span class="abo-status-pill">${tage === 0 ? 'Läuft heute aus' : `Läuft noch ${tage} ${tage === 1 ? 'Tag' : 'Tage'}`}</span>`;
+        return `<span class="abo-status-pill">${tage === 0 ? t('karte.laeuftHeuteAus') : tAnzahl('karte.laeuftNoch', tage)}</span>`;
     }
     return '';
 }
@@ -203,9 +197,9 @@ function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
                 <div>
                     <div class="abo-name-row">
                         <span class="abo-name">${escapeHtml(abo.name)}</span>
-                        <span class="badge ${kategorieKlasse}">${escapeHtml(abo.kategorie)}</span>
+                        <span class="badge ${kategorieKlasse}">${escapeHtml(tWert('kategorie', abo.kategorie))}</span>
                     </div>
-                    <p class="abo-meta">${escapeHtml(abo.turnus)} | ${escapeHtml(abo.waehrung)}</p>
+                    <p class="abo-meta">${escapeHtml(tWert('turnus', abo.turnus))} | ${escapeHtml(abo.waehrung)}</p>
                 </div>
             </div>
             <div class="abo-right">
@@ -219,9 +213,9 @@ function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
                 ${erzeugeStatusPill(abo, tageBisZahlung)}
             </div>
             <div class="abo-aktionen">
-                <button type="button" class="btn btn-outline btn-sm edit-btn">${ICON_EDIT} Bearbeiten</button>
-                ${abo.gekuendigt ? '' : `<button type="button" class="btn btn-outline btn-sm cancel-btn">${ICON_X_CIRCLE} Kündigen</button>`}
-                <button type="button" class="btn btn-outline btn-sm delete-btn">${ICON_TRASH} Löschen</button>
+                <button type="button" class="btn btn-outline btn-sm edit-btn">${ICON_EDIT} ${t('knopf.bearbeiten')}</button>
+                ${abo.gekuendigt ? '' : `<button type="button" class="btn btn-outline btn-sm cancel-btn">${ICON_X_CIRCLE} ${t('knopf.kuendigen')}</button>`}
+                <button type="button" class="btn btn-outline btn-sm delete-btn">${ICON_TRASH} ${t('knopf.loeschen')}</button>
             </div>
         </div>
     `;
@@ -234,78 +228,78 @@ function erzeugeAboBearbeitenFormular(abo) {
     return `
         <form class="abo-edit-form">
             <div class="form-group">
-                <label>Abo-Name</label>
+                <label>${t('feld.name')}</label>
                 <input type="text" class="input-control" data-feld="name" value="${escapeAttr(abo.name)}">
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Kosten</label>
-                    <input type="text" inputmode="decimal" class="input-control" data-feld="kosten" value="${escapeAttr(formatiereZahlDE(abo.kosten))}" placeholder="z.B. 29,99">
+                    <label>${t('feld.kosten')}</label>
+                    <input type="text" inputmode="decimal" class="input-control" data-feld="kosten" value="${escapeAttr(formatiereZahlDE(abo.kosten))}" placeholder="${escapeHtml(t('feld.kostenPlatzhalter'))}">
                 </div>
                 <div class="form-group">
-                    <label>Währung</label>
+                    <label>${t('feld.waehrung')}</label>
                     <input type="text" class="input-control" data-feld="waehrung" value="${escapeAttr(abo.waehrung)}">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Turnus</label>
+                    <label>${t('feld.turnus')}</label>
                     <select class="input-control select-control" data-feld="turnus">
-                        ${KUENDIGUNGS_TURNUSSE.map((t) => `<option value="${t}" ${t === abo.turnus ? 'selected' : ''}>${t}</option>`).join('')}
+                        ${KUENDIGUNGS_TURNUSSE.map((wert) => `<option value="${wert}" ${wert === abo.turnus ? 'selected' : ''}>${escapeHtml(tWert('turnus', wert))}</option>`).join('')}
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Kategorie</label>
+                    <label>${t('feld.kategorie')}</label>
                     <select class="input-control select-control" data-feld="kategorie">
-                        ${KUENDIGUNGS_KATEGORIEN.map((k) => `<option value="${k}" ${k === abo.kategorie ? 'selected' : ''}>${k}</option>`).join('')}
+                        ${KUENDIGUNGS_KATEGORIEN.map((k) => `<option value="${k}" ${k === abo.kategorie ? 'selected' : ''}>${escapeHtml(tWert('kategorie', k))}</option>`).join('')}
                     </select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group date-field">
-                    <label>Nächste Zahlung</label>
+                    <label>${t('feld.naechsteZahlung')}</label>
                     <div class="date-input-wrap">
-                        <input type="text" class="input-control date-input" data-datum-anzeige="naechsteZahlung" placeholder="Datum auswählen" readonly autocomplete="off">
+                        <input type="text" class="input-control date-input" data-datum-anzeige="naechsteZahlung" placeholder="${escapeHtml(t('feld.datumPlatzhalter'))}" readonly autocomplete="off">
                         ${ICON_KALENDER}
                         <div class="date-picker-popover" hidden></div>
                     </div>
                     <input type="hidden" data-feld="naechsteZahlung" value="${escapeAttr(abo.naechsteZahlung)}">
                 </div>
                 <div class="form-group">
-                    <label>Frist (Tage)</label>
+                    <label>${t('feld.frist')}</label>
                     <input type="number" class="input-control" data-feld="kuendigungsfristTage" value="${escapeAttr(abo.kuendigungsfristTage)}">
                 </div>
             </div>
             ${abo.gekuendigt ? `
             <div class="form-group date-field">
-                <label>Gekündigt zum (Vertragsende)</label>
+                <label>${t('feld.gekuendigtZum')}</label>
                 <div class="date-input-wrap">
-                    <input type="text" class="input-control date-input" data-datum-anzeige="gekuendigtZum" placeholder="Datum auswählen" readonly autocomplete="off">
+                    <input type="text" class="input-control date-input" data-datum-anzeige="gekuendigtZum" placeholder="${escapeHtml(t('feld.datumPlatzhalter'))}" readonly autocomplete="off">
                     ${ICON_KALENDER}
                     <div class="date-picker-popover" hidden></div>
                 </div>
                 <input type="hidden" data-feld="gekuendigtZum" value="${escapeAttr(abo.gekuendigtZum || '')}">
             </div>` : ''}
             <fieldset class="vertragsdaten">
-                <legend>Vertragsdaten <span class="legend-hinweis">(optional, für das Kündigungsschreiben)</span></legend>
+                <legend>${t('edit.vertragsdaten')} <span class="legend-hinweis">${t('edit.vertragsdatenHinweis')}</span></legend>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Vertragsnummer</label>
+                        <label>${t('feld.vertragsnummer')}</label>
                         <input type="text" class="input-control" data-feld="vertragsnummer" value="${escapeHtml(abo.vertragsnummer || '')}" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label>Kundennummer</label>
+                        <label>${t('feld.kundennummer')}</label>
                         <input type="text" class="input-control" data-feld="kundennummer" value="${escapeHtml(abo.kundennummer || '')}" autocomplete="off">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Vertragspartner (Firmenname und Anschrift)</label>
-                    <textarea class="input-control textarea-control" data-feld="vertragspartner" rows="4" placeholder="z.B. Musterfirma GmbH&#10;Kundenservice&#10;Musterstraße 1&#10;12345 Musterstadt">${escapeHtml(abo.vertragspartner || '')}</textarea>
+                    <label>${t('feld.vertragspartner')}</label>
+                    <textarea class="input-control textarea-control" data-feld="vertragspartner" rows="4" placeholder="${escapeHtml(t('feld.vertragspartnerPlatzhalter')).replace(/\n/g, '&#10;')}">${escapeHtml(abo.vertragspartner || '')}</textarea>
                 </div>
             </fieldset>
             <div class="abo-edit-aktionen">
-                <button type="button" class="btn btn-primary btn-sm save-btn">Speichern</button>
-                <button type="button" class="btn btn-outline btn-sm cancel-edit-btn">Abbrechen</button>
+                <button type="button" class="btn btn-primary btn-sm save-btn">${t('knopf.speichern')}</button>
+                <button type="button" class="btn btn-outline btn-sm cancel-edit-btn">${t('knopf.abbrechen')}</button>
             </div>
             <p class="edit-fehler" aria-live="polite"></p>
         </form>
@@ -316,10 +310,10 @@ function verdrahteAboAnsicht(kachel, abo) {
     kachel.querySelector('.delete-btn').addEventListener('click', async () => {
         // Löschen ist nicht rückgängig zu machen — daher immer erst nachfragen.
         const bestaetigt = await frageBestaetigung({
-            titel: 'Wirklich löschen?',
-            text: `„${abo.name}“ wird endgültig aus deiner Liste entfernt.`,
-            bestaetigenText: 'Löschen',
-            abbrechenText: 'Abbrechen',
+            titel: t('loeschen.titel'),
+            text: t('loeschen.text', { name: abo.name }),
+            bestaetigenText: t('knopf.loeschen'),
+            abbrechenText: t('knopf.abbrechen'),
             gefaehrlich: true
         });
         if (bestaetigt) await window.aboLoeschen(abo.id);
@@ -350,14 +344,14 @@ async function erstelleSicherung() {
             zeigeDatenStatus('');
             return;
         }
-        zeigeDatenStatus(`Sicherung erstellt: ${ergebnis.pfad}`, 'erfolg');
+        zeigeDatenStatus(t('daten.erstellt', { pfad: ergebnis.pfad }), 'erfolg');
     } catch (error) {
-        zeigeDatenStatus('Sicherung fehlgeschlagen — bitte erneut versuchen.', 'fehler');
+        zeigeDatenStatus(t('daten.erstellenFehler'), 'fehler');
     }
 }
 
 function anzahlText(anzahl) {
-    return anzahl === 1 ? '1 Abo' : `${anzahl} Abos`;
+    return tAnzahl('anzahl.abos', anzahl);
 }
 
 // Liest die gewählte Datei, prüft sie vollständig und ersetzt erst nach
@@ -366,14 +360,14 @@ function anzahlText(anzahl) {
 async function stelleSicherungWiederHer(datei) {
     if (!datei) return;
     if (datei.size > MAX_DATEIGROESSE_BYTES) {
-        zeigeDatenStatus('Die Datei ist zu groß für eine Abo-Warner-Sicherung. Deine vorhandenen Abos bleiben unverändert.', 'fehler');
+        zeigeDatenStatus(t('daten.zuGross'), 'fehler');
         return;
     }
     let text;
     try {
         text = await datei.text();
     } catch (error) {
-        zeigeDatenStatus('Die Datei konnte nicht gelesen werden. Deine vorhandenen Abos bleiben unverändert.', 'fehler');
+        zeigeDatenStatus(t('daten.nichtLesbar'), 'fehler');
         return;
     }
 
@@ -385,29 +379,29 @@ async function stelleSicherungWiederHer(datei) {
 
     const vorhandene = await window.api.loadAbos();
     const bestaetigt = await frageBestaetigung({
-        titel: 'Vorhandene Abos ersetzen?',
-        text: `Die Sicherung enthält ${anzahlText(pruefung.abos.length)}. `
+        titel: t('daten.ersetzenTitel'),
+        text: t('daten.enthaelt', { anzahl: anzahlText(pruefung.abos.length) })
             + (vorhandene.length > 0
-                ? `Deine aktuellen ${anzahlText(vorhandene.length)} werden dadurch ersetzt.`
-                : 'Zurzeit sind keine Abos gespeichert.'),
-        bestaetigenText: 'Ersetzen',
-        abbrechenText: 'Abbrechen',
+                ? t('daten.werdenErsetzt', { anzahl: anzahlText(vorhandene.length) })
+                : t('daten.keineVorhanden')),
+        bestaetigenText: t('daten.ersetzen'),
+        abbrechenText: t('knopf.abbrechen'),
         gefaehrlich: true
     });
     if (!bestaetigt) {
-        zeigeDatenStatus('Wiederherstellung abgebrochen. Es wurde nichts geändert.');
+        zeigeDatenStatus(t('daten.abgebrochen'));
         return;
     }
 
     try {
         await window.api.ersetzeAlleAbos(pruefung.abos);
     } catch (error) {
-        zeigeDatenStatus('Wiederherstellen fehlgeschlagen. Bitte erneut versuchen.', 'fehler');
+        zeigeDatenStatus(t('daten.wiederherstellenFehler'), 'fehler');
         return;
     }
     aktiverKategorieFilter = 'Alle';
     await nachDatenaenderung();
-    zeigeDatenStatus(`Sicherung wiederhergestellt: ${anzahlText(pruefung.abos.length)}.`, 'erfolg');
+    zeigeDatenStatus(t('daten.wiederhergestellt', { anzahl: anzahlText(pruefung.abos.length) }), 'erfolg');
 }
 
 // "Übersicht als PDF": wird komplett auf dem Gerät erzeugt (uebersicht-pdf.js),
@@ -421,9 +415,9 @@ async function erstelleUebersichtPdf() {
             zeigeDatenStatus('');
             return;
         }
-        zeigeDatenStatus(`PDF erstellt: ${ergebnis.pfad}`, 'erfolg');
+        zeigeDatenStatus(t('daten.pdfErstellt', { pfad: ergebnis.pfad }), 'erfolg');
     } catch (error) {
-        zeigeDatenStatus('PDF konnte nicht erstellt werden — bitte erneut versuchen.', 'fehler');
+        zeigeDatenStatus(t('daten.pdfFehler'), 'fehler');
     }
 }
 
@@ -497,7 +491,7 @@ function zeigeBearbeitenModus(kachel, abo) {
         }
 
         if (!Calculator.istGueltig(aktualisiertesAbo)) {
-            if (fehlerEl) fehlerEl.textContent = 'Bitte alle Felder korrekt ausfüllen (inkl. Datum).';
+            if (fehlerEl) fehlerEl.textContent = t('feld.fehler');
             return;
         }
 
@@ -549,7 +543,7 @@ export async function zeigeAbos() {
     listeDiv.innerHTML = '';
 
     if (sichtbareAbos.length === 0) {
-        listeDiv.innerHTML = '<li class="glass empty-msg">Keine Abos gefunden.</li>';
+        listeDiv.innerHTML = `<li class="glass empty-msg">${t('liste.leer')}</li>`;
     } else {
         sichtbareAbos.forEach((abo) => listeDiv.appendChild(erzeugeAboKachel(abo)));
     }
@@ -574,11 +568,11 @@ window.aboKuendigen = async (id) => {
     // Vertragsende abfragen — vorbelegt mit dem berechneten Vorschlag, änderbar
     // (z.B. laut Kündigungsbestätigung des Anbieters).
     const gekuendigtZum = await frageDatum({
-        titel: 'Gekündigt zum',
-        text: `Bis zu welchem Datum läuft „${abo.name}“ noch? Bis dahin bleibt das Abo in der Liste und in den Kosten. Den Vorschlag kannst du ändern, z.B. laut Bestätigung des Anbieters.`,
-        label: 'Vertragsende',
+        titel: t('gekuendigt.titel'),
+        text: t('gekuendigt.text', { name: abo.name }),
+        label: t('gekuendigt.label'),
         vorschlagISO: formatiereDatumISO(schlageVertragsendeVor(abo)),
-        bestaetigenText: 'Als gekündigt speichern'
+        bestaetigenText: t('gekuendigt.speichern')
     });
     if (!gekuendigtZum) return;
     await window.api.updateAbo({ ...abo, gekuendigt: true, gekuendigtZum });
@@ -608,7 +602,7 @@ export async function neuesAboSpeichern() {
     // Renderer-Oberfläche einfriert, solange es offen ist — landet es unauffällig
     // im Hintergrund, wirkt die komplette App wie "tot", obwohl sie nur wartet.
     if (!Calculator.istGueltig(neuesAbo)) {
-        if (fehlerEl) fehlerEl.textContent = 'Bitte alle Felder korrekt ausfüllen (inkl. Datum).';
+        if (fehlerEl) fehlerEl.textContent = t('feld.fehler');
         return;
     }
 

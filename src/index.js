@@ -6,6 +6,7 @@
  */
 
 import './api.js';
+import { initSprache, wendeAufDokumentAn } from './i18n.js';
 import { zeigeAbos, neuesAboSpeichern, initDatenSichern } from './app.js';
 import { initDatePicker } from './datepicker.js';
 import { zeigeFaelligkeitshinweisFallsNoetig, planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
@@ -19,6 +20,12 @@ window.neuesAboSpeichern = neuesAboSpeichern;
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        // 0. Sprache bestimmen (Einstellung bzw. Handysprache) und alle
+        // statischen Texte aus der Sprachdatei einsetzen — vor allem anderen,
+        // damit nie eine leere Oberfläche zu sehen ist.
+        initSprache();
+        wendeAufDokumentAn();
+
         // 1. Lokalisierung über den Capacitor-Adapter abrufen
         const config = await window.api.getLocaleConfig();
         window.appConfig = config;

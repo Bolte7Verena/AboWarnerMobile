@@ -11,9 +11,9 @@
  *    bei geschlossener App erscheinen (Regeln: benachrichtigungsplan.js).
  */
 
-import { formatiereDatumDE } from './calculator.js';
+import { t, formatiereDatum } from './i18n.js';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import { berechneBenachrichtigungsPlan, ermittleAbosImRotenBereich, HINWEIS_TITEL } from './benachrichtigungsplan.js';
+import { berechneBenachrichtigungsPlan, ermittleAbosImRotenBereich } from './benachrichtigungsplan.js';
 
 const ICON_ALARM_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M6.38 18.7 4 21"/><path d="M17.64 18.67 20 21"/></svg>';
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
@@ -35,12 +35,12 @@ export function zeigeFaelligkeitshinweisFallsNoetig(alleAbos) {
     toast.innerHTML = `
         <div class="faelligkeit-toast-header">
             <div class="faelligkeit-toast-icon">${ICON_ALARM_CLOCK}</div>
-            <p class="faelligkeit-toast-title">${HINWEIS_TITEL}</p>
-            <button type="button" class="faelligkeit-toast-close-btn" aria-label="Schließen">${ICON_X}</button>
+            <p class="faelligkeit-toast-title">${escapeHtml(t('hinweis.titel'))}</p>
+            <button type="button" class="faelligkeit-toast-close-btn" aria-label="${escapeHtml(t('knopf.schliessen'))}">${ICON_X}</button>
         </div>
         <ul class="faelligkeit-toast-liste">
             ${roteAbos.map(({ abo, fristDatum }) => `
-                <li class="faelligkeit-toast-item"><strong>${escapeHtml(abo.name)}</strong> — Kündigung nur noch bis ${formatiereDatumDE(fristDatum)}</li>
+                <li class="faelligkeit-toast-item"><strong>${escapeHtml(abo.name)}</strong> — ${escapeHtml(t('hinweis.zeile', { datum: formatiereDatum(fristDatum) }))}</li>
             `).join('')}
         </ul>
     `;

@@ -12,6 +12,7 @@
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { WaehrungsHelper } from './waehrungen.js';
+import { t } from './i18n.js';
 
 const DATEI_NAME = 'abos.json';
 
@@ -95,7 +96,7 @@ window.api = {
             data: JSON.stringify(abos, null, 2),
             encoding: Encoding.UTF8
         });
-        return teileDatei(dateiname, 'Abo-Warner Export');
+        return teileDatei(dateiname, t('teilen.export'));
     },
 
     // "Sicherung wiederherstellen": ersetzt den kompletten Bestand. Die
@@ -124,12 +125,12 @@ window.api = {
             binaer += String.fromCharCode.apply(null, bytes.subarray(i, i + BLOCK));
         }
         await Filesystem.writeFile({ path: dateiname, directory: Directory.Cache, data: btoa(binaer) });
-        return teileDatei(dateiname, 'Abo-Übersicht');
+        return teileDatei(dateiname, t('teilen.pdf'));
     },
 
     exportSchreiben: async (text, dateiname) => {
         await Filesystem.writeFile({ path: dateiname, directory: Directory.Cache, data: text, encoding: Encoding.UTF8 });
-        return teileDatei(dateiname, 'Kündigungsschreiben');
+        return teileDatei(dateiname, t('teilen.schreiben'));
     },
 
     // Mobiles Gegenstück zu app.getLocale()/app.getLocaleCountryCode() im

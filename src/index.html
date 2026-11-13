@@ -10,6 +10,9 @@
     <title>Abo-Warner Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
+<!-- Alle sichtbaren Texte kommen aus src/i18n/<sprache>.js (Attribute
+     data-i18n, data-i18n-html, data-i18n-placeholder, data-i18n-aria-label;
+     befüllt beim Start durch wendeAufDokumentAn() in i18n.js). -->
 <body>
     <header class="site-header">
         <div class="header-inner">
@@ -19,9 +22,11 @@
                 </div>
                 <span class="brand-name">Abo-Warner Pro</span>
             </div>
-            <button type="button" id="btn-hilfe" class="hilfe-btn" aria-label="Hilfe">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-            </button>
+            <div class="kopf-aktionen">
+                <button type="button" id="btn-hilfe" class="hilfe-btn" data-i18n-aria-label="kopf.hilfe">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -29,20 +34,20 @@
         <div class="hero-bg" aria-hidden="true"></div>
         <div class="page-container">
             <div class="intro">
-                <h1 class="page-title">Abo-Übersicht</h1>
-                <p class="page-subline">Deine Überwachung</p>
-                <p class="page-subtitle">Behalte alle Verträge, Kosten und Kündigungsfristen an einem Ort.</p>
+                <h1 class="page-title" data-i18n="start.titel"></h1>
+                <p class="page-subline" data-i18n="start.subline"></p>
+                <p class="page-subtitle" data-i18n="start.untertitel"></p>
             </div>
 
             <section class="content-panel">
                 <div class="content-toolbar">
                     <div class="search-wrap">
                         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
-                        <input type="text" id="input-suche" class="search-input" placeholder="Abos durchsuchen oder filtern …">
+                        <input type="text" id="input-suche" class="search-input" data-i18n-placeholder="suche.platzhalter">
                     </div>
                     <button type="button" id="btn-neues-abo" class="btn btn-primary btn-sm">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                        Neues Abo
+                        <span data-i18n="knopf.neuesAbo"></span>
                     </button>
                 </div>
 
@@ -54,25 +59,25 @@
             </section>
 
             <section class="glass daten-panel" aria-labelledby="daten-titel">
-                <h2 class="daten-titel" id="daten-titel">Daten sichern</h2>
-                <p class="daten-text">Deine Abos liegen nur auf diesem Gerät. Erstelle ab und zu eine Sicherung und bewahre sie gut auf, z.B. in deiner Cloud oder per E-Mail an dich selbst.</p>
+                <h2 class="daten-titel" id="daten-titel" data-i18n="daten.titel"></h2>
+                <p class="daten-text" data-i18n="daten.text"></p>
                 <div class="daten-aktionen">
                     <button type="button" id="btn-sicherung-erstellen" class="btn btn-outline btn-sm">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
-                        Sicherung erstellen
+                        <span data-i18n="daten.erstellen"></span>
                     </button>
                     <button type="button" id="btn-sicherung-wiederherstellen" class="btn btn-outline btn-sm">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/></svg>
-                        Sicherung wiederherstellen
+                        <span data-i18n="daten.wiederherstellen"></span>
                     </button>
                     <input type="file" id="input-sicherung-datei" accept=".json,application/json" hidden>
                 </div>
                 <div class="daten-pdf">
                     <button type="button" id="btn-uebersicht-pdf" class="btn btn-outline btn-sm">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 13H8"/><path d="M16 17H8"/><path d="M16 13h-2"/></svg>
-                        Übersicht als PDF
+                        <span data-i18n="daten.pdf"></span>
                     </button>
-                    <p class="daten-text">Eine Liste aller Abos zum Ausdrucken oder Weitergeben. Keine Sicherung — zum Wiederherstellen bitte „Sicherung erstellen“ nutzen.</p>
+                    <p class="daten-text" data-i18n="daten.pdfText"></p>
                 </div>
                 <p id="daten-status" class="daten-status" aria-live="polite"></p>
             </section>
@@ -80,84 +85,85 @@
             <div id="abo-modal-overlay" class="modal-overlay" hidden>
                 <div class="glass-strong modal-dialog">
                     <div class="modal-header">
-                        <h2 class="modal-title">Neues Abo hinzufügen</h2>
-                        <button type="button" id="btn-modal-schliessen" class="modal-close-btn" aria-label="Schließen">
+                        <h2 class="modal-title" data-i18n="neu.titel"></h2>
+                        <button type="button" id="btn-modal-schliessen" class="modal-close-btn" data-i18n-aria-label="knopf.schliessen">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                         </button>
                     </div>
                     <form id="abo-form">
                         <div class="form-group">
-                            <label for="input-name">Abo-Name</label>
-                            <input type="text" id="input-name" class="input-control" placeholder="z.B. Netflix">
+                            <label for="input-name" data-i18n="feld.name"></label>
+                            <input type="text" id="input-name" class="input-control" data-i18n-placeholder="feld.namePlatzhalter">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="input-kosten">Kosten</label>
-                                <input type="text" inputmode="decimal" id="input-kosten" class="input-control" placeholder="z.B. 29,99">
+                                <label for="input-kosten" data-i18n="feld.kosten"></label>
+                                <input type="text" inputmode="decimal" id="input-kosten" class="input-control" data-i18n-placeholder="feld.kostenPlatzhalter">
                             </div>
                             <div class="form-group">
-                                <label for="input-waehrung">Währung</label>
-                                <input type="text" id="input-waehrung" class="input-control" placeholder="z.B. EUR" autocomplete="off">
+                                <label for="input-waehrung" data-i18n="feld.waehrung"></label>
+                                <input type="text" id="input-waehrung" class="input-control" data-i18n-placeholder="feld.waehrungPlatzhalter" autocomplete="off">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="input-turnus">Turnus</label>
+                                <label for="input-turnus" data-i18n="feld.turnus"></label>
+                                <!-- value = gespeicherter (deutscher) Wert, Anzeige übersetzt -->
                                 <select id="input-turnus" class="input-control select-control">
-                                    <option value="Monatlich">Monatlich</option>
-                                    <option value="Vierteljährlich">Vierteljährlich</option>
-                                    <option value="Halbjährlich">Halbjährlich</option>
-                                    <option value="Jährlich">Jährlich</option>
+                                    <option value="Monatlich" data-i18n="turnus.Monatlich"></option>
+                                    <option value="Vierteljährlich" data-i18n="turnus.Vierteljährlich"></option>
+                                    <option value="Halbjährlich" data-i18n="turnus.Halbjährlich"></option>
+                                    <option value="Jährlich" data-i18n="turnus.Jährlich"></option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="input-kategorie">Kategorie</label>
+                                <label for="input-kategorie" data-i18n="feld.kategorie"></label>
                                 <select id="input-kategorie" class="input-control select-control">
-                                    <option value="Streaming">Streaming</option>
-                                    <option value="Sport">Sport</option>
-                                    <option value="Versicherung">Versicherung</option>
-                                    <option value="Sonstiges">Sonstiges</option>
+                                    <option value="Streaming" data-i18n="kategorie.Streaming"></option>
+                                    <option value="Sport" data-i18n="kategorie.Sport"></option>
+                                    <option value="Versicherung" data-i18n="kategorie.Versicherung"></option>
+                                    <option value="Sonstiges" data-i18n="kategorie.Sonstiges"></option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group date-field">
-                                <label for="input-datum">Nächste Zahlung</label>
+                                <label for="input-datum" data-i18n="feld.naechsteZahlung"></label>
                                 <div class="date-input-wrap">
-                                    <input type="text" id="input-datum" class="input-control date-input" placeholder="Datum auswählen" readonly autocomplete="off">
+                                    <input type="text" id="input-datum" class="input-control date-input" data-i18n-placeholder="feld.datumPlatzhalter" readonly autocomplete="off">
                                     <svg class="date-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
                                     <div id="date-picker-popover" class="date-picker-popover" hidden></div>
                                 </div>
                                 <input type="hidden" id="input-datum-iso">
                             </div>
                             <div class="form-group">
-                                <label for="input-frist">Frist (Tage)</label>
+                                <label for="input-frist" data-i18n="feld.frist"></label>
                                 <input type="number" id="input-frist" class="input-control">
                             </div>
                         </div>
                         <details id="weitere-angaben" class="weitere-angaben">
-                            <summary class="weitere-angaben-summary">Weitere Angaben (optional)</summary>
+                            <summary class="weitere-angaben-summary" data-i18n="neu.weitere"></summary>
                             <div class="weitere-angaben-felder">
-                                <p class="weitere-angaben-hinweis">Werden automatisch ins Kündigungsschreiben übernommen.</p>
+                                <p class="weitere-angaben-hinweis" data-i18n="neu.weitereHinweis"></p>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="input-vertragsnummer">Vertragsnummer</label>
+                                        <label for="input-vertragsnummer" data-i18n="feld.vertragsnummer"></label>
                                         <input type="text" id="input-vertragsnummer" class="input-control" autocomplete="off">
                                     </div>
                                     <div class="form-group">
-                                        <label for="input-kundennummer">Kundennummer</label>
+                                        <label for="input-kundennummer" data-i18n="feld.kundennummer"></label>
                                         <input type="text" id="input-kundennummer" class="input-control" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="input-vertragspartner">Vertragspartner (Firmenname und Anschrift)</label>
-                                    <textarea id="input-vertragspartner" class="input-control textarea-control" rows="4" placeholder="z.B. Musterfirma GmbH&#10;Kundenservice&#10;Musterstraße 1&#10;12345 Musterstadt"></textarea>
+                                    <label for="input-vertragspartner" data-i18n="feld.vertragspartner"></label>
+                                    <textarea id="input-vertragspartner" class="input-control textarea-control" rows="4" data-i18n-placeholder="feld.vertragspartnerPlatzhalter"></textarea>
                                 </div>
                             </div>
                         </details>
                         <button type="button" id="btn-speichern" class="btn btn-primary btn-lg btn-block">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                            Abo speichern
+                            <span data-i18n="neu.speichern"></span>
                         </button>
                         <p id="form-fehler" class="form-fehler" aria-live="polite"></p>
                     </form>
@@ -176,16 +182,16 @@
                 <span class="footer-copyright">© 2026 AppVektor</span>
             </div>
             <div class="footer-links">
-                <button type="button" id="btn-footer-datenschutz" class="footer-link-btn">Datenschutz</button>
-                <button type="button" id="btn-footer-impressum" class="footer-link-btn">Impressum</button>
-                <button type="button" id="btn-footer-kontakt" class="footer-link-btn">Kontakt</button>
+                <button type="button" id="btn-footer-datenschutz" class="footer-link-btn" data-i18n="fuss.datenschutz"></button>
+                <button type="button" id="btn-footer-impressum" class="footer-link-btn" data-i18n="fuss.impressum"></button>
+                <button type="button" id="btn-footer-kontakt" class="footer-link-btn" data-i18n="fuss.kontakt"></button>
             </div>
         </div>
         <!-- Dezenter Hinweis auf den Anbieter. Externe Links öffnet Capacitor
              automatisch im normalen Browser des Geräts (nicht in der App);
              die App selbst lädt dabei nichts und überträgt keine Daten. -->
         <div class="footer-von">
-            <span class="footer-von-titel">Von AppVektor</span>
+            <span class="footer-von-titel" data-i18n="fuss.von"></span>
             <a href="https://appvektor.com" target="_blank" rel="noopener noreferrer">appvektor.com</a>
         </div>
     </footer>
@@ -193,73 +199,26 @@
     <div id="rechtliches-modal-overlay" class="modal-overlay" hidden>
         <div class="glass-strong modal-dialog rechtliches-dialog">
             <div class="modal-header">
-                <h2 class="modal-title" id="rechtliches-titel">Datenschutzerklärung</h2>
-                <button type="button" id="btn-rechtliches-schliessen" class="modal-close-btn" aria-label="Schließen">
+                <h2 class="modal-title" id="rechtliches-titel"></h2>
+                <button type="button" id="btn-rechtliches-schliessen" class="modal-close-btn" data-i18n-aria-label="knopf.schliessen">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
 
-            <div id="rechtliches-datenschutz" class="rechtliches-inhalt">
-                <h3>1. Verantwortlicher</h3>
-                <p>
-                    AppVektor, Inhaber: Jens Hübeler<br>
-                    c/o Flexdienst – #21882, Kurt-Schumacher-Str. 74<br>
-                    67663 Kaiserslautern, Deutschland<br>
-                    E-Mail: kontakt@appvektor.com<br>
-                    Telefon: 0049 421 9899 1701
-                </p>
+            <div id="rechtliches-datenschutz" class="rechtliches-inhalt" data-i18n-html="datenschutz.inhalt"></div>
 
-                <h3>2. Zweck der Datenverarbeitung und verarbeitete Daten</h3>
-                <p>Abo-Warner Pro verarbeitet ausschließlich die Daten, die du selbst einträgst (Abo-Name, Kosten, Kategorie, Zahlungs- und Kündigungsfristen). Diese werden lokal in einer Datei auf deinem Gerät gespeichert (im nutzerspezifischen Anwendungsdatenverzeichnis deines Betriebssystems). Es findet keine Übertragung dieser Daten an den Anbieter oder an Dritte statt.</p>
-
-                <h3>3. Server-Logs, Hosting und externe Dienste</h3>
-                <p>AppVektor betreibt keinen Server, der Daten aus der App empfängt; entsprechend fallen bei AppVektor keine Server-Logs zu deiner Nutzung der App an. Die von der App verwendeten Schriftarten sind lokal in der App gespeichert; die App lädt keine Inhalte von externen Servern nach. Es werden keine Analyse-, Tracking- oder Werbedienste eingebunden. Beziehst du die App über einen App-Store (z. B. Apple App Store oder Google Play), verarbeitet dessen Betreiber die dabei anfallenden Daten in eigener Verantwortung.</p>
-                <p>Ganz unten in der App findest du einen Link zu appvektor.com. Tippst du ihn an, öffnet sich die Website im Browser deines Geräts; dort gilt die Datenschutzerklärung der Website. Die App selbst überträgt dabei keine Daten.</p>
-
-                <h3>4. Keine Analyse und kein Tracking</h3>
-                <p>Abo-Warner Pro verwendet keine Cookies, keine Analyse-Software und kein Nutzer-Tracking.</p>
-
-                <h3>5. Speicherdauer</h3>
-                <p>Deine Daten bleiben lokal gespeichert, bis du sie über die App löschst, bearbeitest oder exportierst, oder bis du die App deinstallierst.</p>
-
-                <h3>6. Deine Rechte</h3>
-                <p>Da alle Daten ausschließlich lokal auf deinem Gerät liegen, kannst du dein Recht auf Auskunft, Berichtigung und Löschung (Art. 15, 16, 17 DSGVO) jederzeit direkt über die Funktionen „Bearbeiten", „Löschen" und „Sicherung erstellen" (unter „Daten sichern") in der App ausüben. Für weitergehende Anfragen wende dich an die im Impressum genannte Kontaktadresse. Zudem steht dir ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu (Art. 77 DSGVO).</p>
-
-                <h3>7. Kontakt für Datenschutzanfragen</h3>
-                <p>Für Anfragen zum Datenschutz oder zur Ausübung deiner Rechte erreichst du uns unter kontakt@appvektor.com oder telefonisch unter 0049 421 9899 1701.</p>
-            </div>
-
-            <div id="rechtliches-impressum" class="rechtliches-inhalt" hidden>
-                <h3>Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz)</h3>
-                <p>
-                    AppVektor<br>
-                    Inhaber: Jens Hübeler<br>
-                    c/o Flexdienst – #21882<br>
-                    Kurt-Schumacher-Str. 74<br>
-                    67663 Kaiserslautern<br>
-                    Deutschland
-                </p>
-
-                <h3>Kontakt</h3>
-                <p>
-                    E-Mail: kontakt@appvektor.com<br>
-                    Telefon: 0049 421 9899 1701
-                </p>
-
-                <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
-                <p>Jens Hübeler, c/o Flexdienst – #21882, Kurt-Schumacher-Str. 74, 67663 Kaiserslautern</p>
-            </div>
+            <div id="rechtliches-impressum" class="rechtliches-inhalt" data-i18n-html="impressum.inhalt" hidden></div>
 
             <div id="rechtliches-kontakt" class="rechtliches-inhalt" hidden>
-                <h3>Fragen, Feedback oder Datenschutzanfragen</h3>
-                <p>Schreib uns per E-Mail:</p>
+                <h3 data-i18n="kontakt.ueberschrift"></h3>
+                <p data-i18n="kontakt.schreib"></p>
                 <p class="kontakt-zeile">
                     <a href="mailto:kontakt@appvektor.com" class="kontakt-mail">kontakt@appvektor.com</a>
-                    <button type="button" id="btn-kontakt-kopieren" class="kontakt-kopieren-btn">Adresse kopieren</button>
+                    <button type="button" id="btn-kontakt-kopieren" class="kontakt-kopieren-btn" data-i18n="kontakt.kopieren"></button>
                 </p>
                 <p id="kontakt-hinweis" class="kontakt-hinweis" role="status" hidden></p>
-                <p>Öffnet sich kein Mail-Programm, kopiere die Adresse und schreib uns aus deinem gewohnten Mail-Dienst.</p>
-                <p>Telefon: 0049 421 9899 1701</p>
+                <p data-i18n="kontakt.keinMailProgramm"></p>
+                <p data-i18n="kontakt.telefon"></p>
             </div>
         </div>
     </div>
@@ -267,58 +226,13 @@
     <div id="hilfe-modal-overlay" class="modal-overlay" hidden>
         <div class="glass-strong modal-dialog rechtliches-dialog" role="dialog" aria-modal="true" aria-labelledby="hilfe-titel">
             <div class="modal-header">
-                <h2 class="modal-title" id="hilfe-titel">Hilfe</h2>
-                <button type="button" id="btn-hilfe-schliessen" class="modal-close-btn" aria-label="Schließen">
+                <h2 class="modal-title" id="hilfe-titel" data-i18n="hilfe.titel"></h2>
+                <button type="button" id="btn-hilfe-schliessen" class="modal-close-btn" data-i18n-aria-label="knopf.schliessen">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
 
-            <div class="rechtliches-inhalt hilfe-inhalt">
-                <h3>Was kann die App?</h3>
-                <p>Abo-Warner Pro behält deine Abos und Verträge im Blick: was sie kosten, wann du zahlst und bis wann du kündigen kannst. 7 Tage bevor eine Kündigungsfrist endet, erinnert dich die App mit einer Mitteilung, wenn du Mitteilungen erlaubst. Alle Daten bleiben nur auf deinem Handy.</p>
-
-                <h3>Wie lege ich ein Abo an?</h3>
-                <ol>
-                    <li>Tippe auf „Neues Abo“.</li>
-                    <li>Trag den Namen, die Kosten und den Turnus ein (wie oft du zahlst, z.B. monatlich).</li>
-                    <li>Wähle das Datum der nächsten Zahlung.</li>
-                    <li>Trag die Kündigungsfrist in Tagen ein (siehe unten).</li>
-                    <li>Wenn du willst: Unter „Weitere Angaben“ Vertragsnummer, Kundennummer und Anschrift des Anbieters eintragen. Die stehen dann automatisch im Kündigungsschreiben.</li>
-                    <li>Tippe auf „Abo speichern“.</li>
-                </ol>
-                <p>Ändern kannst du alles später mit „Bearbeiten“ auf der Karte.</p>
-
-                <h3>Was bedeutet die Frist?</h3>
-                <p>Die Kündigungsfrist sagt, wie viele Tage vor der nächsten Zahlung deine Kündigung beim Anbieter sein muss. Du findest sie in deinem Vertrag. Steht dort z.B. „3 Monate“, trag rund 90 Tage ein, im Zweifel lieber etwas mehr.</p>
-                <p>Die App rechnet daraus das Datum aus und zeigt es auf jeder Karte: „Kündigung möglich bis …“. Ist das Datum vorbei, zeigt sie dir die nächste Möglichkeit.</p>
-
-                <h3>Was bedeuten Rot, Gelb und Grün?</h3>
-                <ul class="hilfe-farben">
-                    <li><span class="hilfe-punkt rot" aria-hidden="true"></span><strong>Rot:</strong> Nur noch 7 Tage oder weniger bis zum Kündigungsdatum. Jetzt handeln, wenn du das Abo nicht mehr willst. Zu Beginn dieser 7 Tage bekommst du eine Mitteilung.</li>
-                    <li><span class="hilfe-punkt gelb" aria-hidden="true"></span><strong>Gelb:</strong> Noch höchstens 30 Tage Zeit.</li>
-                    <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Grün:</strong> Noch mehr als 30 Tage Zeit.</li>
-                    <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Graues Etikett „Gekündigt zum …“:</strong> Das Abo ist gekündigt. Bis zu diesem Datum bleibt die Karte ganz normal an ihrem Platz, denn so lange zahlst du noch. Danach wird sie blasser und rutscht ans Ende der Liste.</li>
-                </ul>
-
-                <h3>Wie kündige ich?</h3>
-                <ol>
-                    <li>Tippe auf der Karte auf „Kündigen“.</li>
-                    <li>Die App schreibt dir ein fertiges Kündigungsschreiben. Deinen Namen und deine Anschrift trägst du nur einmal ein.</li>
-                    <li>Kopiere das Schreiben oder teile es als Datei und schick es an den Anbieter. Die App verschickt nichts selbst. Am besten so, dass du einen Nachweis hast (z.B. E-Mail mit Eingangsbestätigung oder Einschreiben).</li>
-                    <li>Tippe auf „Abo als gekündigt markieren“ und wähle das Vertragsende. Bis dahin bleibt das Abo in der Liste, denn so lange zahlst du noch. Am letzten Tag bekommst du eine Mitteilung: „… endet heute.“</li>
-                </ol>
-
-                <h3>Wie sichere ich meine Daten?</h3>
-                <p>Deine Abos sind nur auf diesem Handy gespeichert. Wenn du die App löschst oder das Handy verlierst, sind sie weg. Deshalb ganz unten unter „Daten sichern“:</p>
-                <ul>
-                    <li><strong>Sicherung erstellen:</strong> speichert alle Abos in einer Datei. Leg sie an einem sicheren Ort ab, z.B. in deiner Cloud oder per E-Mail an dich selbst.</li>
-                    <li><strong>Sicherung wiederherstellen:</strong> liest so eine Datei wieder ein, z.B. auf einem neuen Handy. Achtung: Die Abos auf dem Handy werden dabei ersetzt.</li>
-                    <li><strong>Übersicht als PDF:</strong> eine Liste zum Ausdrucken oder Weitergeben. Das ist keine Sicherung.</li>
-                </ul>
-
-                <h3>Noch Fragen?</h3>
-                <p>Tippe ganz unten auf „Kontakt“ und schreib uns.</p>
-            </div>
+            <div class="rechtliches-inhalt hilfe-inhalt" data-i18n-html="hilfe.inhalt"></div>
         </div>
     </div>
 

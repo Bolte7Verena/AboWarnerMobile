@@ -4,11 +4,11 @@
  * dessen Kalender-Popup sich nicht ins dunkle Design einfügen lassen.
  */
 
-const WOCHENTAGE = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-const MONATE = [
-    'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-    'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
-];
+import { t, formatiereDatum } from './i18n.js';
+
+// Wochentage (Montag zuerst) und Monatsnamen aus der Sprachdatei.
+const wochentage = () => t('kalender.wochentage').split(',');
+const monate = () => t('kalender.monate').split(',');
 
 const ICON_CHEVRON_LEFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
 const ICON_CHEVRON_RIGHT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
@@ -21,8 +21,9 @@ function zuISO(datum) {
     return `${datum.getFullYear()}-${pad(datum.getMonth() + 1)}-${pad(datum.getDate())}`;
 }
 
+// Anzeige im Eingabefeld: Deutsch TT.MM.JJJJ, sonst Format der Geräte-Region.
 function zuDeutschemFormat(datum) {
-    return `${pad(datum.getDate())}.${pad(datum.getMonth() + 1)}.${datum.getFullYear()}`;
+    return formatiereDatum(datum);
 }
 
 export function initDatePicker({ inputEl, hiddenEl, wrapEl, popoverEl, formEl }) {
@@ -103,10 +104,10 @@ export function initDatePicker({ inputEl, hiddenEl, wrapEl, popoverEl, formEl })
         popoverEl.innerHTML = `
             <div class="date-picker-header">
                 <button type="button" class="date-picker-nav-btn" data-nav="-1">${ICON_CHEVRON_LEFT}</button>
-                <span class="date-picker-month-label">${MONATE[sichtMonat]} ${sichtJahr}</span>
+                <span class="date-picker-month-label">${monate()[sichtMonat]} ${sichtJahr}</span>
                 <button type="button" class="date-picker-nav-btn" data-nav="1">${ICON_CHEVRON_RIGHT}</button>
             </div>
-            <div class="date-picker-weekdays">${WOCHENTAGE.map((tag) => `<span>${tag}</span>`).join('')}</div>
+            <div class="date-picker-weekdays">${wochentage().map((tag) => `<span>${tag}</span>`).join('')}</div>
             <div class="date-picker-days">${zellen}</div>
         `;
 

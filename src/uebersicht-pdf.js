@@ -13,9 +13,10 @@
 import { PdfDokument } from './pdf.js';
 import {
     Calculator, ermittleEffektivesZahlungsdatum, ermittleKuendigungsfrist, formatiereBetrag,
-    formatiereDatumDE, formatiereDatumISO, formatiereZahlDE, istGekuendigtLaufend, istVertragBeendet,
+    formatiereDatumISO, formatiereZahlDE, istGekuendigtLaufend, istVertragBeendet,
     parseDatumISO, sortiereAbos
 } from './calculator.js';
+import { t, tAnzahl, tWert, formatiereDatum } from './i18n.js';
 
 const BREITE = 842; // A4 quer
 const HOEHE = 595;
@@ -25,14 +26,15 @@ const SCHRIFT = 9.5;
 const GRAU = [0.42, 0.45, 0.5];
 const DUNKEL = [0.1, 0.12, 0.18];
 
-// x = linke Kante (bzw. rechte Kante bei ausrichtung 'rechts'), w = Breite
+// x = linke Kante (bzw. rechte Kante bei ausrichtung 'rechts'), w = Breite.
+// Spaltentitel aus der Sprachdatei (erst beim Erzeugen, nicht beim Laden).
 const SPALTEN = [
-    { titel: 'Abo', x: RAND, w: 190 },
-    { titel: 'Kosten', x: 330, w: 90, ausrichtung: 'rechts' },
-    { titel: 'Turnus', x: 345, w: 90 },
-    { titel: 'Nächste Zahlung', x: 440, w: 95 },
-    { titel: 'Kündigung möglich bis', x: 540, w: 115 },
-    { titel: 'Status', x: 665, w: BREITE - RAND - 665 }
+    { titel: 'pdf.spalteAbo', x: RAND, w: 190 },
+    { titel: 'pdf.spalteKosten', x: 330, w: 90, ausrichtung: 'rechts' },
+    { titel: 'pdf.spalteTurnus', x: 345, w: 90 },
+    { titel: 'pdf.spalteZahlung', x: 440, w: 95 },
+    { titel: 'pdf.spalteKuendigung', x: 540, w: 115 },
+    { titel: 'pdf.spalteStatus', x: 665, w: BREITE - RAND - 665 }
 ];
 
 // Eine Tabellenzeile als Texte je Spalte.
@@ -41,31 +43,31 @@ export function erzeugeZeile(abo, heute = new Date()) {
     const ende = parseDatumISO(abo.gekuendigtZum);
     const zahlung = parseDatumISO(ermittleEffektivesZahlungsdatum(abo.naechsteZahlung, abo.turnus));
 
-    let naechsteZahlung = zahlung ? formatiereDatumDE(zahlung) : '–';
+    let naechsteZahlung = zahlung ? formatiereDatum(zahlung) : '–';
     if (beendet || (abo.gekuendigt && ende && zahlung && zahlung > ende)) naechsteZahlung = '–';
 
     let kuendigungBis = '–';
     if (!abo.gekuendigt) {
         const frist = ermittleKuendigungsfrist(abo, heute);
-        if (frist) kuendigungBis = formatiereDatumDE(frist.fristDatum);
+        if (frist) kuendigungBis = formatiereDatum(frist.fristDatum);
     }
 
-    let status = 'läuft';
+    let status = t('pdf.laeuft');
     if (abo.gekuendigt) {
-        if (istGekuendigtLaufend(abo, heute)) status = `gekündigt zum ${formatiereDatumDE(ende)}`;
-        else if (ende) status = `beendet (zum ${formatiereDatumDE(ende)})`;
-        else status = 'gekündigt';
+        if (istGekuendigtLaufend(abo, heute)) status = t('pdf.gekuendigtZum', { datum: formatiereDatum(ende) });
+        else if (ende) status = t('pdf.beendet', { datum: formatiereDatum(ende) });
+        else status = t('pdf.gekuendigt');
     }
 
-    return [abo.name, formatiereBetrag(abo.kosten, abo.waehrung), abo.turnus, naechsteZahlung, kuendigungBis, status];
+    return [abo.name, formatiereBetrag(abo.kosten, abo.waehrung), tWert('turnus', abo.turnus), naechsteZahlung, kuendigungBis, status];
 }
 
 export function dateinameUebersicht(heute = new Date()) {
-    return `Abo-Uebersicht-${formatiereDatumISO(heute)}.pdf`;
+    return `${t('datei.pdf')}-${formatiereDatumISO(heute)}.pdf`;
 }
 
 export function erzeugeUebersichtPdf(alleAbos, heute = new Date()) {
-    const pdf = new PdfDokument({ breite: BREITE, hoehe: HOEHE, titel: 'Abo-Übersicht' });
+    const pdf = new PdfDokument({ breite: BREITE, hoehe: HOEHE, titel: t('pdf.titel') });
     const abos = sortiereAbos(alleAbos, heute);
     const laufende = alleAbos.filter((abo) => !istVertragBeendet(abo, heute));
 
@@ -75,7 +77,7 @@ export function erzeugeUebersichtPdf(alleAbos, heute = new Date()) {
         pdf.rechteck(RAND, y, BREITE - 2 * RAND, ZEILENHOEHE, { fuellfarbe: [0.9, 0.91, 0.95] });
         for (const s of SPALTEN) {
             const x = s.ausrichtung === 'rechts' ? s.x : s.x + 4;
-            pdf.text(s.ausrichtung === 'rechts' ? x - 4 : x, y + 13.5, s.titel, { groesse: 8.5, fett: true, farbe: DUNKEL, ausrichtung: s.ausrichtung });
+            pdf.text(s.ausrichtung === 'rechts' ? x - 4 : x, y + 13.5, t(s.titel), { groesse: 8.5, fett: true, farbe: DUNKEL, ausrichtung: s.ausrichtung });
         }
         y += ZEILENHOEHE;
     }
@@ -84,8 +86,8 @@ export function erzeugeUebersichtPdf(alleAbos, heute = new Date()) {
         pdf.neueSeite();
         y = RAND;
         if (erste) {
-            pdf.text(RAND, y + 14, 'Abo-Übersicht', { groesse: 18, fett: true, farbe: DUNKEL });
-            pdf.text(RAND, y + 32, `Abo-Warner Pro · erstellt am ${formatiereDatumDE(heute)} · ${abos.length === 1 ? '1 Abo' : `${abos.length} Abos`}`, { groesse: 9, farbe: GRAU });
+            pdf.text(RAND, y + 14, t('pdf.titel'), { groesse: 18, fett: true, farbe: DUNKEL });
+            pdf.text(RAND, y + 32, t('pdf.untertitel', { datum: formatiereDatum(heute), anzahl: tAnzahl('anzahl.abos', abos.length) }), { groesse: 9, farbe: GRAU });
             y += 48;
         }
         kopfzeileTabelle();
@@ -94,7 +96,7 @@ export function erzeugeUebersichtPdf(alleAbos, heute = new Date()) {
     neueSeite(true);
 
     if (abos.length === 0) {
-        pdf.text(RAND + 4, y + 16, 'Keine Abos gespeichert.', { groesse: SCHRIFT, farbe: GRAU });
+        pdf.text(RAND + 4, y + 16, t('pdf.leer'), { groesse: SCHRIFT, farbe: GRAU });
         y += ZEILENHOEHE + 4;
     }
 
@@ -122,19 +124,18 @@ export function erzeugeUebersichtPdf(alleAbos, heute = new Date()) {
     y += 18;
     const monat = Calculator.berechneMonatsSumme(laufende);
     const jahr = Calculator.berechneJahresSumme(laufende);
-    pdf.text(RAND, y + 10, `Summe der laufenden Abos (${laufende.length === 1 ? '1 Abo' : `${laufende.length} Abos`}):`, { groesse: 10, fett: true, farbe: DUNKEL });
-    pdf.text(RAND, y + 27, `pro Monat: ${formatiereZahlDE(monat)} €`, { groesse: 10, farbe: DUNKEL });
-    pdf.text(RAND + 170, y + 27, `pro Jahr: ${formatiereZahlDE(jahr)} €`, { groesse: 10, farbe: DUNKEL });
+    pdf.text(RAND, y + 10, t('pdf.summe', { anzahl: tAnzahl('anzahl.abos', laufende.length) }), { groesse: 10, fett: true, farbe: DUNKEL });
+    pdf.text(RAND, y + 27, t('pdf.proMonat', { betrag: formatiereZahlDE(monat) }), { groesse: 10, farbe: DUNKEL });
+    pdf.text(RAND + 170, y + 27, t('pdf.proJahr', { betrag: formatiereZahlDE(jahr) }), { groesse: 10, farbe: DUNKEL });
     const fremdwaehrung = laufende.some((abo) => (abo.waehrung || 'EUR').toUpperCase() !== 'EUR');
-    const hinweis = 'Gekündigte Abos zählen bis zu ihrem Vertragsende mit.'
-        + (fremdwaehrung ? ' Andere Währungen sind mit einem Richtkurs in Euro umgerechnet.' : '');
+    const hinweis = t('pdf.hinweis') + (fremdwaehrung ? t('pdf.fremdwaehrung') : '');
     pdf.text(RAND, y + 43, hinweis, { groesse: 8.5, farbe: GRAU });
 
     // Fußzeile mit Seitenzahlen (erst jetzt ist die Gesamtzahl bekannt)
     const anzahl = pdf.seiten.length;
     for (let seite = 1; seite <= anzahl; seite++) {
-        pdf.text(BREITE - RAND, HOEHE - 22, `Seite ${seite} von ${anzahl}`, { groesse: 8, farbe: GRAU, ausrichtung: 'rechts', seite });
-        pdf.text(RAND, HOEHE - 22, 'Erstellt mit Abo-Warner Pro – alle Angaben ohne Gewähr, Grundlage sind deine eigenen Eingaben.', { groesse: 8, farbe: GRAU, seite });
+        pdf.text(BREITE - RAND, HOEHE - 22, t('pdf.seite', { seite, anzahl }), { groesse: 8, farbe: GRAU, ausrichtung: 'rechts', seite });
+        pdf.text(RAND, HOEHE - 22, t('pdf.fusszeile'), { groesse: 8, farbe: GRAU, seite });
     }
 
     return pdf.erzeuge();

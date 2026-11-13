@@ -4,6 +4,8 @@
  * welcher der Abschnitte sichtbar ist, und öffnet/schließt das Modal.
  */
 
+import { t } from './i18n.js';
+
 const KONTAKT_MAIL = 'kontakt@appvektor.com';
 
 export function initRechtliches() {
@@ -15,9 +17,9 @@ export function initRechtliches() {
         kontakt: document.getElementById('rechtliches-kontakt'),
     };
     const titel_je_abschnitt = {
-        datenschutz: 'Datenschutzerklärung',
-        impressum: 'Impressum',
-        kontakt: 'Kontakt',
+        datenschutz: t('rechtlich.datenschutz'),
+        impressum: t('rechtlich.impressum'),
+        kontakt: t('rechtlich.kontakt'),
     };
     const kontaktHinweis = document.getElementById('kontakt-hinweis');
 
@@ -35,9 +37,9 @@ export function initRechtliches() {
     async function kopiereAdresse() {
         try {
             await navigator.clipboard.writeText(KONTAKT_MAIL);
-            kontaktHinweis.textContent = 'Adresse kopiert.';
+            kontaktHinweis.textContent = t('kontakt.kopiert');
         } catch {
-            kontaktHinweis.textContent = 'Kopieren nicht möglich — markiere die Adresse und kopiere sie manuell.';
+            kontaktHinweis.textContent = t('kontakt.kopierenFehler');
         }
         kontaktHinweis.hidden = false;
     }
