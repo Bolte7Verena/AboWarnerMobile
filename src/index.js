@@ -12,6 +12,7 @@ import { initDatePicker } from './datepicker.js';
 import { zeigeFaelligkeitshinweisFallsNoetig, planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { initRechtliches } from './rechtliches.js';
 import { initHilfe } from './hilfe.js';
+import { initSprachwahl } from './sprachwahl.js';
 import { seedDemoDatenFallsNoetig } from './demo-seed.js';
 
 // Globales Binding für UI-Elemente
@@ -77,6 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         initRechtliches();
         initDatenSichern();
         initHilfe();
+        initSprachwahl();
 
         initDatePicker({
             inputEl: document.getElementById('input-datum'),

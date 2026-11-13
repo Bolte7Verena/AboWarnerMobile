@@ -14,7 +14,10 @@ devices([
   "iPad Pro 13-inch (M5)"
 ])
 
-# Die App-Oberfläche ist ausschließlich auf Deutsch, daher nur eine Sprache.
+# Screenshots auf Deutsch. Seit 2.0.2 gibt es auch Englisch (Handysprache
+# nicht Deutsch -> Englisch); der UI-Test AboWarnerProUITests.swift sucht
+# aber deutsche Texte ("Kündigungsfrist endet bald", "Neues Abo" ...).
+# Für englische Store-Screenshots müsste der Test sprachneutral werden.
 languages(["de-DE"])
 
 project("ios/App/App.xcodeproj")

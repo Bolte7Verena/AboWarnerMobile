@@ -555,6 +555,15 @@ p { margin: 0; }
 .rechtliches-inhalt h3:first-child { margin-top: 0; }
 .rechtliches-inhalt p { margin-top: 0.5rem; }
 
+/* Kopfzeile rechts: Sprache + Hilfe */
+.kopf-aktionen { display: flex; align-items: center; gap: 0.5rem; }
+
+/* Sprachwahl */
+.sprache-optionen { display: flex; flex-direction: column; gap: 0.25rem; }
+.sprache-option { display: flex; align-items: center; gap: 0.625rem; padding: 0.625rem 0.5rem; border-radius: var(--radius-md); font-size: 0.875rem; cursor: pointer; }
+.sprache-option:hover { background: oklch(1 0 0 / 0.05); }
+.sprache-option input { width: 1.05rem; height: 1.05rem; accent-color: var(--primary); }
+
 /* Hilfe ("?" oben rechts + Hilfe-Seite) */
 .hilfe-btn { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; border: 1px solid var(--input); background: transparent; color: var(--muted-foreground); cursor: pointer; transition: color 0.15s, background-color 0.15s; }
 .hilfe-btn:hover { color: var(--foreground); background: oklch(1 0 0 / 0.06); }

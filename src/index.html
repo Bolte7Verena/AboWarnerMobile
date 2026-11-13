@@ -23,6 +23,9 @@
                 <span class="brand-name">Abo-Warner Pro</span>
             </div>
             <div class="kopf-aktionen">
+                <button type="button" id="btn-sprache" class="hilfe-btn" data-i18n-aria-label="kopf.sprache">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                </button>
                 <button type="button" id="btn-hilfe" class="hilfe-btn" data-i18n-aria-label="kopf.hilfe">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                 </button>
@@ -233,6 +236,27 @@
             </div>
 
             <div class="rechtliches-inhalt hilfe-inhalt" data-i18n-html="hilfe.inhalt"></div>
+        </div>
+    </div>
+
+    <div id="sprache-modal-overlay" class="modal-overlay bestaetigung-overlay" hidden>
+        <div class="glass-strong modal-dialog bestaetigung-dialog" role="dialog" aria-modal="true" aria-labelledby="sprache-titel">
+            <div class="modal-header">
+                <h2 class="modal-title" id="sprache-titel" data-i18n="sprache.titel"></h2>
+                <button type="button" id="btn-sprache-schliessen" class="modal-close-btn" data-i18n-aria-label="knopf.schliessen">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <!-- Sprachnamen stehen bewusst immer in ihrer eigenen Sprache. -->
+            <div class="sprache-optionen" role="radiogroup" aria-labelledby="sprache-titel">
+                <label class="sprache-option"><input type="radio" name="sprache" value="auto"><span data-i18n="sprache.auto"></span></label>
+                <label class="sprache-option"><input type="radio" name="sprache" value="de"><span lang="de">Deutsch</span></label>
+                <label class="sprache-option"><input type="radio" name="sprache" value="en"><span lang="en">English</span></label>
+            </div>
+            <div class="modal-aktionen bestaetigung-aktionen">
+                <button type="button" id="btn-sprache-abbrechen" class="btn btn-outline btn-sm" data-i18n="knopf.abbrechen"></button>
+                <button type="button" id="btn-sprache-uebernehmen" class="btn btn-primary btn-sm" data-i18n="sprache.uebernehmen"></button>
+            </div>
         </div>
     </div>
 
