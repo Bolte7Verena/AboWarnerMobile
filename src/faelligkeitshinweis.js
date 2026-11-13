@@ -15,9 +15,9 @@
 
 import { ermittleEffektivesZahlungsdatum, formatiereBetrag } from './calculator.js';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { berechneBenachrichtigungsPlan } from './benachrichtigungsplan.js';
 
 const TAGE_SCHWELLE = 3;
-const BENACHRICHTIGUNGS_UHRZEIT = { stunde: 9, minute: 0 };
 
 const ICON_ALARM_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M6.38 18.7 4 21"/><path d="M17.64 18.67 20 21"/></svg>';
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
@@ -62,16 +62,9 @@ export function zeigeFaelligkeitshinweisFallsNoetig(alleAbos) {
     });
 }
 
-// Deterministische, positive 32-Bit-Ganzzahl aus der (String-)Abo-ID —
-// Capacitor-Notification-IDs müssen Ganzzahlen sein, abo.id ist ein String.
-function hasheZuId(text) {
-    let hash = 0;
-    for (let i = 0; i < text.length; i++) {
-        hash = (hash * 31 + text.charCodeAt(i)) | 0;
-    }
-    return Math.abs(hash) || 1;
-}
-
+// Was geplant wird, entscheidet berechneBenachrichtigungsPlan() (siehe
+// benachrichtigungsplan.js); hier nur Berechtigung + Capacitor-Aufrufe.
+// Wird beim App-Start UND nach jeder Datenänderung aufgerufen (app.js).
 export async function planeFaelligkeitsBenachrichtigungen(alleAbos) {
     try {
         const berechtigung = await LocalNotifications.requestPermissions();
@@ -85,25 +78,12 @@ export async function planeFaelligkeitsBenachrichtigungen(alleAbos) {
             await LocalNotifications.cancel({ notifications: ausstehende.notifications });
         }
 
-        const jetzt = new Date();
-
-        const benachrichtigungen = alleAbos
-            .filter((abo) => !abo.gekuendigt)
-            .map((abo) => {
-                const effektivesDatum = ermittleEffektivesZahlungsdatum(abo.naechsteZahlung, abo.turnus);
-                const termin = new Date(effektivesDatum);
-                termin.setDate(termin.getDate() - TAGE_SCHWELLE);
-                termin.setHours(BENACHRICHTIGUNGS_UHRZEIT.stunde, BENACHRICHTIGUNGS_UHRZEIT.minute, 0, 0);
-                return { abo, termin };
-            })
-            // Nur Termine in der Zukunft lassen sich planen.
-            .filter(({ termin }) => termin > jetzt)
-            .map(({ abo, termin }) => ({
-                id: hasheZuId(abo.id),
-                title: 'In 3 Tagen fällig',
-                body: `${abo.name} wird in 3 Tagen abgebucht (${formatiereBetrag(abo.kosten, abo.waehrung)}).`,
-                schedule: { at: termin }
-            }));
+        const benachrichtigungen = berechneBenachrichtigungsPlan(alleAbos).map(({ id, title, body, at }) => ({
+            id,
+            title,
+            body,
+            schedule: { at }
+        }));
 
         if (benachrichtigungen.length > 0) {
             await LocalNotifications.schedule({ notifications: benachrichtigungen });
