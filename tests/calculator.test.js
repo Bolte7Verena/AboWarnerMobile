@@ -267,14 +267,21 @@ test('ermittleFristStatus: angezeigte Frist ist heute -> rot (kritisch)', () => 
     assert.equal(ermittleFristStatus(abo), 'kritisch');
 });
 
-test('ermittleFristStatus: Frist in 10 Tagen -> gelb (warnung)', () => {
-    const abo = { naechsteZahlung: zuISO(heutePlusTage(40)), turnus: 'Monatlich', kuendigungsfristTage: 30 };
-    assert.equal(ermittleFristStatus(abo), 'warnung');
+// Hilfsabo: angezeigte Frist endet in genau `tage` Tagen (Jahresvertrag, Frist 7 Tage).
+const aboMitFristIn = (tage) => ({ naechsteZahlung: zuISO(heutePlusTage(tage + 7)), turnus: 'Jährlich', kuendigungsfristTage: 7 });
+
+test('ermittleFristStatus: Frist in 7 Tagen ist noch rot, in 8 Tagen gelb', () => {
+    assert.equal(ermittleFristStatus(aboMitFristIn(7)), 'kritisch');
+    assert.equal(ermittleFristStatus(aboMitFristIn(8)), 'warnung');
 });
 
-test('ermittleFristStatus: Frist in 14 Tagen ist noch gelb, in 15 Tagen grün', () => {
-    assert.equal(ermittleFristStatus({ naechsteZahlung: zuISO(heutePlusTage(21)), turnus: 'Jährlich', kuendigungsfristTage: 7 }), 'warnung');
-    assert.equal(ermittleFristStatus({ naechsteZahlung: zuISO(heutePlusTage(22)), turnus: 'Jährlich', kuendigungsfristTage: 7 }), 'sicher');
+test('ermittleFristStatus: Frist in 1 bis 7 Tagen durchgehend rot', () => {
+    for (let t = 1; t <= 7; t++) assert.equal(ermittleFristStatus(aboMitFristIn(t)), 'kritisch', `Tag ${t}`);
+});
+
+test('ermittleFristStatus: Frist in 30 Tagen ist noch gelb, in 31 Tagen grün', () => {
+    assert.equal(ermittleFristStatus(aboMitFristIn(30)), 'warnung');
+    assert.equal(ermittleFristStatus(aboMitFristIn(31)), 'sicher');
 });
 
 test('ermittleFristStatus: verpasste Frist färbt nach der NÄCHSTEN erreichbaren Frist (hier weit weg -> grün)', () => {
