@@ -73,7 +73,19 @@ export function zeigeFaelligkeitshinweisFallsNoetig(alleAbos) {
 // Was geplant wird, entscheidet berechneBenachrichtigungsPlan() (siehe
 // benachrichtigungsplan.js); hier nur Berechtigung + Capacitor-Aufrufe.
 // Wird beim App-Start UND nach jeder Datenänderung aufgerufen (app.js).
-export async function planeFaelligkeitsBenachrichtigungen(alleAbos) {
+//
+// Läufe werden hintereinander ausgeführt (nie zwei gleichzeitig), damit sich
+// "alles verwerfen" und "neu planen" zweier Läufe nicht überkreuzen. Jeder
+// Lauf verwirft ALLE ausstehenden Mitteilungen — beim ersten Start nach dem
+// Update also auch die alten "In 3 Tagen fällig"-Erinnerungen aus 2.0.1.
+let letzterLauf = Promise.resolve();
+
+export function planeFaelligkeitsBenachrichtigungen(alleAbos) {
+    letzterLauf = letzterLauf.then(() => planeJetzt(alleAbos));
+    return letzterLauf;
+}
+
+async function planeJetzt(alleAbos) {
     try {
         const berechtigung = await LocalNotifications.requestPermissions();
         if (berechtigung.display !== 'granted') return;

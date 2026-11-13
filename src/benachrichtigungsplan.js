@@ -5,17 +5,26 @@
  * planeFaelligkeitsBenachrichtigungen() in faelligkeitshinweis.js.
  *
  * Regeln (ab 2.0.2):
- * - Laufende, NICHT gekündigte Abos: Erinnerung 3 Tage vor der nächsten
- *   Zahlung, 9:00 Uhr ("In 3 Tagen fällig").
- * - Gekündigte Abos: keine Zahlungs-/Fristerinnerungen mehr, stattdessen
- *   genau eine Benachrichtigung am Vertragsende (abo.gekuendigtZum), 9:00 Uhr:
+ * - Laufende, NICHT gekündigte Abos: Erinnerung 7 Tage vor dem Datum
+ *   "Kündigung möglich bis" (= ab da ist die Karte rot), 9:00 Uhr:
+ *   "[Name]: Kündigung nur noch bis [Datum] möglich."
+ *   Geplant werden die nächsten FRISTEN_JE_ABO Fristen je Abo, damit auch
+ *   dann erinnert wird, wenn die App länger nicht geöffnet wird (Planen ist
+ *   nur möglich, während die App läuft).
+ * - Gekündigte Abos: keine Fristerinnerungen, sondern genau eine
+ *   Benachrichtigung am Vertragsende (abo.gekuendigtZum), 9:00 Uhr:
  *   "[Name] endet heute." Alte gekündigte Abos ohne Datum bekommen nichts.
- * - Nur Termine in der Zukunft lassen sich planen.
+ * - Nur Termine in der Zukunft. Insgesamt höchstens MAX_BENACHRICHTIGUNGEN
+ *   (iOS erlaubt maximal 64 geplante Mitteilungen je App), die frühesten zuerst.
+ * - IDs sind je Abo und Termin eindeutig und stabil — erneutes Planen
+ *   ersetzt statt zu verdoppeln.
  */
 
-import { ermittleEffektivesZahlungsdatum, formatiereBetrag, parseDatumISO } from './calculator.js';
+import { ermittleKuendigungsfrist, formatiereDatumDE, formatiereDatumISO, parseDatumISO, KRITISCH_SCHWELLE_TAGE } from './calculator.js';
 
-export const TAGE_VOR_ZAHLUNG = 3;
+export const TAGE_VOR_FRISTENDE = KRITISCH_SCHWELLE_TAGE; // 7 — passend zu "rot"
+export const FRISTEN_JE_ABO = 3;
+export const MAX_BENACHRICHTIGUNGEN = 60;
 export const BENACHRICHTIGUNGS_UHRZEIT = { stunde: 9, minute: 0 };
 
 // Deterministische, positive 32-Bit-Ganzzahl aus einem Text —
@@ -34,39 +43,55 @@ function umNeunUhr(datum) {
     return termin;
 }
 
-// Liefert [{ id, title, body, at: Date }] — Reihenfolge wie alleAbos.
-export function berechneBenachrichtigungsPlan(alleAbos, jetzt = new Date()) {
-    const plan = [];
-    for (const abo of alleAbos) {
-        if (abo.gekuendigt) {
-            const ende = parseDatumISO(abo.gekuendigtZum);
-            if (!ende) continue;
-            const termin = umNeunUhr(ende);
-            if (termin > jetzt) {
-                plan.push({
-                    // Eigene ID-Variante, damit sie nie mit der Zahlungserinnerung
-                    // desselben Abos kollidiert.
-                    id: hasheZuId(`${abo.id}#vertragsende`),
-                    title: 'Vertragsende',
-                    body: `${abo.name} endet heute.`,
-                    at: termin
-                });
-            }
-            continue;
-        }
+function vertragsendeMeldung(abo, jetzt) {
+    const ende = parseDatumISO(abo.gekuendigtZum);
+    if (!ende) return [];
+    const termin = umNeunUhr(ende);
+    if (termin <= jetzt) return [];
+    return [{
+        id: hasheZuId(`${abo.id}#vertragsende`),
+        title: 'Vertragsende',
+        body: `${abo.name} endet heute.`,
+        at: termin
+    }];
+}
 
-        const zahlung = ermittleEffektivesZahlungsdatum(abo.naechsteZahlung, abo.turnus);
-        if (isNaN(zahlung)) continue;
-        const termin = umNeunUhr(zahlung);
-        termin.setDate(termin.getDate() - TAGE_VOR_ZAHLUNG);
+// Die nächsten Fristen eines laufenden Abos, jeweils mit Erinnerung 7 Tage
+// vorher. Liegt die Erinnerung zur nächsten Frist schon in der Vergangenheit
+// (Frist ist in weniger als 7 Tagen), entfällt nur diese eine — die Karte ist
+// dann ohnehin rot.
+function fristErinnerungen(abo, jetzt) {
+    const ergebnis = [];
+    let stichtag = parseDatumISO(jetzt);
+    for (let i = 0; i < FRISTEN_JE_ABO && stichtag; i++) {
+        const frist = ermittleKuendigungsfrist(abo, stichtag);
+        if (!frist) break;
+        const termin = umNeunUhr(frist.fristDatum);
+        termin.setDate(termin.getDate() - TAGE_VOR_FRISTENDE);
         if (termin > jetzt) {
-            plan.push({
-                id: hasheZuId(abo.id),
-                title: 'In 3 Tagen fällig',
-                body: `${abo.name} wird in 3 Tagen abgebucht (${formatiereBetrag(abo.kosten, abo.waehrung)}).`,
+            ergebnis.push({
+                id: hasheZuId(`${abo.id}#frist#${formatiereDatumISO(frist.fristDatum)}`),
+                title: 'Kündigungsfrist',
+                body: `${abo.name}: Kündigung nur noch bis ${formatiereDatumDE(frist.fristDatum)} möglich.`,
                 at: termin
             });
         }
+        // Nächste Frist: ab dem Tag nach dieser Frist suchen.
+        stichtag = new Date(frist.fristDatum);
+        stichtag.setDate(stichtag.getDate() + 1);
     }
-    return plan;
+    return ergebnis;
+}
+
+// Liefert [{ id, title, body, at: Date }], nach Zeitpunkt sortiert.
+export function berechneBenachrichtigungsPlan(alleAbos, jetzt = new Date()) {
+    const plan = [];
+    for (const abo of alleAbos) {
+        if (abo.gekuendigt) plan.push(...vertragsendeMeldung(abo, jetzt));
+        else plan.push(...fristErinnerungen(abo, jetzt));
+    }
+    plan.sort((a, b) => a.at - b.at);
+    // Doppelte IDs (theoretisch möglich) nur einmal einplanen.
+    const gesehen = new Set();
+    return plan.filter((n) => !gesehen.has(n.id) && gesehen.add(n.id)).slice(0, MAX_BENACHRICHTIGUNGEN);
 }
