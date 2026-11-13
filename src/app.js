@@ -507,7 +507,11 @@ export async function neuesAboSpeichern() {
         turnus: document.getElementById('input-turnus').value,
         kategorie: document.getElementById('input-kategorie').value,
         naechsteZahlung: document.getElementById('input-datum-iso').value,
-        kuendigungsfristTage: parseInt(document.getElementById('input-frist').value, 10)
+        kuendigungsfristTage: parseInt(document.getElementById('input-frist').value, 10),
+        // Optional (zugeklappt unter "Weitere Angaben").
+        vertragsnummer: document.getElementById('input-vertragsnummer').value.trim(),
+        kundennummer: document.getElementById('input-kundennummer').value.trim(),
+        vertragspartner: document.getElementById('input-vertragspartner').value.trim()
     };
 
     // Nicht-blockierende Inline-Meldung statt alert(): ein natives alert() ist

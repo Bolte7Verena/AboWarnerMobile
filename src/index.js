@@ -43,6 +43,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             aboForm.reset();
         }
 
+        // "Weitere Angaben (optional)" beim nächsten Öffnen wieder zugeklappt,
+        // damit das Formular einfach bleibt (Felder leert reset() selbst).
+        aboForm.addEventListener('reset', () => {
+            document.getElementById('weitere-angaben').open = false;
+        });
+
         document.getElementById('btn-neues-abo').addEventListener('click', oeffneAboModal);
         document.getElementById('btn-modal-schliessen').addEventListener('click', schliesseAboModal);
         modalOverlay.addEventListener('click', (e) => {

@@ -108,6 +108,26 @@
                                 <input type="number" id="input-frist" class="input-control">
                             </div>
                         </div>
+                        <details id="weitere-angaben" class="weitere-angaben">
+                            <summary class="weitere-angaben-summary">Weitere Angaben (optional)</summary>
+                            <div class="weitere-angaben-felder">
+                                <p class="weitere-angaben-hinweis">Werden automatisch ins Kündigungsschreiben übernommen.</p>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="input-vertragsnummer">Vertragsnummer</label>
+                                        <input type="text" id="input-vertragsnummer" class="input-control" autocomplete="off">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="input-kundennummer">Kundennummer</label>
+                                        <input type="text" id="input-kundennummer" class="input-control" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input-vertragspartner">Vertragspartner (Firmenname und Anschrift)</label>
+                                    <textarea id="input-vertragspartner" class="input-control textarea-control" rows="4" placeholder="z.B. Musterfirma GmbH&#10;Kundenservice&#10;Musterstraße 1&#10;12345 Musterstadt"></textarea>
+                                </div>
+                            </div>
+                        </details>
                         <button type="button" id="btn-speichern" class="btn btn-primary btn-lg btn-block">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                             Abo speichern
