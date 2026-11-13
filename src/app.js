@@ -4,7 +4,7 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumDE, formatiereDatumISO, ermittleKuendigungsfrist, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO } from './calculator.js';
+import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumDE, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung, frageDatum } from './bestaetigung.js';
@@ -33,11 +33,6 @@ const KATEGORIE_BADGE_KLASSE = {
 };
 
 let aktiverKategorieFilter = 'Alle';
-
-// Zusätzlicher Vorlauf vor der eigentlichen Kündigungsfrist, ab dem ein Abo
-// als "Bald fällig" (gelb) statt "Sicher" (grün) angezeigt wird. Erst wenn
-// die Frist selbst erreicht ist, gilt ein Abo als "Kritisch" (rot).
-const WARNSCHWELLE_TAGE = 14;
 
 const STATUS_LABEL = {
     kritisch: 'Kritisch',
@@ -125,8 +120,9 @@ function berechneStatistiken(alleAbos) {
     // wird ja noch gezahlt (z.B. Miete). Für "Fristen fällig" sind sie egal,
     // da bereits gekündigt.
     const aktiveAbos = alleAbos.filter((abo) => !istVertragBeendet(abo));
-    const kritischeAnzahl = aktiveAbos.filter((abo) => !abo.gekuendigt).filter(
-        (abo) => tageBisNaechsterZahlung(abo) <= abo.kuendigungsfristTage
+    // Zählt genau die rot markierten Karten (gleiche Regel wie ermittleAboStatus).
+    const kritischeAnzahl = aktiveAbos.filter(
+        (abo) => !abo.gekuendigt && ermittleFristStatus(abo) === 'kritisch'
     ).length;
 
     return {
@@ -146,21 +142,17 @@ function renderStatistiken(statsGrid, statistiken) {
     ].join('');
 }
 
-// tageBisZahlung wird von aufrufender Seite übergeben (aus dem turnusgerecht
-// vorgerückten Datum berechnet, siehe erzeugeAboKachel) — so existiert pro
-// Render-Durchlauf nur eine einzige Quelle der Wahrheit für "wie viele Tage
-// bis zur nächsten Zahlung", die niemals fälschlich negativ wird.
-function ermittleAboStatus(abo, tageBisZahlung) {
+// Farbe der Karte/des Etiketts. Richtet sich nach der Frist, die auf der
+// Karte angezeigt wird ("Kündigung möglich bis ..."), siehe
+// ermittleFristStatus in calculator.js.
+function ermittleAboStatus(abo) {
     if (abo.gekuendigt) return 'gekuendigt';
-    if (tageBisZahlung <= abo.kuendigungsfristTage) return 'kritisch';
-    if (tageBisZahlung <= abo.kuendigungsfristTage + WARNSCHWELLE_TAGE) return 'warnung';
-    return 'sicher';
+    return ermittleFristStatus(abo);
 }
 
 // Text im Status-Etikett der Karte. Für laufende Abos statt "Kritisch"/
 // "Bald fällig"/"Sicher" das konkrete Datum, bis zu dem gekündigt werden
-// kann. Die Farbe des Etiketts (rot/gelb/grün) bleibt unverändert die
-// Dringlichkeitsstufe aus ermittleAboStatus.
+// kann. Die Farbe (rot/gelb/grün) bezieht sich auf genau dieses Datum.
 function erzeugeStatusText(abo, status) {
     if (status === 'gekuendigt') {
         // Ältere, vor 2.0.2 gekündigte Abos haben kein Vertragsende hinterlegt.
@@ -191,7 +183,7 @@ function erzeugeStatusPill(abo, tageBisZahlung) {
 }
 
 function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
-    const status = ermittleAboStatus(abo, tageBisZahlung);
+    const status = ermittleAboStatus(abo);
     const kategorieKlasse = KATEGORIE_BADGE_KLASSE[abo.kategorie] || 'badge-cat-muted';
 
     const statusBadge = `<span class="badge ${STATUS_BADGE_KLASSE[status]}">${erzeugeStatusText(abo, status)}</span>`;
@@ -425,7 +417,7 @@ function erzeugeAboKachel(abo) {
     const kachel = document.createElement('li');
     // "laufend": gekündigt, aber Vertragsende noch nicht erreicht — wird nicht
     // ausgegraut, da bis dahin weiter gezahlt wird.
-    kachel.className = `glass abo-karte ${ermittleAboStatus(abo, tageBisZahlung)}${istGekuendigtLaufend(abo) ? ' laufend' : ''}`;
+    kachel.className = `glass abo-karte ${ermittleAboStatus(abo)}${istGekuendigtLaufend(abo) ? ' laufend' : ''}`;
     kachel.innerHTML = erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum);
     verdrahteAboAnsicht(kachel, abo);
     return kachel;

@@ -85,6 +85,26 @@ export function ermittleKuendigungsfrist(abo, heute = new Date()) {
     return null;
 }
 
+// Vorlauf vor der Kündigungsfrist, ab dem ein Abo gelb ("bald") statt grün ist.
+export const WARNSCHWELLE_TAGE = 14;
+
+// Dringlichkeit (Farbe) eines laufenden Abos — gemessen an GENAU der Frist,
+// die die Karte als "Kündigung möglich bis ..." anzeigt (ermittleKuendigungsfrist),
+// nicht an einer bereits verpassten:
+//   'kritisch' (rot)  = heute ist der letzte Tag dieser Frist
+//   'warnung'  (gelb) = Frist in höchstens WARNSCHWELLE_TAGE Tagen
+//   'sicher'   (grün) = sonst
+// Bei ungültigen Daten 'sicher' (kein Fehlalarm, kein Absturz).
+export function ermittleFristStatus(abo, heute = new Date()) {
+    const frist = ermittleKuendigungsfrist(abo, heute);
+    if (!frist) return 'sicher';
+    const stichtag = parseDatumISO(heute);
+    const tageBisFrist = Math.round((frist.fristDatum - stichtag) / (1000 * 60 * 60 * 24));
+    if (tageBisFrist <= 0) return 'kritisch';
+    if (tageBisFrist <= WARNSCHWELLE_TAGE) return 'warnung';
+    return 'sicher';
+}
+
 // --- Gekündigte Verträge (ab 2.0.2) ---
 // Ein gekündigtes Abo kann noch bis zu seinem Vertragsende laufen (z.B. Miete:
 // bis dahin wird weiter gezahlt). Gespeichert wird das Vertragsende als

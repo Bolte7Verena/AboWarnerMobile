@@ -11,7 +11,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Calculator, TURNUS_MONATE, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereZahlDE, formatiereBetrag, formatiereDatumDE, formatiereDatumISO, parseDatumISO, ermittleKuendigungsfrist, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor } from '../src/calculator.js';
+import { Calculator, TURNUS_MONATE, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereZahlDE, formatiereBetrag, formatiereDatumDE, formatiereDatumISO, parseDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor } from '../src/calculator.js';
 
 function heutePlusTage(tage) {
     const d = new Date();
@@ -258,4 +258,31 @@ test('istVertragBeendet: nicht gekündigtes Abo ist nie beendet', () => {
 test('schlageVertragsendeVor: Tag vor der ersten Zahlung, die durch rechtzeitige Kündigung wegfällt', () => {
     const abo = { naechsteZahlung: zuISO(heutePlusTage(40)), turnus: 'Monatlich', kuendigungsfristTage: 30 };
     assert.equal(zuISO(schlageVertragsendeVor(abo)), zuISO(heutePlusTage(39)));
+});
+
+// --- ermittleFristStatus: Farbe passt zum angezeigten Datum ---
+
+test('ermittleFristStatus: angezeigte Frist ist heute -> rot (kritisch)', () => {
+    const abo = { naechsteZahlung: zuISO(heutePlusTage(30)), turnus: 'Monatlich', kuendigungsfristTage: 30 };
+    assert.equal(ermittleFristStatus(abo), 'kritisch');
+});
+
+test('ermittleFristStatus: Frist in 10 Tagen -> gelb (warnung)', () => {
+    const abo = { naechsteZahlung: zuISO(heutePlusTage(40)), turnus: 'Monatlich', kuendigungsfristTage: 30 };
+    assert.equal(ermittleFristStatus(abo), 'warnung');
+});
+
+test('ermittleFristStatus: Frist in 14 Tagen ist noch gelb, in 15 Tagen grün', () => {
+    assert.equal(ermittleFristStatus({ naechsteZahlung: zuISO(heutePlusTage(21)), turnus: 'Jährlich', kuendigungsfristTage: 7 }), 'warnung');
+    assert.equal(ermittleFristStatus({ naechsteZahlung: zuISO(heutePlusTage(22)), turnus: 'Jährlich', kuendigungsfristTage: 7 }), 'sicher');
+});
+
+test('ermittleFristStatus: verpasste Frist färbt nach der NÄCHSTEN erreichbaren Frist (hier weit weg -> grün)', () => {
+    // Zahlung in 3 Tagen, Frist 7 Tage -> verpasst. Nächste Frist: ca. 1 Jahr später -> grün, nicht rot.
+    const abo = { naechsteZahlung: zuISO(heutePlusTage(3)), turnus: 'Jährlich', kuendigungsfristTage: 7 };
+    assert.equal(ermittleFristStatus(abo), 'sicher');
+});
+
+test('ermittleFristStatus: ungültige Daten -> sicher (kein Fehlalarm)', () => {
+    assert.equal(ermittleFristStatus({ naechsteZahlung: 'x', turnus: 'Monatlich', kuendigungsfristTage: 3 }), 'sicher');
 });
