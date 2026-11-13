@@ -116,3 +116,19 @@ test('Datum: ungültige Eingabe liefert leeren Text, ungültige Region fällt zu
     assert.equal(formatiereDatum('2026-11-05', 'xx-INVALID-###'), '05.11.2026');
     setzeSprache('de');
 });
+
+// --- Rechtstexte und Hilfe auf Englisch ---
+
+test('Englisch: Datenschutz und Impressum beginnen mit dem Hinweis auf die deutsche Fassung', () => {
+    const ersterText = (html) => html.replace(/<[^>]+>/g, '\n').split('\n').map((z) => z.trim()).find(Boolean);
+    assert.equal(ersterText(SPRACHEN.en['datenschutz.inhalt']), 'In case of doubt, the German version applies.');
+    assert.equal(ersterText(SPRACHEN.en['impressum.inhalt']), 'In case of doubt, the German version applies.');
+    assert.ok(!SPRACHEN.de['datenschutz.inhalt'].includes('In case of doubt'), 'nicht in der deutschen Fassung');
+});
+
+test('Englisch: Hilfe hat dieselbe Gliederung wie Deutsch', () => {
+    const anzahl = (html, tag) => (html.match(new RegExp(`<${tag}[ >]`, 'g')) || []).length;
+    for (const tag of ['h3', 'li', 'ol', 'ul']) {
+        assert.equal(anzahl(SPRACHEN.en['hilfe.inhalt'], tag), anzahl(SPRACHEN.de['hilfe.inhalt'], tag), tag);
+    }
+});

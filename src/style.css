@@ -555,6 +555,9 @@ p { margin: 0; }
 .rechtliches-inhalt h3:first-child { margin-top: 0; }
 .rechtliches-inhalt p { margin-top: 0.5rem; }
 
+/* Übersetzte Rechtstexte: Hinweis auf die maßgebliche deutsche Fassung */
+.rechtlich-sprachhinweis { font-style: italic; color: var(--foreground); margin-bottom: 1rem; }
+
 /* Kopfzeile rechts: Sprache + Hilfe */
 .kopf-aktionen { display: flex; align-items: center; gap: 0.5rem; }
 
