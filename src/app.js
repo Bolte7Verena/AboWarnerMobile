@@ -9,6 +9,7 @@ import { initDatePicker } from './datepicker.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung, frageDatum } from './bestaetigung.js';
 import { planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
+import { pruefeSicherung, MAX_DATEIGROESSE_BYTES } from './sicherung.js';
 
 // Nach jeder Datenänderung: Liste neu zeichnen UND die nativen
 // Benachrichtigungen neu planen — sonst blieben z.B. nach einer Kündigung
@@ -31,7 +32,6 @@ const ICON_TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.986L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>';
 const ICON_X_CIRCLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>';
 const ICON_KALENDER = '<svg class="date-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>';
-const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>';
 
 // Kategorie-Farbzuordnung 1:1 aus AboActionView.tsx (CATEGORY_STYLES)
 const KATEGORIE_BADGE_KLASSE = {
@@ -99,7 +99,7 @@ function erzeugeFilterChips(alleAbos) {
     const chipsDiv = document.createElement('div');
     chipsDiv.className = 'filter-chips';
     chipsDiv.innerHTML = kategorien.map((kat) => `
-        <button type="button" class="filter-chip ${kat === aktiverKategorieFilter ? 'active' : ''}" data-kategorie="${kat}">${kat}</button>
+        <button type="button" class="filter-chip ${kat === aktiverKategorieFilter ? 'active' : ''}" data-kategorie="${escapeHtml(kat)}">${escapeHtml(kat)}</button>
     `).join('');
 
     chipsDiv.querySelectorAll('.filter-chip').forEach((chip) => {
@@ -208,14 +208,14 @@ function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
                 <div class="abo-icon">${ICON_WALLET}</div>
                 <div>
                     <div class="abo-name-row">
-                        <span class="abo-name">${abo.name}</span>
-                        <span class="badge ${kategorieKlasse}">${abo.kategorie}</span>
+                        <span class="abo-name">${escapeHtml(abo.name)}</span>
+                        <span class="badge ${kategorieKlasse}">${escapeHtml(abo.kategorie)}</span>
                     </div>
-                    <p class="abo-meta">${abo.turnus} | ${abo.waehrung}</p>
+                    <p class="abo-meta">${escapeHtml(abo.turnus)} | ${escapeHtml(abo.waehrung)}</p>
                 </div>
             </div>
             <div class="abo-right">
-                <p class="abo-price">${formatiereBetrag(abo.kosten, abo.waehrung)}</p>
+                <p class="abo-price">${escapeHtml(formatiereBetrag(abo.kosten, abo.waehrung))}</p>
                 <p class="abo-price-sub">${erzeugeZahlungsZeile(abo, effektivesZahlungsdatum)}</p>
             </div>
         </div>
@@ -227,10 +227,8 @@ function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
             <div class="abo-aktionen">
                 <button type="button" class="btn btn-outline btn-sm edit-btn">${ICON_EDIT} Bearbeiten</button>
                 ${abo.gekuendigt ? '' : `<button type="button" class="btn btn-outline btn-sm cancel-btn">${ICON_X_CIRCLE} Kündigen</button>`}
-                <button type="button" class="btn btn-outline btn-sm export-btn">${ICON_DOWNLOAD} Exportieren</button>
                 <button type="button" class="btn btn-outline btn-sm delete-btn">${ICON_TRASH} Löschen</button>
             </div>
-            <p class="karte-export-status" aria-live="polite"></p>
         </div>
     `;
 }
@@ -340,25 +338,97 @@ function verdrahteAboAnsicht(kachel, abo) {
         // separater Schritt innerhalb des Modals (siehe kuendigungsschreiben.js).
         kuendigenBtn.addEventListener('click', () => oeffneKuendigungsschreibenModal(abo));
     }
-    kachel.querySelector('.export-btn').addEventListener('click', () => exportiereAlsDatei(kachel));
 }
 
-// Exportiert den kompletten aktuellen Abo-Bestand als eigenständige JSON-Sicherungskopie
-// (nicht nur das Abo der geklickten Kachel) — jede Kachel ist damit ein gleichwertiger,
-// überall verfügbarer Auslöser für einen Voll-Export ("damit nichts verloren geht"),
-// statt eines einzelnen globalen Buttons an nur einer Stelle der Oberfläche.
-async function exportiereAlsDatei(kachel) {
-    const statusEl = kachel.querySelector('.karte-export-status');
+// --- "Daten sichern": eine zentrale Stelle unter der Liste (ab 2.0.2) ---
+// Ersetzt den früheren "Exportieren"-Knopf auf jeder einzelnen Karte.
+
+function zeigeDatenStatus(text, art = '') {
+    const statusEl = document.getElementById('daten-status');
+    statusEl.textContent = text;
+    statusEl.className = `daten-status ${art}`.trim();
+}
+
+async function erstelleSicherung() {
     try {
         const ergebnis = await window.api.exportAbos();
         if (ergebnis.abgebrochen) {
-            if (statusEl) statusEl.textContent = '';
+            zeigeDatenStatus('');
             return;
         }
-        if (statusEl) statusEl.textContent = `Gespeichert unter: ${ergebnis.pfad}`;
+        zeigeDatenStatus(`Sicherung erstellt: ${ergebnis.pfad}`, 'erfolg');
     } catch (error) {
-        if (statusEl) statusEl.textContent = 'Speichern fehlgeschlagen — bitte erneut versuchen.';
+        zeigeDatenStatus('Sicherung fehlgeschlagen — bitte erneut versuchen.', 'fehler');
     }
+}
+
+function anzahlText(anzahl) {
+    return anzahl === 1 ? '1 Abo' : `${anzahl} Abos`;
+}
+
+// Liest die gewählte Datei, prüft sie vollständig und ersetzt erst nach
+// ausdrücklicher Bestätigung den Bestand. Bei jeder Unstimmigkeit: Meldung,
+// nichts wird verändert.
+async function stelleSicherungWiederHer(datei) {
+    if (!datei) return;
+    if (datei.size > MAX_DATEIGROESSE_BYTES) {
+        zeigeDatenStatus('Die Datei ist zu groß für eine Abo-Warner-Sicherung. Deine vorhandenen Abos bleiben unverändert.', 'fehler');
+        return;
+    }
+    let text;
+    try {
+        text = await datei.text();
+    } catch (error) {
+        zeigeDatenStatus('Die Datei konnte nicht gelesen werden. Deine vorhandenen Abos bleiben unverändert.', 'fehler');
+        return;
+    }
+
+    const pruefung = pruefeSicherung(text);
+    if (!pruefung.ok) {
+        zeigeDatenStatus(pruefung.meldung, 'fehler');
+        return;
+    }
+
+    const vorhandene = await window.api.loadAbos();
+    const bestaetigt = await frageBestaetigung({
+        titel: 'Vorhandene Abos ersetzen?',
+        text: `Die Sicherung enthält ${anzahlText(pruefung.abos.length)}. `
+            + (vorhandene.length > 0
+                ? `Deine aktuellen ${anzahlText(vorhandene.length)} werden dadurch ersetzt.`
+                : 'Zurzeit sind keine Abos gespeichert.'),
+        bestaetigenText: 'Ersetzen',
+        abbrechenText: 'Abbrechen',
+        gefaehrlich: true
+    });
+    if (!bestaetigt) {
+        zeigeDatenStatus('Wiederherstellung abgebrochen. Es wurde nichts geändert.');
+        return;
+    }
+
+    try {
+        await window.api.ersetzeAlleAbos(pruefung.abos);
+    } catch (error) {
+        zeigeDatenStatus('Wiederherstellen fehlgeschlagen. Bitte erneut versuchen.', 'fehler');
+        return;
+    }
+    aktiverKategorieFilter = 'Alle';
+    await nachDatenaenderung();
+    zeigeDatenStatus(`Sicherung wiederhergestellt: ${anzahlText(pruefung.abos.length)}.`, 'erfolg');
+}
+
+export function initDatenSichern() {
+    const dateiInput = document.getElementById('input-sicherung-datei');
+    document.getElementById('btn-sicherung-erstellen').addEventListener('click', erstelleSicherung);
+    document.getElementById('btn-sicherung-wiederherstellen').addEventListener('click', () => {
+        zeigeDatenStatus('');
+        dateiInput.click();
+    });
+    dateiInput.addEventListener('change', async () => {
+        const datei = dateiInput.files && dateiInput.files[0];
+        // Zurücksetzen, damit dieselbe Datei erneut gewählt werden kann.
+        dateiInput.value = '';
+        await stelleSicherungWiederHer(datei);
+    });
 }
 
 // Kalender-Instanzen offener Bearbeiten-Formulare. Werden bei jedem

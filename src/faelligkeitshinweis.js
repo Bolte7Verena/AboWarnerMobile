@@ -22,6 +22,14 @@ const TAGE_SCHWELLE = 3;
 const ICON_ALARM_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M6.38 18.7 4 21"/><path d="M17.64 18.67 20 21"/></svg>';
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
 function berechneTageBisZahlung(datum) {
     const heute = new Date();
     heute.setHours(0, 0, 0, 0);
@@ -50,7 +58,7 @@ export function zeigeFaelligkeitshinweisFallsNoetig(alleAbos) {
         </div>
         <ul class="faelligkeit-toast-liste">
             ${faelligeAbos.map((abo) => `
-                <li class="faelligkeit-toast-item"><strong>${abo.name}</strong> — ${formatiereBetrag(abo.kosten, abo.waehrung)}</li>
+                <li class="faelligkeit-toast-item"><strong>${escapeHtml(abo.name)}</strong> — ${escapeHtml(formatiereBetrag(abo.kosten, abo.waehrung))}</li>
             `).join('')}
         </ul>
     `;

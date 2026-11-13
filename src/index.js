@@ -6,7 +6,7 @@
  */
 
 import './api.js';
-import { zeigeAbos, neuesAboSpeichern } from './app.js';
+import { zeigeAbos, neuesAboSpeichern, initDatenSichern } from './app.js';
 import { initDatePicker } from './datepicker.js';
 import { zeigeFaelligkeitshinweisFallsNoetig, planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { initRechtliches } from './rechtliches.js';
@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         document.getElementById('input-suche').addEventListener('input', () => zeigeAbos());
         initRechtliches();
+        initDatenSichern();
 
         initDatePicker({
             inputEl: document.getElementById('input-datum'),

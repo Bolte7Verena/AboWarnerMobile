@@ -50,6 +50,23 @@
                 <ul id="abo-liste" class="abo-list"></ul>
             </section>
 
+            <section class="glass daten-panel" aria-labelledby="daten-titel">
+                <h2 class="daten-titel" id="daten-titel">Daten sichern</h2>
+                <p class="daten-text">Deine Abos liegen nur auf diesem Gerät. Erstelle ab und zu eine Sicherung und bewahre sie gut auf, z.B. in deiner Cloud oder per E-Mail an dich selbst.</p>
+                <div class="daten-aktionen">
+                    <button type="button" id="btn-sicherung-erstellen" class="btn btn-outline btn-sm">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+                        Sicherung erstellen
+                    </button>
+                    <button type="button" id="btn-sicherung-wiederherstellen" class="btn btn-outline btn-sm">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/></svg>
+                        Sicherung wiederherstellen
+                    </button>
+                    <input type="file" id="input-sicherung-datei" accept=".json,application/json" hidden>
+                </div>
+                <p id="daten-status" class="daten-status" aria-live="polite"></p>
+            </section>
+
             <div id="abo-modal-overlay" class="modal-overlay" hidden>
                 <div class="glass-strong modal-dialog">
                     <div class="modal-header">
@@ -188,7 +205,7 @@
                 <p>Deine Daten bleiben lokal gespeichert, bis du sie über die App löschst, bearbeitest oder exportierst, oder bis du die App deinstallierst.</p>
 
                 <h3>6. Deine Rechte</h3>
-                <p>Da alle Daten ausschließlich lokal auf deinem Gerät liegen, kannst du dein Recht auf Auskunft, Berichtigung und Löschung (Art. 15, 16, 17 DSGVO) jederzeit direkt über die Funktionen „Bearbeiten", „Löschen" und „Exportieren" in der App ausüben. Für weitergehende Anfragen wende dich an die im Impressum genannte Kontaktadresse. Zudem steht dir ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu (Art. 77 DSGVO).</p>
+                <p>Da alle Daten ausschließlich lokal auf deinem Gerät liegen, kannst du dein Recht auf Auskunft, Berichtigung und Löschung (Art. 15, 16, 17 DSGVO) jederzeit direkt über die Funktionen „Bearbeiten", „Löschen" und „Sicherung erstellen" (unter „Daten sichern") in der App ausüben. Für weitergehende Anfragen wende dich an die im Impressum genannte Kontaktadresse. Zudem steht dir ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu (Art. 77 DSGVO).</p>
 
                 <h3>7. Kontakt für Datenschutzanfragen</h3>
                 <p>Für Anfragen zum Datenschutz oder zur Ausübung deiner Rechte erreichst du uns unter kontakt@appvektor.com oder telefonisch unter 0049 421 9899 1701.</p>

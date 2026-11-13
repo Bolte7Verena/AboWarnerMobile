@@ -425,6 +425,15 @@ p { margin: 0; }
 .badge-status-safe { background: color-mix(in oklch, var(--accent-lime) 20%, transparent); color: var(--accent-lime); border-color: color-mix(in oklch, var(--accent-lime) 30%, transparent); }
 .badge-status-gekuendigt { background: var(--muted); color: var(--muted-foreground); border-color: oklch(1 0 0 / 0.1); }
 
+/* "Daten sichern" unter der Liste */
+.daten-panel { margin-top: 1.5rem; border-radius: var(--radius-2xl); padding: 1.25rem 1.375rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.daten-titel { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; }
+.daten-text { font-size: 0.8rem; color: var(--muted-foreground); }
+.daten-aktionen { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.daten-status { font-size: 0.75rem; color: var(--muted-foreground); min-height: 1rem; overflow-wrap: anywhere; }
+.daten-status.fehler { color: var(--accent-rose); }
+.daten-status.erfolg { color: var(--accent-lime); }
+
 /* Empty state */
 .empty-msg { border-radius: var(--radius-2xl); padding: 2rem; text-align: center; font-size: 0.875rem; color: var(--muted-foreground); }
 

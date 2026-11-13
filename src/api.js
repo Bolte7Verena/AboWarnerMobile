@@ -98,6 +98,23 @@ window.api = {
         return teileDatei(dateiname, 'Abo-Warner Export');
     },
 
+    // "Sicherung wiederherstellen": ersetzt den kompletten Bestand. Die
+    // Prüfung der Datei (sicherung.js) ist vorher bereits erfolgt. Als
+    // zusätzliches Sicherheitsnetz wird der bisherige Bestand vorher in
+    // einer eigenen Datei im App-Datenverzeichnis abgelegt (überschreibt nur
+    // die vorherige dieser Art, wird nirgendwohin übertragen).
+    ersetzeAlleAbos: async (neueAbos) => {
+        const bisherige = await ladeAbosVonDisk();
+        await Filesystem.writeFile({
+            path: 'abos-vor-wiederherstellung.json',
+            directory: Directory.Data,
+            data: JSON.stringify(bisherige, null, 2),
+            encoding: Encoding.UTF8
+        });
+        await schreibeAbosAufDisk(neueAbos);
+        return neueAbos;
+    },
+
     exportSchreiben: async (text, dateiname) => {
         await Filesystem.writeFile({ path: dateiname, directory: Directory.Cache, data: text, encoding: Encoding.UTF8 });
         return teileDatei(dateiname, 'Kündigungsschreiben');
