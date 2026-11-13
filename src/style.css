@@ -529,8 +529,8 @@ p { margin: 0; }
 /* Footer */
 .site-footer { border-top: 1px solid oklch(1 0 0 / 0.05); }
 .footer-inner { max-width: 72rem; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 1rem; padding: 2rem 1.5rem; font-size: 0.875rem; color: var(--muted-foreground); }
-/* Mobile-Anpassung: Platz für Home-Indicator (iOS) bzw. Gesten-Leiste (Android). */
-.footer-inner { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+/* Mobile-Anpassung: Platz für Home-Indicator (iOS) bzw. Gesten-Leiste (Android)
+   — sitzt seit 2.0.2 am letzten Block des Footers (.footer-von). */
 @media (min-width: 640px) { .footer-inner { flex-direction: row; } }
 .footer-brand { display: flex; align-items: center; gap: 0.5rem; }
 .footer-brand-icon { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; overflow: hidden; }
@@ -541,6 +541,12 @@ p { margin: 0; }
 .footer-links a:hover { color: var(--foreground); }
 .footer-link-btn { border: none; background: transparent; padding: 0; font-family: var(--font-sans); font-size: inherit; color: inherit; cursor: pointer; transition: color 0.15s; }
 .footer-link-btn:hover { color: var(--foreground); }
+
+/* "Von AppVektor" — bewusst klein und unauffällig, wie ein Impressum */
+.footer-von { max-width: 72rem; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.25rem 1rem; padding: 0 1.5rem calc(1.5rem + env(safe-area-inset-bottom)); margin-top: -1rem; font-size: 0.75rem; color: var(--muted-foreground); opacity: 0.8; }
+.footer-von-titel { width: 100%; text-align: center; }
+.footer-von a { color: inherit; text-decoration: underline; text-decoration-color: oklch(1 0 0 / 0.2); text-underline-offset: 2px; }
+.footer-von a:hover { color: var(--foreground); }
 
 /* Rechtliches-Modal (Datenschutz/Impressum) */
 .rechtliches-dialog { max-width: 38rem; }
