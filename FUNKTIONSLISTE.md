@@ -142,8 +142,13 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 
 ## 5. Webseiten und Buch
 
-- [ ] appvektor.com auf Englisch (automatische Erkennung nach Browsersprache, Umschalter, Impressum und Datenschutz auch auf Englisch)
-- [ ] Link in der App zu appvektor.com öffnet die Seite in der gerade gewählten App-Sprache
+- [x] appvektor.com in 5 Sprachen gebaut (Deutsch, Englisch, Spanisch, Französisch, Portugiesisch), wie in der App: automatische Erkennung nach Browsersprache, Umschalter (Weltkugel), Wahl wird gemerkt, Impressum und Datenschutz in allen Sprachen mit „Im Zweifel gilt die deutsche Fassung“ (14.11.2026, Projekt G:\appvektor-landing, Zweig sprachen, nur lokal)
+- [x] appvektor.com: feste Adressen je Sprache (/de/, /en/, /es/, /fr/, /pt/ + /impressum, /datenschutz), Titel, Beschreibung und lang je Sprache für Google
+- [ ] appvektor.com: Vorschau ansehen und Veröffentlichen freigeben (Jens), dann veröffentlichen
+- [ ] appvektor.com: Cloudflare-Token (CLOUDFLARE_API_TOKEN) auf dem neuen Rechner einrichten – ist hier noch nicht gesetzt
+- [ ] appvektor.com: Projekt auf GitHub sichern (Git ist jetzt angelegt, aber noch ohne GitHub)
+- [ ] appvektor.com: Produkttext zu Abo-Warner Pro prüfen (nennt noch Kontoauszug-Erkennung, CSV-Export und „Apps in Vorbereitung“)
+- [ ] Link in der App zu appvektor.com öffnet die Seite in der gerade gewählten App-Sprache (Adressen stehen jetzt fest, z. B. appvektor.com/en/)
 - [ ] wieticktkiwirklich.com (Buchseite) auf Englisch, mit Hinweis „English edition in preparation“
 - [ ] abo-warner-pro.com: Englisch ist schon da, später Spanisch/Französisch/Portugiesisch passend zur App
 - [ ] Buch nach Fertigstellung ins Englische übersetzen (eigenes Projekt)
