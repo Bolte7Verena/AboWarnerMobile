@@ -8,6 +8,12 @@ Stand: 14.11.2026
 
 ---
 
+## GRUNDREGEL
+
+Alles wird für den weltweiten Markt gebaut. Jede App, jede Webseite und jedes Buch mindestens auf Deutsch UND Englisch, mit automatischer Spracherkennung und Umschalter. Weitere Sprachen nach Markt.
+
+---
+
 ## 1. Version 2.0.1 (Zweig master, liegt bei Apple und Google in der Prüfung)
 
 Geprüft im Code von master (Stand ab6372a).
@@ -134,7 +140,17 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 
 ---
 
-## 5. Bewusst verworfen
+## 5. Webseiten und Buch
+
+- [ ] appvektor.com auf Englisch (automatische Erkennung nach Browsersprache, Umschalter, Impressum und Datenschutz auch auf Englisch)
+- [ ] Link in der App zu appvektor.com öffnet die Seite in der gerade gewählten App-Sprache
+- [ ] wieticktkiwirklich.com (Buchseite) auf Englisch, mit Hinweis „English edition in preparation“
+- [ ] abo-warner-pro.com: Englisch ist schon da, später Spanisch/Französisch/Portugiesisch passend zur App
+- [ ] Buch nach Fertigstellung ins Englische übersetzen (eigenes Projekt)
+
+---
+
+## 6. Bewusst verworfen
 
 - Windows-App (18.10.2026): wird nicht mehr gepflegt
 - Japanisch und Norwegisch in der App (13.11.2026): vorerst nicht
@@ -144,6 +160,6 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 
 ---
 
-## 6. Ideen für später
+## 7. Ideen für später
 
 - Weitere Sprachen, Märkte Naher Osten und China prüfen
