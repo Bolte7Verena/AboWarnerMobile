@@ -133,6 +133,17 @@ test('Englisch: Hilfe hat dieselbe Gliederung wie Deutsch', () => {
     }
 });
 
+test('Datenschutz nennt in beiden Sprachen alle gespeicherten Angaben', () => {
+    const de = SPRACHEN.de['datenschutz.inhalt'];
+    for (const w of ['Vertragsnummer', 'Kundennummer', 'Anschrift des Anbieters', 'Absender für das Kündigungsschreiben', 'werden nur lokal', 'keine Übertragung']) {
+        assert.ok(de.includes(w), `de: ${w}`);
+    }
+    const en = SPRACHEN.en['datenschutz.inhalt'];
+    for (const w of ['contract number', 'customer number', "provider's address", 'sender details for the cancellation letter', 'stored only locally', 'not transmitted']) {
+        assert.ok(en.includes(w), `en: ${w}`);
+    }
+});
+
 // --- Vollständigkeit ---
 
 test('Englisch ist vollständig: jeder deutsche Schlüssel hat eine englische Übersetzung', () => {

@@ -245,7 +245,7 @@ export default {
                 </p>
 
                 <h3>2. Zweck der Datenverarbeitung und verarbeitete Daten</h3>
-                <p>Abo-Warner Pro verarbeitet ausschließlich die Daten, die du selbst einträgst (Abo-Name, Kosten, Kategorie, Zahlungs- und Kündigungsfristen). Diese werden lokal in einer Datei auf deinem Gerät gespeichert (im nutzerspezifischen Anwendungsdatenverzeichnis deines Betriebssystems). Es findet keine Übertragung dieser Daten an den Anbieter oder an Dritte statt.</p>
+                <p>Abo-Warner Pro verarbeitet ausschließlich die Daten, die du selbst einträgst (Abo-Name, Kosten, Kategorie, Zahlungs- und Kündigungsfristen sowie, wenn du sie angibst, Vertragsnummer, Kundennummer, Anschrift des Anbieters und deinen Absender für das Kündigungsschreiben). Diese werden nur lokal in einer Datei auf deinem Gerät gespeichert (im nutzerspezifischen Anwendungsdatenverzeichnis deines Betriebssystems). Es findet keine Übertragung dieser Daten an den Anbieter oder an Dritte statt.</p>
 
                 <h3>3. Server-Logs, Hosting und externe Dienste</h3>
                 <p>AppVektor betreibt keinen Server, der Daten aus der App empfängt; entsprechend fallen bei AppVektor keine Server-Logs zu deiner Nutzung der App an. Die von der App verwendeten Schriftarten sind lokal in der App gespeichert; die App lädt keine Inhalte von externen Servern nach. Es werden keine Analyse-, Tracking- oder Werbedienste eingebunden. Beziehst du die App über einen App-Store (z. B. Apple App Store oder Google Play), verarbeitet dessen Betreiber die dabei anfallenden Daten in eigener Verantwortung.</p>

@@ -248,7 +248,7 @@ export default {
                 </p>
 
                 <h3>2. Purpose of processing and data processed</h3>
-                <p>Abo-Warner Pro only processes the data you enter yourself (subscription name, cost, category, payment dates and notice periods). This data is stored locally in a file on your device (in the user-specific application data directory of your operating system). It is not transmitted to the provider or to any third party.</p>
+                <p>Abo-Warner Pro only processes the data you enter yourself (subscription name, cost, category, payment dates and notice periods and, if you enter them, contract number, customer number, the provider's address and your sender details for the cancellation letter). This data is stored only locally in a file on your device (in the user-specific application data directory of your operating system). It is not transmitted to the provider or to any third party.</p>
 
                 <h3>3. Server logs, hosting and external services</h3>
                 <p>AppVektor does not operate any server that receives data from the app; accordingly, AppVektor does not hold any server logs about your use of the app. The fonts used by the app are stored locally in the app; the app does not load any content from external servers. No analytics, tracking or advertising services are integrated. If you obtain the app from an app store (e.g. Apple App Store or Google Play), its operator processes the resulting data under its own responsibility.</p>
