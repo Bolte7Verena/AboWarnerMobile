@@ -6,4 +6,7 @@
      die App dort nie schreibt — entfernt nach dem Least-Privilege-Prinzip. -->
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <cache-path name="my_cache_images" path="." />
+    <!-- "Per Foto einlesen": Zwischendatei der System-Kamera (app-eigener
+         Ordner Pictures, nur JPEG_*.jpg). Wird nach dem Auslesen gelöscht. -->
+    <external-files-path name="kamera_zwischendatei" path="Pictures/" />
 </paths>

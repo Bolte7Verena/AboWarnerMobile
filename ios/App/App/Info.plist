@@ -32,6 +32,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Only when you tap “Scan from photo”: the camera takes a photo of an invoice or contract confirmation. The text is read only on your device; the photo is not saved or sent anywhere.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Only when you tap “Scan from photo”: you choose one image (e.g. a screenshot of an invoice). The text is read only on your device; the image is not saved or sent anywhere.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

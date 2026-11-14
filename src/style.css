@@ -265,6 +265,19 @@ p { margin: 0; }
 }
 .select-control option { background: var(--popover); color: var(--popover-foreground); }
 
+/* Per Foto einlesen (ab 2.0.2) */
+.foto-bereich { display: flex; flex-direction: column; gap: 0.6rem; }
+.foto-knopf { align-self: flex-start; }
+.foto-knopf svg { width: 1rem; height: 1rem; }
+.foto-auswahl { display: flex; flex-direction: column; gap: 0.6rem; padding: 0.75rem; border: 1px dashed var(--border); border-radius: var(--radius-md); }
+.foto-auswahl[hidden], .foto-status[hidden] { display: none; }
+.foto-hinweis { margin: 0; font-size: 0.8rem; line-height: 1.45; color: var(--muted-foreground); }
+.foto-auswahl-knoepfe { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.foto-status { margin: 0; font-size: 0.8rem; line-height: 1.45; color: var(--muted-foreground); }
+.foto-status.erfolg { color: var(--accent-amber); }
+.foto-status.fehler { color: var(--destructive, #f87171); }
+.input-control.vom-foto { border-color: var(--accent-amber); box-shadow: 0 0 0 1px color-mix(in oklch, var(--accent-amber) 60%, transparent); }
+
 /* Probeabo / Testzeitraum: Schalter + Datum (ab 2.0.2) */
 .probe-bereich { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md); }
 .schalter { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.875rem; font-weight: 600; color: var(--foreground); }

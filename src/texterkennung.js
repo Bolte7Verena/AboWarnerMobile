@@ -1,0 +1,195 @@
+/**
+ * texterkennung.js | "Per Foto einlesen" im Formular "Neues Abo" (ab 2.0.2).
+ *
+ * Ablauf, vollständig auf dem Gerät:
+ * 1. Nutzer tippt "Per Foto einlesen" und dann "Foto aufnehmen" oder
+ *    "Bild auswählen". Erst dadurch öffnet das System Kamera bzw. Bildauswahl
+ *    (iOS fragt beim ersten Mal nach der Erlaubnis, Android braucht keine,
+ *    weil die System-Kamera bzw. die System-Bildauswahl genutzt wird).
+ * 2. Das Bild wird nur im Arbeitsspeicher verkleinert und an die
+ *    Texterkennung des Geräts übergeben (iOS: Apple Vision, Android:
+ *    Tesseract mit fest eingebauten Sprachdaten). Kein Internet, kein Server.
+ * 3. Aus dem erkannten Text werden Werte VORGESCHLAGEN
+ *    (texterkennung-auswertung.js). Nur leere Felder werden befüllt, Unsicheres
+ *    bleibt leer. Der Nutzer prüft und speichert selbst.
+ * 4. Das Bild wird nicht gespeichert: Verweise werden verworfen, das
+ *    Dateifeld geleert, Zwischendateien der Kamera löscht die native Seite.
+ */
+
+import { t, tAnzahl, aktuelleSprache, formatiereDatum } from './i18n.js';
+import { formatiereZahlDE } from './calculator.js';
+import { werteTextAus } from './texterkennung-auswertung.js';
+
+const MAX_KANTE = 2400; // Pixel, genügt für gut lesbaren Text
+
+// Bild aus der Datei -> verkleinertes JPEG als Base64 (nur im Speicher).
+async function bildAlsJpegBase64(datei) {
+    let quelle;
+    let breite;
+    let hoehe;
+    try {
+        quelle = await createImageBitmap(datei, { imageOrientation: 'from-image' });
+        breite = quelle.width;
+        hoehe = quelle.height;
+    } catch (error) {
+        // Ersatzweg: über ein data:-URL (blob: ist per CSP nicht erlaubt).
+        const dataUrl = await new Promise((resolve, reject) => {
+            const leser = new FileReader();
+            leser.onload = () => resolve(leser.result);
+            leser.onerror = () => reject(leser.error);
+            leser.readAsDataURL(datei);
+        });
+        quelle = await new Promise((resolve, reject) => {
+            const bild = new Image();
+            bild.onload = () => resolve(bild);
+            bild.onerror = reject;
+            bild.src = dataUrl;
+        });
+        breite = quelle.naturalWidth;
+        hoehe = quelle.naturalHeight;
+    }
+    const faktor = Math.min(1, MAX_KANTE / Math.max(breite, hoehe));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(breite * faktor));
+    canvas.height = Math.max(1, Math.round(hoehe * faktor));
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(quelle, 0, 0, canvas.width, canvas.height);
+    if (quelle.close) quelle.close();
+    const jpeg = canvas.toDataURL('image/jpeg', 0.92);
+    canvas.width = 0;
+    canvas.height = 0;
+    return jpeg.slice(jpeg.indexOf(',') + 1);
+}
+
+// Schreibt die Region Daten als MM/TT (z.B. USA)?
+function monatZuerst() {
+    try {
+        const teile = new Intl.DateTimeFormat(navigator.language || 'de-DE').formatToParts(new Date(2026, 10, 25));
+        return teile.findIndex((teil) => teil.type === 'month') < teile.findIndex((teil) => teil.type === 'day');
+    } catch (error) {
+        return false;
+    }
+}
+
+// Reihenfolge der Erkennungssprachen: App-Sprache zuerst.
+function erkennungsSprachen() {
+    const alle = ['de', 'en', 'es', 'fr', 'pt'];
+    const erste = aktuelleSprache();
+    return [erste, ...alle.filter((code) => code !== erste)];
+}
+
+function markiere(el) {
+    el.classList.add('vom-foto');
+    el.addEventListener('input', () => el.classList.remove('vom-foto'), { once: true });
+    el.addEventListener('change', () => el.classList.remove('vom-foto'), { once: true });
+}
+
+// Trägt die Vorschläge in leere Felder ein. Rückgabe: Anzahl übernommener Angaben.
+export function uebernehmeVorschlaege(vorschlag, { datumsauswahl } = {}) {
+    let anzahl = 0;
+    const feld = (id) => document.getElementById(id);
+    const setzeText = (id, wert) => {
+        const el = feld(id);
+        if (!el || wert === undefined || wert === '' || el.value.trim() !== '') return false;
+        el.value = wert;
+        markiere(el);
+        anzahl++;
+        return true;
+    };
+
+    setzeText('input-name', vorschlag.name);
+    const kostenGesetzt = vorschlag.kosten !== undefined && setzeText('input-kosten', formatiereZahlDE(vorschlag.kosten));
+    // Währung: vorbelegt ist nur die Landeswährung des Geräts. Sie wird
+    // ersetzt, wenn der Betrag aus dem Foto stammt und eine Währung dabeistand.
+    if (kostenGesetzt && vorschlag.waehrung) {
+        const el = feld('input-waehrung');
+        if (el.value !== vorschlag.waehrung) {
+            el.value = vorschlag.waehrung;
+            markiere(el);
+        }
+    }
+    if (vorschlag.turnus) {
+        const el = feld('input-turnus');
+        el.value = vorschlag.turnus;
+        markiere(el);
+        anzahl++;
+    }
+    if (vorschlag.naechsteZahlung && !feld('input-datum-iso').value) {
+        if (datumsauswahl && datumsauswahl.setzeDatum) {
+            datumsauswahl.setzeDatum(vorschlag.naechsteZahlung);
+        } else {
+            feld('input-datum-iso').value = vorschlag.naechsteZahlung;
+            feld('input-datum').value = formatiereDatum(vorschlag.naechsteZahlung);
+        }
+        markiere(feld('input-datum'));
+        anzahl++;
+    }
+    const weitere = [
+        setzeText('input-vertragsnummer', vorschlag.vertragsnummer),
+        setzeText('input-kundennummer', vorschlag.kundennummer),
+        setzeText('input-vertragspartner', vorschlag.vertragspartner)
+    ];
+    if (weitere.some(Boolean)) feld('weitere-angaben').open = true;
+    return anzahl;
+}
+
+function zeigeStatus(text, art = '') {
+    const el = document.getElementById('foto-status');
+    el.textContent = text;
+    el.className = `foto-status ${art}`.trim();
+    el.hidden = !text;
+}
+
+async function verarbeiteDatei(datei, optionen) {
+    if (!datei) return;
+    const knoepfe = document.querySelectorAll('#foto-bereich button');
+    knoepfe.forEach((k) => { k.disabled = true; });
+    zeigeStatus(t('foto.laeuft'), 'laeuft');
+    try {
+        let bild = await bildAlsJpegBase64(datei);
+        let zeilen;
+        try {
+            zeilen = await window.api.erkenneText(bild, erkennungsSprachen());
+        } finally {
+            bild = null; // Bilddaten sofort verwerfen
+        }
+        const anzahl = uebernehmeVorschlaege(werteTextAus(zeilen, { monatZuerst: monatZuerst() }), optionen);
+        zeigeStatus(anzahl > 0 ? tAnzahl('foto.erkannt', anzahl) : t('foto.nichts'), anzahl > 0 ? 'erfolg' : '');
+    } catch (error) {
+        zeigeStatus(error && error.code === 'NICHT_VERFUEGBAR' ? t('foto.nurApp') : t('foto.fehler'), 'fehler');
+    } finally {
+        knoepfe.forEach((k) => { k.disabled = false; });
+        // Zwischendateien der Kamera entfernen (auch nach Fehlern).
+        window.api.raeumeFotoAuf().catch(() => {});
+    }
+}
+
+export function initFotoEinlesen(optionen = {}) {
+    const aufnehmen = document.getElementById('input-foto-kamera');
+    const auswaehlen = document.getElementById('input-foto-datei');
+    const auswahl = document.getElementById('foto-auswahl');
+
+    document.getElementById('btn-foto-einlesen').addEventListener('click', () => {
+        auswahl.hidden = !auswahl.hidden;
+    });
+    // Kamera bzw. Bildauswahl öffnen sich ausschließlich durch diese Knöpfe.
+    document.getElementById('btn-foto-aufnehmen').addEventListener('click', () => aufnehmen.click());
+    document.getElementById('btn-foto-auswaehlen').addEventListener('click', () => auswaehlen.click());
+
+    for (const input of [aufnehmen, auswaehlen]) {
+        input.addEventListener('change', async () => {
+            const datei = input.files && input.files[0];
+            input.value = ''; // Datei-Verweis sofort lösen
+            auswahl.hidden = true;
+            await verarbeiteDatei(datei, optionen);
+        });
+    }
+
+    document.getElementById('abo-form').addEventListener('reset', () => {
+        auswahl.hidden = true;
+        zeigeStatus('');
+        document.querySelectorAll('#abo-form .vom-foto').forEach((el) => el.classList.remove('vom-foto'));
+    });
+}

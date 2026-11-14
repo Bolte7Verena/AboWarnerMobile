@@ -8,7 +8,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
 
-        let bridgeViewController = CAPBridgeViewController()
+        let bridgeViewController = AppBridgeViewController()
 
         // Nur für automatisierte Store-Screenshots (Fastlane Snapshot/XCUITest,
         // siehe AboWarnerProUITests): setzt ein Flag im WebView-Kontext, BEVOR
@@ -39,5 +39,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
         SceneDelegateProxy.shared.scene(scene, continue: userActivity)
+    }
+}
+
+/// Bridge-Controller der App: registriert das eigene Plugin
+/// (Texterkennung auf dem Gerät, siehe TextErkennungPlugin.swift).
+class AppBridgeViewController: CAPBridgeViewController {
+    override open func capacitorDidLoad() {
+        bridge?.registerPluginInstance(TextErkennungPlugin())
     }
 }

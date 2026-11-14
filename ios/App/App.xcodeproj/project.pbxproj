@@ -20,6 +20,8 @@
 		9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9582B6822FE993A50072D4E8 /* SceneDelegate.swift */; };
 		B5DFC0386A9817447C8F5C59 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA0C70AB84789FA6A23DAE5C /* SnapshotHelper.swift */; };
 		D2B701BCD85B791CDB0CBE6E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51E991A7B243F5752387C86C /* Foundation.framework */; };
+		AB5E00012F00000000000001 /* TextErkennungPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5E00012F00000000000002 /* TextErkennungPlugin.swift */; };
+		AB5E00012F00000000000003 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AB5E00012F00000000000004 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,12 @@
 		EA0C70AB84789FA6A23DAE5C /* SnapshotHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
 		ECC1CA37377A59F0D594B257 /* AboWarnerProUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AboWarnerProUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD1F28BEEBEAEF36109EF315 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AB5E00012F00000000000002 /* TextErkennungPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextErkennungPlugin.swift; sourceTree = "<group>"; };
+		AB5E00012F00000000000005 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AB5E00012F00000000000006 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AB5E00012F00000000000007 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AB5E00012F00000000000008 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AB5E00012F00000000000009 /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,12 +101,14 @@
 			isa = PBXGroup;
 			children = (
 				9582B6822FE993A50072D4E8 /* SceneDelegate.swift */,
+				AB5E00012F00000000000002 /* TextErkennungPlugin.swift */,
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
 				504EC3131FED79650016851F /* Info.plist */,
+				AB5E00012F00000000000004 /* InfoPlist.strings */,
 				FD1F28BEEBEAEF36109EF315 /* PrivacyInfo.xcprivacy */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
@@ -187,6 +197,10 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
+				es,
+				fr,
+				pt,
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
 			packageReferences = (
@@ -221,6 +235,7 @@
 				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
 				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
 				56D8E6DEC7FE25A024D5D5BE /* PrivacyInfo.xcprivacy in Resources */,
+				AB5E00012F00000000000003 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,6 +248,7 @@
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */,
+				AB5E00012F00000000000001 /* TextErkennungPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,6 +278,18 @@
 				504EC3111FED79650016851F /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		AB5E00012F00000000000004 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AB5E00012F00000000000005 /* de */,
+				AB5E00012F00000000000006 /* en */,
+				AB5E00012F00000000000007 /* es */,
+				AB5E00012F00000000000008 /* fr */,
+				AB5E00012F00000000000009 /* pt */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

@@ -1,0 +1,3 @@
+/* Erklärtexte für Kamera und Fotos ("Per Foto einlesen"), Sprache: en */
+"NSCameraUsageDescription" = "Only when you tap “Scan from photo”: the camera takes a photo of an invoice or contract confirmation. The text is read only on your device; the photo is not saved or sent anywhere.";
+"NSPhotoLibraryUsageDescription" = "Only when you tap “Scan from photo”: you choose one image (e.g. a screenshot of an invoice). The text is read only on your device; the image is not saved or sent anywhere.";

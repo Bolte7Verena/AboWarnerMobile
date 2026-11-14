@@ -13,6 +13,7 @@ import { zeigeFaelligkeitshinweisFallsNoetig, planeFaelligkeitsBenachrichtigunge
 import { initRechtliches } from './rechtliches.js';
 import { initHilfe } from './hilfe.js';
 import { initSprachwahl } from './sprachwahl.js';
+import { initFotoEinlesen } from './texterkennung.js';
 import { seedDemoDatenFallsNoetig } from './demo-seed.js';
 
 // Globales Binding für UI-Elemente
@@ -87,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         initHilfe();
         initSprachwahl();
 
-        initDatePicker({
+        const zahlungsDatum = initDatePicker({
             inputEl: document.getElementById('input-datum'),
             hiddenEl: document.getElementById('input-datum-iso'),
             wrapEl: document.querySelector('.date-input-wrap'),
@@ -101,6 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             popoverEl: document.getElementById('probe-date-picker-popover'),
             formEl: document.getElementById('abo-form')
         });
+        initFotoEinlesen({ datumsauswahl: zahlungsDatum });
 
         // 4. Nur für automatisierte Store-Screenshots (siehe demo-seed.js):
         // feste Demo-Abos anlegen, bevor die Liste gerendert wird. Das Flag

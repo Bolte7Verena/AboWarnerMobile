@@ -1,0 +1,3 @@
+/* Erklärtexte für Kamera und Fotos ("Per Foto einlesen"), Sprache: pt */
+"NSCameraUsageDescription" = "Somente quando você toca em “Ler de uma foto”: a câmera tira uma foto de uma fatura ou confirmação de contrato. O texto é lido apenas no seu aparelho; a foto não é salva nem enviada.";
+"NSPhotoLibraryUsageDescription" = "Somente quando você toca em “Ler de uma foto”: você escolhe uma imagem (por exemplo, uma captura de tela de uma fatura). O texto é lido apenas no seu aparelho; a imagem não é salva nem enviada.";

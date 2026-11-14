@@ -97,6 +97,18 @@ export default {
     'edit.vertragsdaten': 'Données du contrat',
     'edit.vertragsdatenHinweis': '(facultatif, pour la lettre de résiliation)',
 
+    // --- Per Foto einlesen ---
+    'foto.knopf': 'Lire depuis une photo',
+    'foto.hinweis': 'Photographiez une facture ou une confirmation de contrat, ou choisissez une image, p. ex. une capture d’écran. Le texte est lu uniquement sur votre appareil, sans Internet. L’image n’est pas enregistrée.',
+    'foto.aufnehmen': 'Prendre une photo',
+    'foto.auswaehlen': 'Choisir une image',
+    'foto.laeuft': 'Lecture du texte …',
+    'foto.erkannt': '{anzahl} informations reprises. Veuillez les vérifier et les corriger si nécessaire. Ce qui n’a pas été reconnu avec certitude reste vide.',
+    'foto.erkannt.eins': '1 information reprise. Veuillez la vérifier et la corriger si nécessaire. Ce qui n’a pas été reconnu avec certitude reste vide.',
+    'foto.nichts': 'Rien n’a pu être reconnu avec certitude sur l’image. Veuillez saisir les informations vous-même.',
+    'foto.fehler': 'L’image n’a pas pu être lue. Essayez avec une photo plus nette ou saisissez les informations vous-même.',
+    'foto.nurApp': 'La reconnaissance de texte n’est disponible que dans l’application sur votre téléphone.',
+
     // --- Supprimer, marquer comme résilié ---
     'loeschen.titel': 'Supprimer cet abonnement ?',
     'loeschen.text': '« {name} » sera définitivement supprimé de votre liste.',
@@ -314,6 +326,7 @@ export default {
                 <h3>Comment ajouter un abonnement ?</h3>
                 <ol>
                     <li>Touchez « Nouvel abonnement ».</li>
+                    <li>Si vous le souhaitez : touchez « Lire depuis une photo » et photographiez une facture ou une confirmation de contrat (ou choisissez une capture d’écran). L’application propose les informations reconnues, vous les vérifiez. L’image est lue uniquement sur votre téléphone et n’est pas enregistrée.</li>
                     <li>Saisissez le nom, le coût et la fréquence de paiement (à quelle fréquence vous payez, p. ex. mensuel).</li>
                     <li>Choisissez la date du prochain paiement.</li>
                     <li>Saisissez le délai de préavis en jours, semaines ou mois (voir ci-dessous).</li>

@@ -100,6 +100,18 @@ export default {
     'edit.vertragsdaten': 'Contract details',
     'edit.vertragsdatenHinweis': '(optional, for your cancellation letter)',
 
+    // --- Per Foto einlesen ---
+    'foto.knopf': 'Scan from photo',
+    'foto.hinweis': 'Take a photo of an invoice or contract confirmation, or choose an image such as a screenshot. The text is read only on your device, without the internet. The image is not saved.',
+    'foto.aufnehmen': 'Take photo',
+    'foto.auswaehlen': 'Choose image',
+    'foto.laeuft': 'Reading text …',
+    'foto.erkannt': '{anzahl} details filled in. Please check them and correct them if needed. Anything not recognised reliably stays empty.',
+    'foto.erkannt.eins': '1 detail filled in. Please check it and correct it if needed. Anything not recognised reliably stays empty.',
+    'foto.nichts': 'Nothing could be recognised reliably in the image. Please enter the details yourself.',
+    'foto.fehler': 'The image could not be read. Try a sharper photo or enter the details yourself.',
+    'foto.nurApp': 'Text recognition is only available in the app on your phone.',
+
     // --- Delete, mark as cancelled ---
     'loeschen.titel': 'Delete this subscription?',
     'loeschen.text': '“{name}” will be permanently removed from your list.',
@@ -317,6 +329,7 @@ export default {
                 <h3>How do I add a subscription?</h3>
                 <ol>
                     <li>Tap “New subscription”.</li>
+                    <li>If you like: tap “Scan from photo” and take a photo of an invoice or contract confirmation (or choose a screenshot). The app suggests the details it recognises, and you check them. The image is read only on your phone and is not saved.</li>
                     <li>Enter the name, the cost and the billing cycle (how often you pay, e.g. monthly).</li>
                     <li>Choose the date of the next payment.</li>
                     <li>Enter the notice period in days, weeks or months (see below).</li>

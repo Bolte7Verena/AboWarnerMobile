@@ -98,6 +98,18 @@ export default {
     'edit.vertragsdaten': 'Vertragsdaten',
     'edit.vertragsdatenHinweis': '(optional, für das Kündigungsschreiben)',
 
+    // --- Per Foto einlesen ---
+    'foto.knopf': 'Per Foto einlesen',
+    'foto.hinweis': 'Fotografiere eine Rechnung oder Vertragsbestätigung oder wähle ein Bild aus, z.B. einen Screenshot. Der Text wird nur auf deinem Gerät gelesen, ohne Internet. Das Bild wird nicht gespeichert.',
+    'foto.aufnehmen': 'Foto aufnehmen',
+    'foto.auswaehlen': 'Bild auswählen',
+    'foto.laeuft': 'Text wird gelesen …',
+    'foto.erkannt': '{anzahl} Angaben übernommen. Bitte prüfe sie und korrigiere sie bei Bedarf. Was nicht sicher erkannt wurde, bleibt leer.',
+    'foto.erkannt.eins': '1 Angabe übernommen. Bitte prüfe sie und korrigiere sie bei Bedarf. Was nicht sicher erkannt wurde, bleibt leer.',
+    'foto.nichts': 'Auf dem Bild wurde nichts sicher erkannt. Bitte trag die Angaben selbst ein.',
+    'foto.fehler': 'Das Bild konnte nicht gelesen werden. Versuch es mit einem schärferen Foto oder trag die Angaben selbst ein.',
+    'foto.nurApp': 'Die Texterkennung gibt es nur in der App auf dem Handy.',
+
     // --- Löschen, Kündigen markieren ---
     'loeschen.titel': 'Wirklich löschen?',
     'loeschen.text': '„{name}“ wird endgültig aus deiner Liste entfernt.',
@@ -312,6 +324,7 @@ export default {
                 <h3>Wie lege ich ein Abo an?</h3>
                 <ol>
                     <li>Tippe auf „Neues Abo“.</li>
+                    <li>Wenn du willst: Tippe auf „Per Foto einlesen“ und fotografiere eine Rechnung oder Vertragsbestätigung (oder wähle einen Screenshot). Die App schlägt die erkannten Angaben vor, du prüfst sie. Das Bild wird nur auf deinem Handy gelesen und nicht gespeichert.</li>
                     <li>Trag den Namen, die Kosten und den Turnus ein (wie oft du zahlst, z.B. monatlich).</li>
                     <li>Wähle das Datum der nächsten Zahlung.</li>
                     <li>Trag die Kündigungsfrist ein, wahlweise in Tagen, Wochen oder Monaten (siehe unten).</li>

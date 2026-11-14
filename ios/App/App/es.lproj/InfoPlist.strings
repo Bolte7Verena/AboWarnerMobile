@@ -1,0 +1,3 @@
+/* Erklärtexte für Kamera und Fotos ("Per Foto einlesen"), Sprache: es */
+"NSCameraUsageDescription" = "Solo cuando tocas «Leer desde una foto»: la cámara hace una foto de una factura o de una confirmación del contrato. El texto se lee solo en tu dispositivo; la foto no se guarda ni se envía.";
+"NSPhotoLibraryUsageDescription" = "Solo cuando tocas «Leer desde una foto»: eliges una imagen (p. ej. una captura de pantalla de una factura). El texto se lee solo en tu dispositivo; la imagen no se guarda ni se envía.";

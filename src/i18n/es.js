@@ -96,6 +96,18 @@ export default {
     'edit.vertragsdaten': 'Datos del contrato',
     'edit.vertragsdatenHinweis': '(opcional, para la carta de cancelación)',
 
+    // --- Per Foto einlesen ---
+    'foto.knopf': 'Leer desde una foto',
+    'foto.hinweis': 'Haz una foto de una factura o de una confirmación del contrato, o elige una imagen, p. ej. una captura de pantalla. El texto se lee solo en tu dispositivo, sin internet. La imagen no se guarda.',
+    'foto.aufnehmen': 'Hacer foto',
+    'foto.auswaehlen': 'Elegir imagen',
+    'foto.laeuft': 'Leyendo el texto …',
+    'foto.erkannt': 'Se han rellenado {anzahl} datos. Revísalos y corrígelos si hace falta. Lo que no se ha reconocido con seguridad queda vacío.',
+    'foto.erkannt.eins': 'Se ha rellenado 1 dato. Revísalo y corrígelo si hace falta. Lo que no se ha reconocido con seguridad queda vacío.',
+    'foto.nichts': 'No se ha reconocido nada con seguridad en la imagen. Introduce los datos tú mismo.',
+    'foto.fehler': 'No se pudo leer la imagen. Prueba con una foto más nítida o introduce los datos tú mismo.',
+    'foto.nurApp': 'El reconocimiento de texto solo está disponible en la app del móvil.',
+
     // --- Eliminar, marcar como cancelada ---
     'loeschen.titel': '¿Eliminar esta suscripción?',
     'loeschen.text': '«{name}» se eliminará definitivamente de tu lista.',
@@ -313,6 +325,7 @@ export default {
                 <h3>¿Cómo añado una suscripción?</h3>
                 <ol>
                     <li>Toca «Nueva suscripción».</li>
+                    <li>Si quieres: toca «Leer desde una foto» y haz una foto de una factura o de una confirmación del contrato (o elige una captura de pantalla). La app te propone los datos que reconoce y tú los revisas. La imagen solo se lee en tu móvil y no se guarda.</li>
                     <li>Introduce el nombre, el coste y la frecuencia de pago (cada cuánto pagas, p. ej. mensual).</li>
                     <li>Elige la fecha del próximo pago.</li>
                     <li>Introduce el plazo de preaviso en días, semanas o meses (ver más abajo).</li>

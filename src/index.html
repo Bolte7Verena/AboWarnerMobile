@@ -94,6 +94,24 @@
                         </button>
                     </div>
                     <form id="abo-form">
+                        <!-- Per Foto einlesen (ab 2.0.2): Texterkennung nur auf dem Gerät,
+                             Kamera/Bildauswahl öffnen sich nur über diese Knöpfe. -->
+                        <div id="foto-bereich" class="foto-bereich">
+                            <button type="button" id="btn-foto-einlesen" class="btn btn-outline btn-sm foto-knopf" aria-controls="foto-auswahl">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                                <span data-i18n="foto.knopf"></span>
+                            </button>
+                            <div id="foto-auswahl" class="foto-auswahl" hidden>
+                                <p class="foto-hinweis" data-i18n="foto.hinweis"></p>
+                                <div class="foto-auswahl-knoepfe">
+                                    <button type="button" id="btn-foto-aufnehmen" class="btn btn-outline btn-sm" data-i18n="foto.aufnehmen"></button>
+                                    <button type="button" id="btn-foto-auswaehlen" class="btn btn-outline btn-sm" data-i18n="foto.auswaehlen"></button>
+                                </div>
+                            </div>
+                            <input type="file" id="input-foto-kamera" accept="image/*" capture="environment" hidden>
+                            <input type="file" id="input-foto-datei" accept="image/*" hidden>
+                            <p id="foto-status" class="foto-status" role="status" aria-live="polite" hidden></p>
+                        </div>
                         <div class="form-group">
                             <label for="input-name" data-i18n="feld.name"></label>
                             <input type="text" id="input-name" class="input-control" data-i18n-placeholder="feld.namePlatzhalter">

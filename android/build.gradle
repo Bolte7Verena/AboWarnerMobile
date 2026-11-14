@@ -21,6 +21,13 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // Nur für Tesseract (Texterkennung auf dem Gerät, Apache-2.0).
+        // Auf genau diese Gruppe beschränkt, alles andere kommt weiter
+        // nur von google() und mavenCentral().
+        maven {
+            url 'https://jitpack.io'
+            content { includeGroup 'cz.adaptech.tesseract4android' }
+        }
     }
 }
 

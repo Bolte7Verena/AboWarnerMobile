@@ -9,12 +9,19 @@
  * dahinter ist mobil-typisch (Capacitor Filesystem/Share statt Node fs/IPC).
  */
 
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { WaehrungsHelper } from './waehrungen.js';
 import { t } from './i18n.js';
 
 const DATEI_NAME = 'abos.json';
+
+// Eigenes, in der App enthaltenes Plugin (kein Fremdpaket): Texterkennung auf
+// dem Gerät. iOS: ios/App/App/TextErkennungPlugin.swift (Apple Vision),
+// Android: android/app/src/main/java/com/abowarner/pro/TextErkennungPlugin.java
+// (Tesseract, Sprachdaten fest in der App). Kein Internet, kein Server.
+const TextErkennung = registerPlugin('TextErkennung');
 
 function pad(zahl) {
     return String(zahl).padStart(2, '0');
@@ -131,6 +138,24 @@ window.api = {
     exportSchreiben: async (text, dateiname) => {
         await Filesystem.writeFile({ path: dateiname, directory: Directory.Cache, data: text, encoding: Encoding.UTF8 });
         return teileDatei(dateiname, t('teilen.schreiben'));
+    },
+
+    // "Per Foto einlesen": bildBase64 = verkleinertes JPEG (nur im Speicher),
+    // sprachen = z.B. ['de', 'en', 'es', 'fr', 'pt'] (App-Sprache zuerst).
+    // Rückgabe: erkannte Textzeilen. Im Browser gibt es keine Texterkennung.
+    erkenneText: async (bildBase64, sprachen) => {
+        if (!Capacitor.isNativePlatform()) {
+            const fehler = new Error('Texterkennung nur in der App');
+            fehler.code = 'NICHT_VERFUEGBAR';
+            throw fehler;
+        }
+        const ergebnis = await TextErkennung.erkenne({ bild: bildBase64, sprachen });
+        return Array.isArray(ergebnis.zeilen) ? ergebnis.zeilen : [];
+    },
+
+    // Zwischendateien der Kamera löschen (z.B. wenn das Bild nicht lesbar war).
+    raeumeFotoAuf: async () => {
+        if (Capacitor.isNativePlatform()) await TextErkennung.aufraeumen();
     },
 
     // Mobiles Gegenstück zu app.getLocale()/app.getLocaleCountryCode() im

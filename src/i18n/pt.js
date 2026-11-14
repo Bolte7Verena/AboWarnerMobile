@@ -96,6 +96,18 @@ export default {
     'edit.vertragsdaten': 'Dados do contrato',
     'edit.vertragsdatenHinweis': '(opcional, para a carta de cancelamento)',
 
+    // --- Per Foto einlesen ---
+    'foto.knopf': 'Ler de uma foto',
+    'foto.hinweis': 'Tire uma foto de uma fatura ou confirmação de contrato, ou escolha uma imagem, por exemplo, uma captura de tela. O texto é lido apenas no seu aparelho, sem internet. A imagem não é salva.',
+    'foto.aufnehmen': 'Tirar foto',
+    'foto.auswaehlen': 'Escolher imagem',
+    'foto.laeuft': 'Lendo o texto …',
+    'foto.erkannt': '{anzahl} informações preenchidas. Confira e corrija se necessário. O que não foi reconhecido com segurança fica vazio.',
+    'foto.erkannt.eins': '1 informação preenchida. Confira e corrija se necessário. O que não foi reconhecido com segurança fica vazio.',
+    'foto.nichts': 'Nada foi reconhecido com segurança na imagem. Informe os dados você mesmo.',
+    'foto.fehler': 'Não foi possível ler a imagem. Tente uma foto mais nítida ou informe os dados você mesmo.',
+    'foto.nurApp': 'O reconhecimento de texto só está disponível no app do celular.',
+
     // --- Excluir, marcar como cancelada ---
     'loeschen.titel': 'Excluir esta assinatura?',
     'loeschen.text': '“{name}” será removida definitivamente da sua lista.',
@@ -313,6 +325,7 @@ export default {
                 <h3>Como adiciono uma assinatura?</h3>
                 <ol>
                     <li>Toque em “Nova assinatura”.</li>
+                    <li>Se quiser: toque em “Ler de uma foto” e tire uma foto de uma fatura ou confirmação de contrato (ou escolha uma captura de tela). O app sugere os dados que reconhece e você os confere. A imagem é lida apenas no seu celular e não é salva.</li>
                     <li>Informe o nome, o custo e a frequência de pagamento (com que frequência você paga, por exemplo, mensal).</li>
                     <li>Escolha a data do próximo pagamento.</li>
                     <li>Informe o prazo de aviso prévio em dias, semanas ou meses (veja abaixo).</li>

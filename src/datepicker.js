@@ -221,6 +221,16 @@ export function initDatePicker({ inputEl, hiddenEl, wrapEl, popoverEl, formEl })
     // Formular auf der Karte): globale Listener und das an <body> gehängte
     // Popover wieder entfernen, damit nichts liegen bleibt.
     return {
+        // Datum von außen setzen (z.B. Vorschlag aus "Per Foto einlesen").
+        setzeDatum(iso) {
+            const teile = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+            if (!teile) return;
+            ausgewaehltesDatum = new Date(Number(teile[1]), Number(teile[2]) - 1, Number(teile[3]));
+            sichtJahr = ausgewaehltesDatum.getFullYear();
+            sichtMonat = ausgewaehltesDatum.getMonth();
+            inputEl.value = zuDeutschemFormat(ausgewaehltesDatum);
+            hiddenEl.value = zuISO(ausgewaehltesDatum);
+        },
         zerstoeren() {
             document.removeEventListener('pointerdown', pointerdownHandler);
             document.removeEventListener('keydown', keydownHandler);

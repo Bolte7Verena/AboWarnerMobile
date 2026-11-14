@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Texterkennung (Tesseract per JNI) und eigenes Capacitor-Plugin
+-keep class com.googlecode.tesseract.android.** { *; }
+-keep class com.abowarner.pro.TextErkennungPlugin { *; }

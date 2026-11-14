@@ -1,0 +1,3 @@
+/* Erklärtexte für Kamera und Fotos ("Per Foto einlesen"), Sprache: de */
+"NSCameraUsageDescription" = "Nur wenn du „Per Foto einlesen“ antippst: Die Kamera fotografiert eine Rechnung oder Vertragsbestätigung. Der Text wird nur auf deinem Gerät gelesen, das Foto wird weder gespeichert noch verschickt.";
+"NSPhotoLibraryUsageDescription" = "Nur wenn du „Per Foto einlesen“ antippst: Du wählst ein Bild aus (z.B. einen Screenshot einer Rechnung). Der Text wird nur auf deinem Gerät gelesen, das Bild wird weder gespeichert noch verschickt.";
