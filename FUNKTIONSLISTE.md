@@ -147,6 +147,9 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] wieticktkiwirklich.com (Buchseite) auf Englisch, mit Hinweis „English edition in preparation“
 - [ ] abo-warner-pro.com: Englisch ist schon da, später Spanisch/Französisch/Portugiesisch passend zur App
 - [ ] Buch nach Fertigstellung ins Englische übersetzen (eigenes Projekt)
+- [ ] Buch zuerst nur auf Deutsch veröffentlichen (Print-on-Demand, E-Book), um zu sehen, wie es läuft
+- [ ] Buch weltweit: Amazon Kindle Translate prüfen (Beta nur auf Einladung, Deutsch → Englisch, danach weitere Sprachen; Rechte an der Übersetzung klären; nur E-Book)
+- [ ] Hörbuch prüfen (eigener Schritt, echte Stimme oder KI-Stimme)
 
 ---
 
