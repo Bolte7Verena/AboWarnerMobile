@@ -14,6 +14,28 @@ Alles wird für den weltweiten Markt gebaut. Jede App, jede Webseite und jedes B
 
 ---
 
+## STAND 14.11.2026 ABENDS / NÄCHSTE SCHRITTE
+
+**App (G:\AboWarnerMobile)**
+- Zweig update-2.0.2 mit Paket 1 bis 5 fertig.
+- Test-APK „AWP Test“ ist auf Jens' Handy installiert.
+- [ ] Offen: Foto-Funktion und Übersetzungen auf dem Handy testen.
+
+**appvektor.com (G:\appvektor-landing)**
+- Zweig „sprachen“ mit 5 Sprachen fertig, NICHT veröffentlicht.
+- Nächste Schritte in dieser Reihenfolge:
+  1. [ ] Jens schaut die Vorschau an
+  2. [ ] Veralteten Produkttext zu Abo-Warner Pro korrigieren (Kontoauszüge, CSV-Export, „Apps in Vorbereitung“ raus, an die echten Funktionen der App anpassen)
+  3. [ ] Neuen Cloudflare-API-Token auf diesem Rechner einrichten
+  4. [ ] Veröffentlichen
+  5. [ ] Projekt auf GitHub sichern
+  6. [ ] Link in der App auf die Sprach-Adressen umstellen (appvektor.com/de/, /en/, /es/, /fr/, /pt/)
+
+**Danach**
+- [ ] abo-warner-pro.com und die Buchseite genauso auf 5 Sprachen mit eigenen Adressen umbauen.
+
+---
+
 ## 1. Version 2.0.1 (Zweig master, liegt bei Apple und Google in der Prüfung)
 
 Geprüft im Code von master (Stand ab6372a).
