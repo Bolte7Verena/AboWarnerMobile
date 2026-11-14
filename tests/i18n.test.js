@@ -235,3 +235,18 @@ test('Englisch: keine deutschen Umlaute (Ausnahme: Name des Inhabers)', () => {
         assert.ok(!/[äöüÄÖÜß]/.test(v.replace(/Jens Hübeler/g, '')), `${k}: ${v.slice(0, 80)}`);
     }
 });
+
+test('Datenschutz in allen Sprachen erklärt "Per Foto einlesen" (nur auf Knopfdruck, nur auf dem Gerät, nicht gespeichert, nichts übertragen)', () => {
+    const pflicht = {
+        de: ['Per Foto einlesen', 'ausschließlich auf deinem Gerät', 'nicht gespeichert und nicht übertragen', 'Tesseract', 'Vision'],
+        en: ['Scan from photo', 'exclusively on your device', 'not saved and not transmitted', 'Tesseract', 'Vision'],
+        es: ['Leer desde una foto', 'exclusivamente en tu dispositivo', 'No se guarda ni se transmite', 'Tesseract', 'Vision'],
+        fr: ['Lire depuis une photo', 'exclusivement sur votre appareil', 'ni enregistrée ni transmise', 'Tesseract', 'Vision'],
+        pt: ['Ler de uma foto', 'exclusivamente no seu aparelho', 'não é salva nem transmitida', 'Tesseract', 'Vision']
+    };
+    for (const [code, woerter] of Object.entries(pflicht)) {
+        for (const w of woerter) assert.ok(SPRACHEN[code]['datenschutz.inhalt'].includes(w), `${code}: ${w}`);
+        // Der Knopfname im Datenschutz stimmt mit dem Knopf in der App überein.
+        assert.ok(SPRACHEN[code]['datenschutz.inhalt'].includes(SPRACHEN[code]['foto.knopf']), `${code}: Knopfname`);
+    }
+});
