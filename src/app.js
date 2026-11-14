@@ -4,7 +4,7 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, FRIST_EINHEITEN, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
+import { Calculator, FRIST_EINHEITEN, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { t, tAnzahl, tWert, formatiereDatum } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
@@ -160,6 +160,7 @@ function erzeugeStatusText(abo, status) {
         // Ältere, vor 2.0.2 gekündigte Abos haben kein Vertragsende hinterlegt.
         return abo.gekuendigtZum ? t('karte.gekuendigtZum', { datum: formatiereDatum(abo.gekuendigtZum) }) : t('status.gekuendigt');
     }
+    if (istProbezeitLaufend(abo)) return t('karte.probeEndet', { datum: formatiereDatum(abo.probeEndeAm) });
     const frist = ermittleKuendigungsfrist(abo);
     return frist ? t('karte.moeglichBis', { datum: formatiereDatum(frist.fristDatum) }) : t(`status.${status}`);
 }
@@ -204,6 +205,7 @@ function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
                     <div class="abo-name-row">
                         <span class="abo-name">${escapeHtml(abo.name)}</span>
                         <span class="badge ${kategorieKlasse}">${escapeHtml(tWert('kategorie', abo.kategorie))}</span>
+                        ${istProbezeitLaufend(abo) ? `<span class="badge badge-probe">${escapeHtml(t('karte.probeBadge'))}</span>` : ''}
                     </div>
                     <p class="abo-meta">${escapeHtml(tWert('turnus', abo.turnus))} | ${escapeHtml(abo.waehrung)}</p>
                 </div>
@@ -284,6 +286,22 @@ function erzeugeAboBearbeitenFormular(abo) {
                     </div>
                 </div>
             </div>
+            <div class="probe-bereich">
+                <label class="schalter">
+                    <input type="checkbox" class="schalter-input" data-feld="probeabo" ${abo.probeabo === true ? 'checked' : ''}>
+                    <span class="schalter-regler" aria-hidden="true"></span>
+                    <span class="schalter-text">${escapeHtml(t('feld.probe'))}</span>
+                </label>
+                <div class="form-group date-field probe-datum-gruppe" ${abo.probeabo === true ? '' : 'hidden'}>
+                    <label>${t('feld.probeEnde')}</label>
+                    <div class="date-input-wrap">
+                        <input type="text" class="input-control date-input" data-datum-anzeige="probeEndeAm" placeholder="${escapeHtml(t('feld.datumPlatzhalter'))}" readonly autocomplete="off">
+                        ${ICON_KALENDER}
+                        <div class="date-picker-popover" hidden></div>
+                    </div>
+                    <input type="hidden" data-feld="probeEndeAm" value="${escapeAttr(abo.probeEndeAm || '')}">
+                </div>
+            </div>
             ${abo.gekuendigt ? `
             <div class="form-group date-field">
                 <label>${t('feld.gekuendigtZum')}</label>
@@ -318,6 +336,13 @@ function erzeugeAboBearbeitenFormular(abo) {
             <p class="edit-fehler" aria-live="polite"></p>
         </form>
     `;
+}
+
+// Probeabo-Felder zum Speichern. Schalter aus: Felder entfallen (undefined
+// wird beim Speichern als JSON weggelassen). Schalter an ohne Datum: ungültig
+// (probeEndeAm leer), istGueltig meldet dann den Fehler.
+function probeFelder(an, endeISO) {
+    return an ? { probeabo: true, probeEndeAm: endeISO || '' } : { probeabo: undefined, probeEndeAm: undefined };
 }
 
 function verdrahteAboAnsicht(kachel, abo) {
@@ -474,6 +499,11 @@ function verdrahteDatumsfeld(form, feldName) {
 function zeigeBearbeitenModus(kachel, abo) {
     kachel.innerHTML = erzeugeAboBearbeitenFormular(abo);
     verdrahteDatumsfeld(kachel.querySelector('.abo-edit-form'), 'naechsteZahlung');
+    verdrahteDatumsfeld(kachel.querySelector('.abo-edit-form'), 'probeEndeAm');
+    const probeSchalter = kachel.querySelector('[data-feld="probeabo"]');
+    probeSchalter.addEventListener('change', () => {
+        kachel.querySelector('.probe-datum-gruppe').hidden = !probeSchalter.checked;
+    });
     if (abo.gekuendigt) verdrahteDatumsfeld(kachel.querySelector('.abo-edit-form'), 'gekuendigtZum');
 
     kachel.querySelector('.cancel-edit-btn').addEventListener('click', () => zeigeAbos());
@@ -496,7 +526,8 @@ function zeigeBearbeitenModus(kachel, abo) {
             // Felder nicht — überall wird dann mit '' gerechnet.
             vertragsnummer: feld('vertragsnummer').trim(),
             kundennummer: feld('kundennummer').trim(),
-            vertragspartner: feld('vertragspartner').trim()
+            vertragspartner: feld('vertragspartner').trim(),
+            ...probeFelder(form.querySelector('[data-feld="probeabo"]').checked, feld('probeEndeAm'))
         };
         if (abo.gekuendigt) {
             const gekuendigtZum = feld('gekuendigtZum');
@@ -608,7 +639,8 @@ export async function neuesAboSpeichern() {
         // Optional (zugeklappt unter "Weitere Angaben").
         vertragsnummer: document.getElementById('input-vertragsnummer').value.trim(),
         kundennummer: document.getElementById('input-kundennummer').value.trim(),
-        vertragspartner: document.getElementById('input-vertragspartner').value.trim()
+        vertragspartner: document.getElementById('input-vertragspartner').value.trim(),
+        ...probeFelder(document.getElementById('input-probe').checked, document.getElementById('input-probe-datum-iso').value)
     };
 
     // Nicht-blockierende Inline-Meldung statt alert(): ein natives alert() ist

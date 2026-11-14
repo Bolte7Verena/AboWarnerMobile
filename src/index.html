@@ -154,6 +154,23 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Probeabo / Testzeitraum (ab 2.0.2): bewusst nicht zugeklappt -->
+                        <div class="probe-bereich">
+                            <label class="schalter">
+                                <input type="checkbox" id="input-probe" class="schalter-input">
+                                <span class="schalter-regler" aria-hidden="true"></span>
+                                <span class="schalter-text" data-i18n="feld.probe"></span>
+                            </label>
+                            <div id="probe-datum-gruppe" class="form-group date-field" hidden>
+                                <label for="input-probe-datum" data-i18n="feld.probeEnde"></label>
+                                <div class="date-input-wrap">
+                                    <input type="text" id="input-probe-datum" class="input-control date-input" data-i18n-placeholder="feld.datumPlatzhalter" readonly autocomplete="off">
+                                    <svg class="date-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                                    <div id="probe-date-picker-popover" class="date-picker-popover" hidden></div>
+                                </div>
+                                <input type="hidden" id="input-probe-datum-iso">
+                            </div>
+                        </div>
                         <details id="weitere-angaben" class="weitere-angaben">
                             <summary class="weitere-angaben-summary" data-i18n="neu.weitere"></summary>
                             <div class="weitere-angaben-felder">

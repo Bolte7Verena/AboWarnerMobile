@@ -128,6 +128,28 @@ export function ermittleKuendigungsfrist(abo, heute = new Date()) {
     return null;
 }
 
+// --- Probeabo / Testzeitraum (ab 2.0.2) ---
+// abo.probeabo = true und abo.probeEndeAm (ISO). Solange die Probezeit läuft
+// (bis einschließlich probeEndeAm) und das Abo nicht gekündigt ist, ist das
+// Ende der Probezeit das Datum, bis zu dem gehandelt werden muss. Danach
+// gilt wieder ganz normal die Kündigungsfrist.
+export function istProbezeitLaufend(abo, heute = new Date()) {
+    if (abo.probeabo !== true || abo.gekuendigt) return false;
+    const ende = parseDatumISO(abo.probeEndeAm);
+    const stichtag = parseDatumISO(heute);
+    return !!ende && !!stichtag && ende >= stichtag;
+}
+
+// Das Datum, das die Karte zeigt und nach dem sich die Farbe richtet:
+//   { art: 'probe', datum }  = "Probezeit endet am ..."
+//   { art: 'frist', datum }  = "Kündigung möglich bis ..."
+// oder null bei ungültigen Daten.
+export function ermittleHandlungsDatum(abo, heute = new Date()) {
+    if (istProbezeitLaufend(abo, heute)) return { art: 'probe', datum: parseDatumISO(abo.probeEndeAm) };
+    const frist = ermittleKuendigungsfrist(abo, heute);
+    return frist ? { art: 'frist', datum: frist.fristDatum } : null;
+}
+
 // Vorlauf (in Tagen) vor dem Ende der angezeigten Kündigungsfrist:
 // ab KRITISCH_SCHWELLE_TAGE rot, ab WARNSCHWELLE_TAGE gelb (jeweils inklusive).
 export const KRITISCH_SCHWELLE_TAGE = 7;
@@ -135,16 +157,16 @@ export const WARNSCHWELLE_TAGE = 30;
 
 // Dringlichkeit (Farbe) eines laufenden Abos — gemessen an GENAU der Frist,
 // die die Karte als "Kündigung möglich bis ..." anzeigt (ermittleKuendigungsfrist),
-// nicht an einer bereits verpassten:
+// nicht an einer bereits verpassten. Bei laufender Probezeit zählt deren Ende:
 //   'kritisch' (rot)  = Frist endet in höchstens 7 Tagen (inkl. letzter Tag = heute)
 //   'warnung'  (gelb) = Frist endet in höchstens 30 Tagen
 //   'sicher'   (grün) = sonst
 // Bei ungültigen Daten 'sicher' (kein Fehlalarm, kein Absturz).
 export function ermittleFristStatus(abo, heute = new Date()) {
-    const frist = ermittleKuendigungsfrist(abo, heute);
-    if (!frist) return 'sicher';
+    const handlung = ermittleHandlungsDatum(abo, heute);
+    if (!handlung) return 'sicher';
     const stichtag = parseDatumISO(heute);
-    const tageBisFrist = Math.round((frist.fristDatum - stichtag) / (1000 * 60 * 60 * 24));
+    const tageBisFrist = Math.round((handlung.datum - stichtag) / (1000 * 60 * 60 * 24));
     if (tageBisFrist <= KRITISCH_SCHWELLE_TAGE) return 'kritisch';
     if (tageBisFrist <= WARNSCHWELLE_TAGE) return 'warnung';
     return 'sicher';
@@ -175,6 +197,8 @@ export function istVertragBeendet(abo, heute = new Date()) {
 // wegfällt (siehe ermittleKuendigungsfrist). Nur ein Vorschlag — der Nutzer
 // kann ihn ändern (z.B. laut Bestätigung des Anbieters).
 export function schlageVertragsendeVor(abo, heute = new Date()) {
+    // Während der Probezeit: Ende der Probezeit.
+    if (istProbezeitLaufend(abo, heute)) return parseDatumISO(abo.probeEndeAm);
     const frist = ermittleKuendigungsfrist(abo, heute);
     if (!frist) return null;
     const ende = new Date(frist.zahlungsDatum);
@@ -260,7 +284,9 @@ export const Calculator = {
             // Optional: Frist in Wochen/Monaten (ab 2.0.2)
             (abo.kuendigungsfristEinheit === undefined ||
                 (['wochen', 'monate'].includes(abo.kuendigungsfristEinheit) &&
-                    Number.isInteger(abo.kuendigungsfristAnzahl) && abo.kuendigungsfristAnzahl >= 0))
+                    Number.isInteger(abo.kuendigungsfristAnzahl) && abo.kuendigungsfristAnzahl >= 0)) &&
+            // Optional: Probeabo braucht ein gültiges Enddatum (ab 2.0.2)
+            (abo.probeabo !== true || !!parseDatumISO(abo.probeEndeAm))
         );
     }
 };

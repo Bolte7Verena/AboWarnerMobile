@@ -30,6 +30,8 @@ export default {
     'status.gekuendigt': 'Gekündigt',
     'karte.gekuendigtZum': 'Gekündigt zum {datum}',
     'karte.moeglichBis': 'Kündigung möglich bis {datum}',
+    'karte.probeEndet': 'Probezeit endet am {datum}',
+    'karte.probeBadge': 'Probeabo',
     'karte.keineZahlung': 'Keine weitere Zahlung',
     'karte.naechsteZahlung': 'Nächste Zahlung: {datum}',
     'karte.tageBisZahlung': '{tage} Tage bis Zahlung · Frist {frist}',
@@ -71,6 +73,8 @@ export default {
     'feld.naechsteZahlung': 'Nächste Zahlung',
     'feld.datumPlatzhalter': 'Datum auswählen',
     'feld.frist': 'Kündigungsfrist',
+    'feld.probe': 'Probeabo / Testzeitraum',
+    'feld.probeEnde': 'Probezeit endet am',
     'feld.fristEinheit': 'Einheit der Kündigungsfrist',
     'einheit.tage': 'Tage',
     'einheit.wochen': 'Wochen',
@@ -150,6 +154,7 @@ export default {
 
     // --- Kündigungsschreiben: Fenster ---
     'brief.titel': 'Kündigungsschreiben — {name}',
+    'brief.probeHinweis': 'Deine Probezeit endet am <strong>{datum}</strong>. Kündige vorher, sonst wird das Abo kostenpflichtig.',
     'brief.fristHinweis': 'Damit die Kündigung rechtzeitig wirkt, muss sie bis zum <strong>{datum}</strong> beim Anbieter sein.',
     'brief.absender': 'Dein Absender:',
     'brief.absenderKurz': '{name}, {ort} (ändern)',
@@ -196,10 +201,13 @@ export default {
     // --- Hinweis beim App-Start und Mitteilungen ---
     'hinweis.titel': 'Kündigungsfrist endet bald',
     'hinweis.zeile': 'Kündigung nur noch bis {datum}',
+    'hinweis.zeileProbe': 'Probezeit endet am {datum}',
     'mitteilung.fristTitel': 'Kündigungsfrist',
     'mitteilung.fristText': '{name}: Kündigung nur noch bis {datum} möglich.',
     'mitteilung.endeTitel': 'Vertragsende',
     'mitteilung.endeText': '{name} endet heute.',
+    'mitteilung.probeTitel': 'Probezeit endet bald',
+    'mitteilung.probeText': '{name}: Probezeit endet am {datum} – jetzt kündigen, sonst wird es kostenpflichtig.',
 
     // --- PDF-Übersicht ---
     'pdf.titel': 'Abo-Übersicht',
@@ -211,6 +219,7 @@ export default {
     'pdf.spalteKuendigung': 'Kündigung möglich bis',
     'pdf.spalteStatus': 'Status',
     'pdf.laeuft': 'läuft',
+    'pdf.probe': 'Probezeit bis {datum}',
     'pdf.gekuendigtZum': 'gekündigt zum {datum}',
     'pdf.beendet': 'beendet (zum {datum})',
     'pdf.gekuendigt': 'gekündigt',
@@ -306,6 +315,7 @@ export default {
                     <li>Trag den Namen, die Kosten und den Turnus ein (wie oft du zahlst, z.B. monatlich).</li>
                     <li>Wähle das Datum der nächsten Zahlung.</li>
                     <li>Trag die Kündigungsfrist ein, wahlweise in Tagen, Wochen oder Monaten (siehe unten).</li>
+                    <li>Testest du gerade kostenlos? Schalte „Probeabo / Testzeitraum“ ein und wähl, wann die Probezeit endet. Die Karte zeigt dann „Probezeit endet am …“, und 3 Tage vorher erinnert dich die App.</li>
                     <li>Wenn du willst: Unter „Weitere Angaben“ Vertragsnummer, Kundennummer und Anschrift des Anbieters eintragen. Die stehen dann automatisch im Kündigungsschreiben.</li>
                     <li>Tippe auf „Abo speichern“.</li>
                 </ol>

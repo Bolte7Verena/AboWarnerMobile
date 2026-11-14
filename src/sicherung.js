@@ -63,6 +63,13 @@ export function normalisiereAbo(roh) {
     if (kundennummer) abo.kundennummer = kundennummer;
     if (vertragspartner) abo.vertragspartner = vertragspartner;
 
+    // Probeabo (ab 2.0.2): nur mit gültigem Enddatum.
+    const probeEnde = parseDatumISO(roh.probeEndeAm);
+    if (roh.probeabo === true && probeEnde) {
+        abo.probeabo = true;
+        abo.probeEndeAm = formatiereDatumISO(probeEnde);
+    }
+
     if (roh.gekuendigt === true) {
         abo.gekuendigt = true;
         const ende = parseDatumISO(roh.gekuendigtZum);

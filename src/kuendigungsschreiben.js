@@ -12,7 +12,7 @@
  *   [Platzhalter] stehen zu bleiben.
  */
 
-import { ermittleKuendigungsfrist } from './calculator.js';
+import { ermittleKuendigungsfrist, istProbezeitLaufend } from './calculator.js';
 import { t, formatiereDatum } from './i18n.js';
 
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
@@ -105,6 +105,7 @@ export function erzeugeSchreibenText(abo, absender, heute = new Date()) {
 }
 
 function erzeugeFristHinweis(abo) {
+    if (istProbezeitLaufend(abo)) return t('brief.probeHinweis', { datum: formatiereDatum(abo.probeEndeAm) });
     const frist = ermittleKuendigungsfrist(abo);
     if (!frist) return '';
     return t('brief.fristHinweis', { datum: formatiereDatum(frist.fristDatum) });

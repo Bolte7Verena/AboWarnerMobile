@@ -32,6 +32,8 @@ export default {
     'status.gekuendigt': 'Cancelled',
     'karte.gekuendigtZum': 'Cancelled, ends {datum}',
     'karte.moeglichBis': 'Cancel by {datum}',
+    'karte.probeEndet': 'Trial ends on {datum}',
+    'karte.probeBadge': 'Trial',
     'karte.keineZahlung': 'No further payment',
     'karte.naechsteZahlung': 'Next payment: {datum}',
     'karte.tageBisZahlung': '{tage} days until payment · notice period {frist}',
@@ -73,6 +75,8 @@ export default {
     'feld.naechsteZahlung': 'Next payment',
     'feld.datumPlatzhalter': 'Select date',
     'feld.frist': 'Notice period',
+    'feld.probe': 'Free trial',
+    'feld.probeEnde': 'Trial ends on',
     'feld.fristEinheit': 'Unit of the notice period',
     'einheit.tage': 'Days',
     'einheit.wochen': 'Weeks',
@@ -152,6 +156,7 @@ export default {
 
     // --- Cancellation letter: dialog ---
     'brief.titel': 'Cancellation letter — {name}',
+    'brief.probeHinweis': 'Your trial ends on <strong>{datum}</strong>. Cancel before then, otherwise you will be charged.',
     'brief.fristHinweis': 'For the cancellation to take effect in time, the provider must receive it by <strong>{datum}</strong>.',
     'brief.absender': 'Your sender details:',
     'brief.absenderKurz': '{name}, {ort} (edit)',
@@ -197,10 +202,13 @@ export default {
     // --- Notice at app start and notifications ---
     'hinweis.titel': 'Cancellation deadline ending soon',
     'hinweis.zeile': 'cancel by {datum}',
+    'hinweis.zeileProbe': 'trial ends on {datum}',
     'mitteilung.fristTitel': 'Cancellation deadline',
     'mitteilung.fristText': '{name}: cancellation is only possible until {datum}.',
     'mitteilung.endeTitel': 'Contract ends',
     'mitteilung.endeText': '{name} ends today.',
+    'mitteilung.probeTitel': 'Trial ending soon',
+    'mitteilung.probeText': '{name}: your trial ends on {datum} – cancel now, otherwise you will be charged.',
 
     // --- PDF overview ---
     'pdf.titel': 'Subscription overview',
@@ -212,6 +220,7 @@ export default {
     'pdf.spalteKuendigung': 'Cancel by',
     'pdf.spalteStatus': 'Status',
     'pdf.laeuft': 'active',
+    'pdf.probe': 'Trial until {datum}',
     'pdf.gekuendigtZum': 'cancelled, ends {datum}',
     'pdf.beendet': 'ended ({datum})',
     'pdf.gekuendigt': 'cancelled',
@@ -311,6 +320,7 @@ export default {
                     <li>Enter the name, the cost and the billing cycle (how often you pay, e.g. monthly).</li>
                     <li>Choose the date of the next payment.</li>
                     <li>Enter the notice period in days, weeks or months (see below).</li>
+                    <li>On a free trial? Switch on “Free trial” and choose when the trial ends. The card then shows “Trial ends on …”, and the app reminds you 3 days before.</li>
                     <li>If you like: under “More details”, enter the contract number, customer number and the provider’s address. They will then appear in your cancellation letter automatically.</li>
                     <li>Tap “Save subscription”.</li>
                 </ol>

@@ -12,7 +12,7 @@
 
 import { PdfDokument } from './pdf.js';
 import {
-    Calculator, ermittleEffektivesZahlungsdatum, ermittleKuendigungsfrist, formatiereBetrag,
+    Calculator, ermittleEffektivesZahlungsdatum, ermittleHandlungsDatum, istProbezeitLaufend, formatiereBetrag,
     formatiereDatumISO, formatiereZahlDE, istGekuendigtLaufend, istVertragBeendet,
     parseDatumISO, sortiereAbos
 } from './calculator.js';
@@ -48,11 +48,11 @@ export function erzeugeZeile(abo, heute = new Date()) {
 
     let kuendigungBis = '–';
     if (!abo.gekuendigt) {
-        const frist = ermittleKuendigungsfrist(abo, heute);
-        if (frist) kuendigungBis = formatiereDatum(frist.fristDatum);
+        const handlung = ermittleHandlungsDatum(abo, heute);
+        if (handlung) kuendigungBis = formatiereDatum(handlung.datum);
     }
 
-    let status = t('pdf.laeuft');
+    let status = istProbezeitLaufend(abo, heute) ? t('pdf.probe', { datum: formatiereDatum(abo.probeEndeAm) }) : t('pdf.laeuft');
     if (abo.gekuendigt) {
         if (istGekuendigtLaufend(abo, heute)) status = t('pdf.gekuendigtZum', { datum: formatiereDatum(ende) });
         else if (ende) status = t('pdf.beendet', { datum: formatiereDatum(ende) });

@@ -56,6 +56,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         // damit das Formular einfach bleibt (Felder leert reset() selbst).
         aboForm.addEventListener('reset', () => {
             document.getElementById('weitere-angaben').open = false;
+            document.getElementById('probe-datum-gruppe').hidden = true;
+        });
+
+        // Probeabo: Datum nur zeigen, wenn der Schalter an ist.
+        const probeSchalter = document.getElementById('input-probe');
+        probeSchalter.addEventListener('change', () => {
+            document.getElementById('probe-datum-gruppe').hidden = !probeSchalter.checked;
         });
 
         document.getElementById('btn-neues-abo').addEventListener('click', oeffneAboModal);
@@ -85,6 +92,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             hiddenEl: document.getElementById('input-datum-iso'),
             wrapEl: document.querySelector('.date-input-wrap'),
             popoverEl: document.getElementById('date-picker-popover'),
+            formEl: document.getElementById('abo-form')
+        });
+        initDatePicker({
+            inputEl: document.getElementById('input-probe-datum'),
+            hiddenEl: document.getElementById('input-probe-datum-iso'),
+            wrapEl: document.getElementById('input-probe-datum').closest('.date-input-wrap'),
+            popoverEl: document.getElementById('probe-date-picker-popover'),
             formEl: document.getElementById('abo-form')
         });
 

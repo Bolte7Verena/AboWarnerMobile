@@ -11,6 +11,10 @@
  *   Geplant werden die nächsten FRISTEN_JE_ABO Fristen je Abo, damit auch
  *   dann erinnert wird, wenn die App länger nicht geöffnet wird (Planen ist
  *   nur möglich, während die App läuft).
+ * - Probeabos (ab 2.0.2), solange die Probezeit läuft: Erinnerung 3 Tage
+ *   vor dem Ende der Probezeit, 9:00 Uhr: "[Name]: Probezeit endet am
+ *   [Datum] – jetzt kündigen, sonst wird es kostenpflichtig."
+ *   Fristerinnerungen gibt es dann erst für Fristen nach der Probezeit.
  * - Gekündigte Abos: keine Fristerinnerungen, sondern genau eine
  *   Benachrichtigung am Vertragsende (abo.gekuendigtZum), 9:00 Uhr:
  *   "[Name] endet heute." Alte gekündigte Abos ohne Datum bekommen nichts.
@@ -20,7 +24,7 @@
  *   ersetzt statt zu verdoppeln.
  */
 
-import { ermittleKuendigungsfrist, ermittleFristStatus, formatiereDatumISO, parseDatumISO, KRITISCH_SCHWELLE_TAGE } from './calculator.js';
+import { ermittleKuendigungsfrist, ermittleFristStatus, ermittleHandlungsDatum, istProbezeitLaufend, formatiereDatumISO, parseDatumISO, KRITISCH_SCHWELLE_TAGE } from './calculator.js';
 import { t, formatiereDatum } from './i18n.js';
 
 // Titel der Einblendung beim App-Start: Schlüssel 'hinweis.titel' in der
@@ -31,16 +35,21 @@ import { t, formatiereDatum } from './i18n.js';
 // Für die Einblendung beim App-Start: alle laufenden, nicht gekündigten Abos
 // im roten Bereich (Kündigung nur noch höchstens 7 Tage möglich — gleiche
 // Regel wie die rote Karte), früheste Frist zuerst.
-// Rückgabe: [{ abo, fristDatum }]
+// Bei laufender Probezeit zählt deren Ende (art: 'probe').
+// Rückgabe: [{ abo, fristDatum, art }]
 export function ermittleAbosImRotenBereich(alleAbos, heute = new Date()) {
     return alleAbos
         .filter((abo) => !abo.gekuendigt && ermittleFristStatus(abo, heute) === 'kritisch')
-        .map((abo) => ({ abo, fristDatum: ermittleKuendigungsfrist(abo, heute).fristDatum }))
+        .map((abo) => {
+            const handlung = ermittleHandlungsDatum(abo, heute);
+            return { abo, fristDatum: handlung.datum, art: handlung.art };
+        })
         .sort((a, b) => a.fristDatum - b.fristDatum);
 }
 
 export const TAGE_VOR_FRISTENDE = KRITISCH_SCHWELLE_TAGE; // 7 — passend zu "rot"
 export const FRISTEN_JE_ABO = 3;
+export const TAGE_VOR_PROBEENDE = 3;
 export const MAX_BENACHRICHTIGUNGEN = 60;
 export const BENACHRICHTIGUNGS_UHRZEIT = { stunde: 9, minute: 0 };
 
@@ -80,6 +89,11 @@ function vertragsendeMeldung(abo, jetzt) {
 function fristErinnerungen(abo, jetzt) {
     const ergebnis = [];
     let stichtag = parseDatumISO(jetzt);
+    // Laufende Probezeit: Fristen erst ab dem Tag nach ihrem Ende.
+    if (istProbezeitLaufend(abo, jetzt)) {
+        stichtag = parseDatumISO(abo.probeEndeAm);
+        stichtag.setDate(stichtag.getDate() + 1);
+    }
     for (let i = 0; i < FRISTEN_JE_ABO && stichtag; i++) {
         const frist = ermittleKuendigungsfrist(abo, stichtag);
         if (!frist) break;
@@ -100,12 +114,28 @@ function fristErinnerungen(abo, jetzt) {
     return ergebnis;
 }
 
+// Probeabo: eine Erinnerung 3 Tage vor dem Ende der Probezeit. Liegt dieser
+// Zeitpunkt schon in der Vergangenheit, entfällt sie (die Karte ist dann rot).
+function probeErinnerung(abo, jetzt) {
+    if (!istProbezeitLaufend(abo, jetzt)) return [];
+    const ende = parseDatumISO(abo.probeEndeAm);
+    const termin = umNeunUhr(ende);
+    termin.setDate(termin.getDate() - TAGE_VOR_PROBEENDE);
+    if (termin <= jetzt) return [];
+    return [{
+        id: hasheZuId(`${abo.id}#probe#${formatiereDatumISO(ende)}`),
+        title: t('mitteilung.probeTitel'),
+        body: t('mitteilung.probeText', { name: abo.name, datum: formatiereDatum(ende) }),
+        at: termin
+    }];
+}
+
 // Liefert [{ id, title, body, at: Date }], nach Zeitpunkt sortiert.
 export function berechneBenachrichtigungsPlan(alleAbos, jetzt = new Date()) {
     const plan = [];
     for (const abo of alleAbos) {
         if (abo.gekuendigt) plan.push(...vertragsendeMeldung(abo, jetzt));
-        else plan.push(...fristErinnerungen(abo, jetzt));
+        else plan.push(...probeErinnerung(abo, jetzt), ...fristErinnerungen(abo, jetzt));
     }
     plan.sort((a, b) => a.at - b.at);
     // Doppelte IDs (theoretisch möglich) nur einmal einplanen.

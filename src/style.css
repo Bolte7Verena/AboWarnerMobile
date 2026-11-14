@@ -265,6 +265,17 @@ p { margin: 0; }
 }
 .select-control option { background: var(--popover); color: var(--popover-foreground); }
 
+/* Probeabo / Testzeitraum: Schalter + Datum (ab 2.0.2) */
+.probe-bereich { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-md); }
+.schalter { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.875rem; font-weight: 600; color: var(--foreground); }
+.schalter-input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.schalter-regler { position: relative; flex: 0 0 auto; width: 2.5rem; height: 1.4rem; border-radius: 999px; background: var(--input); transition: background 0.15s; }
+.schalter-regler::after { content: ''; position: absolute; top: 0.2rem; left: 0.2rem; width: 1rem; height: 1rem; border-radius: 50%; background: var(--foreground); transition: transform 0.15s; }
+.schalter-input:checked + .schalter-regler { background: var(--accent-amber); }
+.schalter-input:checked + .schalter-regler::after { transform: translateX(1.1rem); background: #1a1a1a; }
+.schalter-input:focus-visible + .schalter-regler { outline: 2px solid var(--ring, var(--primary)); outline-offset: 2px; }
+.probe-bereich .form-group[hidden] { display: none; }
+
 /* Kündigungsfrist: Zahl + Einheit (Tage/Wochen/Monate) nebeneinander */
 .frist-eingabe { display: flex; gap: 0.375rem; }
 .frist-eingabe .frist-anzahl { flex: 0 0 5.5rem; }
@@ -422,6 +433,8 @@ p { margin: 0; }
 .badge-cat-teal { background: color-mix(in oklch, var(--accent-teal) 20%, transparent); color: var(--accent-teal); border-color: color-mix(in oklch, var(--accent-teal) 30%, transparent); }
 .badge-cat-lime { background: color-mix(in oklch, var(--accent-lime) 20%, transparent); color: var(--accent-lime); border-color: color-mix(in oklch, var(--accent-lime) 30%, transparent); }
 .badge-cat-amber { background: color-mix(in oklch, var(--accent-amber) 20%, transparent); color: var(--accent-amber); border-color: color-mix(in oklch, var(--accent-amber) 30%, transparent); }
+/* Etikett "Probeabo" auf der Karte (ab 2.0.2) */
+.badge-probe { background: color-mix(in oklch, var(--accent-amber) 20%, transparent); color: var(--accent-amber); border-color: color-mix(in oklch, var(--accent-amber) 45%, transparent); }
 .badge-cat-rose { background: color-mix(in oklch, var(--accent-rose) 20%, transparent); color: var(--accent-rose); border-color: color-mix(in oklch, var(--accent-rose) 30%, transparent); }
 .badge-cat-muted { background: var(--muted); color: var(--muted-foreground); border-color: oklch(1 0 0 / 0.1); }
 

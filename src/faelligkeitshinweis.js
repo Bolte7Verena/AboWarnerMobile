@@ -39,8 +39,8 @@ export function zeigeFaelligkeitshinweisFallsNoetig(alleAbos) {
             <button type="button" class="faelligkeit-toast-close-btn" aria-label="${escapeHtml(t('knopf.schliessen'))}">${ICON_X}</button>
         </div>
         <ul class="faelligkeit-toast-liste">
-            ${roteAbos.map(({ abo, fristDatum }) => `
-                <li class="faelligkeit-toast-item"><strong>${escapeHtml(abo.name)}</strong> — ${escapeHtml(t('hinweis.zeile', { datum: formatiereDatum(fristDatum) }))}</li>
+            ${roteAbos.map(({ abo, fristDatum, art }) => `
+                <li class="faelligkeit-toast-item"><strong>${escapeHtml(abo.name)}</strong> — ${escapeHtml(t(art === 'probe' ? 'hinweis.zeileProbe' : 'hinweis.zeile', { datum: formatiereDatum(fristDatum) }))}</li>
             `).join('')}
         </ul>
     `;
