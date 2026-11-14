@@ -139,9 +139,19 @@
                                 </div>
                                 <input type="hidden" id="input-datum-iso">
                             </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label for="input-frist" data-i18n="feld.frist"></label>
-                                <input type="number" id="input-frist" class="input-control">
+                                <div class="frist-eingabe">
+                                    <input type="number" id="input-frist" class="input-control frist-anzahl" min="0" step="1" inputmode="numeric">
+                                    <!-- value = gespeicherte Einheit, Anzeige übersetzt -->
+                                    <select id="input-frist-einheit" class="input-control select-control frist-einheit" data-i18n-aria-label="feld.fristEinheit">
+                                        <option value="tage" data-i18n="einheit.tage"></option>
+                                        <option value="wochen" data-i18n="einheit.wochen"></option>
+                                        <option value="monate" data-i18n="einheit.monate"></option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <details id="weitere-angaben" class="weitere-angaben">

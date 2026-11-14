@@ -32,7 +32,7 @@ export default {
     'karte.moeglichBis': 'Kündigung möglich bis {datum}',
     'karte.keineZahlung': 'Keine weitere Zahlung',
     'karte.naechsteZahlung': 'Nächste Zahlung: {datum}',
-    'karte.tageBisZahlung': '{tage} Tage bis Zahlung · Frist {frist} Tage',
+    'karte.tageBisZahlung': '{tage} Tage bis Zahlung · Frist {frist}',
     'karte.laeuftHeuteAus': 'Läuft heute aus',
     'karte.laeuftNoch': 'Läuft noch {anzahl} Tage',
     'karte.laeuftNoch.eins': 'Läuft noch {anzahl} Tag',
@@ -70,7 +70,17 @@ export default {
     'feld.kategorie': 'Kategorie',
     'feld.naechsteZahlung': 'Nächste Zahlung',
     'feld.datumPlatzhalter': 'Datum auswählen',
-    'feld.frist': 'Frist (Tage)',
+    'feld.frist': 'Kündigungsfrist',
+    'feld.fristEinheit': 'Einheit der Kündigungsfrist',
+    'einheit.tage': 'Tage',
+    'einheit.wochen': 'Wochen',
+    'einheit.monate': 'Monate',
+    'frist.tage': '{anzahl} Tage',
+    'frist.tage.eins': '{anzahl} Tag',
+    'frist.wochen': '{anzahl} Wochen',
+    'frist.wochen.eins': '{anzahl} Woche',
+    'frist.monate': '{anzahl} Monate',
+    'frist.monate.eins': '{anzahl} Monat',
     'feld.vertragsnummer': 'Vertragsnummer',
     'feld.kundennummer': 'Kundennummer',
     'feld.vertragspartner': 'Vertragspartner (Firmenname und Anschrift)',
@@ -295,14 +305,14 @@ export default {
                     <li>Tippe auf „Neues Abo“.</li>
                     <li>Trag den Namen, die Kosten und den Turnus ein (wie oft du zahlst, z.B. monatlich).</li>
                     <li>Wähle das Datum der nächsten Zahlung.</li>
-                    <li>Trag die Kündigungsfrist in Tagen ein (siehe unten).</li>
+                    <li>Trag die Kündigungsfrist ein, wahlweise in Tagen, Wochen oder Monaten (siehe unten).</li>
                     <li>Wenn du willst: Unter „Weitere Angaben“ Vertragsnummer, Kundennummer und Anschrift des Anbieters eintragen. Die stehen dann automatisch im Kündigungsschreiben.</li>
                     <li>Tippe auf „Abo speichern“.</li>
                 </ol>
                 <p>Ändern kannst du alles später mit „Bearbeiten“ auf der Karte.</p>
 
                 <h3>Was bedeutet die Frist?</h3>
-                <p>Die Kündigungsfrist sagt, wie viele Tage vor der nächsten Zahlung deine Kündigung beim Anbieter sein muss. Du findest sie in deinem Vertrag. Steht dort z.B. „3 Monate“, trag rund 90 Tage ein, im Zweifel lieber etwas mehr.</p>
+                <p>Die Kündigungsfrist sagt, wie lange vor der nächsten Zahlung deine Kündigung beim Anbieter sein muss. Du findest sie in deinem Vertrag. Trag sie so ein, wie sie dort steht: Zahl eintippen und daneben Tage, Wochen oder Monate wählen. Steht dort z.B. „3 Monate“, wähl 3 und „Monate“. Die App rechnet dann mit echten Kalendermonaten.</p>
                 <p>Die App rechnet daraus das Datum aus und zeigt es auf jeder Karte: „Kündigung möglich bis …“. Ist das Datum vorbei, zeigt sie dir die nächste Möglichkeit.</p>
 
                 <h3>Was bedeuten Rot, Gelb und Grün?</h3>

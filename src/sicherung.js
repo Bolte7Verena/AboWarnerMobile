@@ -47,6 +47,13 @@ export function normalisiereAbo(roh) {
         naechsteZahlung: formatiereDatumISO(naechsteZahlung),
         kuendigungsfristTage: Math.round(frist)
     };
+    // Frist in Wochen/Monaten (ab 2.0.2). Unstimmige Angaben fallen weg,
+    // dann gilt wie bisher die Frist in Tagen.
+    const anzahl = Number(roh.kuendigungsfristAnzahl);
+    if ((roh.kuendigungsfristEinheit === 'wochen' || roh.kuendigungsfristEinheit === 'monate') && Number.isInteger(anzahl) && anzahl >= 0) {
+        abo.kuendigungsfristEinheit = roh.kuendigungsfristEinheit;
+        abo.kuendigungsfristAnzahl = anzahl;
+    }
     if (!Calculator.istGueltig(abo) || !TURNUS_MONATE[abo.turnus]) return null;
 
     const vertragsnummer = optionalerText(roh.vertragsnummer);

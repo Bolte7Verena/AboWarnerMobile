@@ -60,8 +60,52 @@ export function formatiereDatumDE(datum) {
     return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
 }
 
+// --- Kündigungsfrist in Tagen, Wochen oder Monaten (ab 2.0.2) ---
+// Gespeichert wird wie bisher immer abo.kuendigungsfristTage (bei Wochen x7,
+// bei Monaten x30 als Näherung). So bleiben alte Abos unverändert gültig und
+// eine Sicherung lässt sich auch in einer älteren App-Version einlesen.
+// Neu und optional: abo.kuendigungsfristEinheit ('wochen' | 'monate') und
+// abo.kuendigungsfristAnzahl. Fehlen sie, gilt die Frist in Tagen.
+export const FRIST_EINHEITEN = ['tage', 'wochen', 'monate'];
+
+// Liefert die Frist so, wie der Nutzer sie eingetragen hat: { anzahl, einheit }.
+export function ermittleFristAngabe(abo) {
+    const einheit = abo.kuendigungsfristEinheit;
+    const anzahl = Number(abo.kuendigungsfristAnzahl);
+    if ((einheit === 'wochen' || einheit === 'monate') && Number.isInteger(anzahl) && anzahl >= 0) {
+        return { anzahl, einheit };
+    }
+    return { anzahl: Number(abo.kuendigungsfristTage), einheit: 'tage' };
+}
+
+// Felder zum Speichern aus einer Eingabe (Zahl + Einheit).
+export function erzeugeFristFelder(anzahl, einheit) {
+    const n = Number(anzahl);
+    if (einheit === 'wochen') return { kuendigungsfristTage: n * 7, kuendigungsfristEinheit: 'wochen', kuendigungsfristAnzahl: n };
+    if (einheit === 'monate') return { kuendigungsfristTage: n * 30, kuendigungsfristEinheit: 'monate', kuendigungsfristAnzahl: n };
+    return { kuendigungsfristTage: n, kuendigungsfristEinheit: undefined, kuendigungsfristAnzahl: undefined };
+}
+
+// Datum minus ganze Kalendermonate. Gibt es den Tag im Zielmonat nicht,
+// gilt der letzte Tag des Monats (31.05. minus 3 Monate = 28./29.02.).
+export function minusMonate(datum, monate) {
+    const jahr = datum.getFullYear();
+    const monat = datum.getMonth() - monate;
+    const letzterTag = new Date(jahr, monat + 1, 0).getDate();
+    return new Date(jahr, monat, Math.min(datum.getDate(), letzterTag));
+}
+
+// Zahlungsdatum minus Frist (Tage, Wochen oder Kalendermonate).
+function fristVorZahlung(zahlung, angabe) {
+    if (angabe.einheit === 'monate') return minusMonate(zahlung, angabe.anzahl);
+    const frist = new Date(zahlung);
+    frist.setDate(frist.getDate() - (angabe.einheit === 'wochen' ? angabe.anzahl * 7 : angabe.anzahl));
+    return frist;
+}
+
 // Letzter Tag, an dem die Kündigung noch rechtzeitig vor einer Zahlung beim
-// Anbieter sein muss: Zahlungsdatum minus Kündigungsfrist (in Tagen).
+// Anbieter sein muss: Zahlungsdatum minus Kündigungsfrist (Tage, Wochen oder
+// Kalendermonate).
 // Liegt dieser Tag für die nächste Zahlung bereits in der Vergangenheit, ist
 // diese Zahlung nicht mehr abwendbar — dann zählt die Frist vor der darauf
 // folgenden Zahlung (turnusgerecht weitergerückt). So wird nie ein bereits
@@ -70,15 +114,14 @@ export function formatiereDatumDE(datum) {
 // oder null bei ungültigen Daten. `heute` nur für Tests überschreibbar.
 export function ermittleKuendigungsfrist(abo, heute = new Date()) {
     const stichtag = parseDatumISO(heute);
-    const fristTage = Number(abo.kuendigungsfristTage);
+    const angabe = ermittleFristAngabe(abo);
     const start = parseDatumISO(ermittleEffektivesZahlungsdatum(abo.naechsteZahlung, abo.turnus));
-    if (!stichtag || !start || !Number.isFinite(fristTage) || fristTage < 0) return null;
+    if (!stichtag || !start || !Number.isFinite(angabe.anzahl) || angabe.anzahl < 0) return null;
 
     const monate = TURNUS_MONATE[abo.turnus] || 1;
     const zahlung = new Date(start);
     for (let i = 0; i < 1000; i++) {
-        const frist = new Date(zahlung);
-        frist.setDate(frist.getDate() - fristTage);
+        const frist = fristVorZahlung(zahlung, angabe);
         if (frist >= stichtag) return { fristDatum: frist, zahlungsDatum: new Date(zahlung) };
         zahlung.setMonth(zahlung.getMonth() + monate);
     }
@@ -213,7 +256,11 @@ export const Calculator = {
             !!abo.waehrung &&
             !!TURNUS_MONATE[abo.turnus] &&
             !isNaN(Date.parse(abo.naechsteZahlung)) &&
-            Number.isFinite(abo.kuendigungsfristTage) && abo.kuendigungsfristTage >= 0
+            Number.isFinite(abo.kuendigungsfristTage) && abo.kuendigungsfristTage >= 0 &&
+            // Optional: Frist in Wochen/Monaten (ab 2.0.2)
+            (abo.kuendigungsfristEinheit === undefined ||
+                (['wochen', 'monate'].includes(abo.kuendigungsfristEinheit) &&
+                    Number.isInteger(abo.kuendigungsfristAnzahl) && abo.kuendigungsfristAnzahl >= 0))
         );
     }
 };

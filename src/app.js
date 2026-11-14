@@ -4,7 +4,7 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
+import { Calculator, FRIST_EINHEITEN, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { t, tAnzahl, tWert, formatiereDatum } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
@@ -172,10 +172,16 @@ function erzeugeZahlungsZeile(abo, effektivesZahlungsdatum) {
     return t('karte.naechsteZahlung', { datum: formatiereDatum(effektivesZahlungsdatum) });
 }
 
+// "30 Tage", "4 Wochen", "3 Monate" — so, wie der Nutzer die Frist eingetragen hat.
+function fristText(abo) {
+    const { anzahl, einheit } = ermittleFristAngabe(abo);
+    return tAnzahl(`frist.${einheit}`, anzahl);
+}
+
 // Grauer Hinweis neben dem Etikett.
 function erzeugeStatusPill(abo, tageBisZahlung) {
     if (!abo.gekuendigt) {
-        return `<span class="abo-status-pill">${t('karte.tageBisZahlung', { tage: tageBisZahlung, frist: abo.kuendigungsfristTage })}</span>`;
+        return `<span class="abo-status-pill">${t('karte.tageBisZahlung', { tage: tageBisZahlung, frist: fristText(abo) })}</span>`;
     }
     if (istGekuendigtLaufend(abo)) {
         const tage = berechneTageBisZahlung(parseDatumISO(abo.gekuendigtZum));
@@ -225,6 +231,7 @@ const KUENDIGUNGS_KATEGORIEN = Object.keys(KATEGORIE_BADGE_KLASSE);
 const KUENDIGUNGS_TURNUSSE = ['Monatlich', 'Vierteljährlich', 'Halbjährlich', 'Jährlich'];
 
 function erzeugeAboBearbeitenFormular(abo) {
+    const fristAngabe = ermittleFristAngabe(abo);
     return `
         <form class="abo-edit-form">
             <div class="form-group">
@@ -265,9 +272,16 @@ function erzeugeAboBearbeitenFormular(abo) {
                     </div>
                     <input type="hidden" data-feld="naechsteZahlung" value="${escapeAttr(abo.naechsteZahlung)}">
                 </div>
+            </div>
+            <div class="form-row">
                 <div class="form-group">
                     <label>${t('feld.frist')}</label>
-                    <input type="number" class="input-control" data-feld="kuendigungsfristTage" value="${escapeAttr(abo.kuendigungsfristTage)}">
+                    <div class="frist-eingabe">
+                        <input type="number" class="input-control frist-anzahl" min="0" step="1" inputmode="numeric" data-feld="fristAnzahl" value="${escapeAttr(fristAngabe.anzahl)}">
+                        <select class="input-control select-control frist-einheit" data-feld="fristEinheit" aria-label="${escapeAttr(t('feld.fristEinheit'))}">
+                            ${FRIST_EINHEITEN.map((e) => `<option value="${e}" ${e === fristAngabe.einheit ? 'selected' : ''}>${escapeHtml(t(`einheit.${e}`))}</option>`).join('')}
+                        </select>
+                    </div>
                 </div>
             </div>
             ${abo.gekuendigt ? `
@@ -477,7 +491,7 @@ function zeigeBearbeitenModus(kachel, abo) {
             turnus: feld('turnus'),
             kategorie: feld('kategorie'),
             naechsteZahlung: feld('naechsteZahlung'),
-            kuendigungsfristTage: parseInt(feld('kuendigungsfristTage'), 10),
+            ...erzeugeFristFelder(parseInt(feld('fristAnzahl'), 10), feld('fristEinheit')),
             // Neue, optionale Vertragsdaten (ab 2.0.2). Ältere Abos haben diese
             // Felder nicht — überall wird dann mit '' gerechnet.
             vertragsnummer: feld('vertragsnummer').trim(),
@@ -590,7 +604,7 @@ export async function neuesAboSpeichern() {
         turnus: document.getElementById('input-turnus').value,
         kategorie: document.getElementById('input-kategorie').value,
         naechsteZahlung: document.getElementById('input-datum-iso').value,
-        kuendigungsfristTage: parseInt(document.getElementById('input-frist').value, 10),
+        ...erzeugeFristFelder(parseInt(document.getElementById('input-frist').value, 10), document.getElementById('input-frist-einheit').value),
         // Optional (zugeklappt unter "Weitere Angaben").
         vertragsnummer: document.getElementById('input-vertragsnummer').value.trim(),
         kundennummer: document.getElementById('input-kundennummer').value.trim(),

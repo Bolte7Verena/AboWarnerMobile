@@ -34,7 +34,7 @@ export default {
     'karte.moeglichBis': 'Cancel by {datum}',
     'karte.keineZahlung': 'No further payment',
     'karte.naechsteZahlung': 'Next payment: {datum}',
-    'karte.tageBisZahlung': '{tage} days until payment · notice period {frist} days',
+    'karte.tageBisZahlung': '{tage} days until payment · notice period {frist}',
     'karte.laeuftHeuteAus': 'Ends today',
     'karte.laeuftNoch': 'Ends in {anzahl} days',
     'karte.laeuftNoch.eins': 'Ends in {anzahl} day',
@@ -72,7 +72,17 @@ export default {
     'feld.kategorie': 'Category',
     'feld.naechsteZahlung': 'Next payment',
     'feld.datumPlatzhalter': 'Select date',
-    'feld.frist': 'Notice period (days)',
+    'feld.frist': 'Notice period',
+    'feld.fristEinheit': 'Unit of the notice period',
+    'einheit.tage': 'Days',
+    'einheit.wochen': 'Weeks',
+    'einheit.monate': 'Months',
+    'frist.tage': '{anzahl} days',
+    'frist.tage.eins': '{anzahl} day',
+    'frist.wochen': '{anzahl} weeks',
+    'frist.wochen.eins': '{anzahl} week',
+    'frist.monate': '{anzahl} months',
+    'frist.monate.eins': '{anzahl} month',
     'feld.vertragsnummer': 'Contract number',
     'feld.kundennummer': 'Customer number',
     'feld.vertragspartner': 'Provider (company name and address)',
@@ -300,14 +310,14 @@ export default {
                     <li>Tap “New subscription”.</li>
                     <li>Enter the name, the cost and the billing cycle (how often you pay, e.g. monthly).</li>
                     <li>Choose the date of the next payment.</li>
-                    <li>Enter the notice period in days (see below).</li>
+                    <li>Enter the notice period in days, weeks or months (see below).</li>
                     <li>If you like: under “More details”, enter the contract number, customer number and the provider’s address. They will then appear in your cancellation letter automatically.</li>
                     <li>Tap “Save subscription”.</li>
                 </ol>
                 <p>You can change everything later with “Edit” on the card.</p>
 
                 <h3>What does the notice period mean?</h3>
-                <p>The notice period tells you how many days before the next payment your cancellation must reach the provider. You will find it in your contract. If it says e.g. “3 months”, enter about 90 days — if in doubt, a little more.</p>
+                <p>The notice period tells you how long before the next payment your cancellation must reach the provider. You will find it in your contract. Enter it exactly as it is written there: type the number and choose days, weeks or months next to it. If it says e.g. “3 months”, choose 3 and “Months”. The app then calculates with real calendar months.</p>
                 <p>The app works out the date and shows it on every card: “Cancel by …”. Once that date has passed, it shows you the next possible date.</p>
 
                 <h3>What do red, yellow and green mean?</h3>
