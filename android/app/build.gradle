@@ -39,6 +39,14 @@ android {
         }
     }
     buildTypes {
+        // Test-App fürs Handy: eigene App-ID (com.abowarner.pro.test), damit sie
+        // NEBEN der Store-Version installiert werden kann. Name "AWP Test" kommt
+        // aus src/debug/res/values/strings.xml. Signiert mit dem normalen
+        // Debug-Schlüssel von Android, nicht mit dem Upload-Schlüssel.
+        // Release (App-ID com.abowarner.pro, Signatur) bleibt unverändert.
+        debug {
+            applicationIdSuffix ".test"
+        }
         release {
             minifyEnabled true
             shrinkResources true

@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Nur für den Debug-Build (Test-App fürs Handy): eigener Name, damit die
+     Test-App neben der Store-Version klar zu erkennen ist. Die Release-
+     Version nutzt weiterhin src/main/res/values/strings.xml. -->
+<resources>
+    <string name="app_name">AWP Test</string>
+    <string name="title_activity_main">AWP Test</string>
+</resources>
