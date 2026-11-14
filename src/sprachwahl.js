@@ -1,6 +1,7 @@
 /**
  * sprachwahl.js | Sprachwahl über das Weltkugel-Symbol oben rechts:
- * Automatisch (Sprache des Geräts) / Deutsch / English.
+ * Automatisch (Sprache des Geräts) / Deutsch / English / Español /
+ * Français / Português.
  *
  * Die Wahl wird gespeichert (i18n.js, localStorage). Nach einer Änderung
  * lädt die App einmal neu — so stehen garantiert alle Texte (auch bereits

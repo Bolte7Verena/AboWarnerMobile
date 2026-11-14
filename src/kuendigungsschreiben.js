@@ -61,7 +61,7 @@ function heuteIsoKompakt() {
 // Windows in Dateinamen verboten sind) und liefert einen sinnvollen Fallback,
 // falls davon nichts Verwertbares übrig bleibt.
 function zuDateiSicheremNamen(text) {
-    const bereinigt = text.replace(/[^A-Za-z0-9äöüÄÖÜß _-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+    const bereinigt = text.replace(/[^A-Za-z0-9À-ÖØ-öø-ÿ _-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
     return bereinigt || 'Abo';
 }
 

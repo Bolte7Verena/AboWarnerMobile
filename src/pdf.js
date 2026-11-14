@@ -63,6 +63,12 @@ const ASCII_BOLD = [278, 333, 474, 556, 556, 889, 722, 238, 333, 333, 389, 584, 
 function baueBreiten(ascii, extra) {
     const breiten = new Array(256).fill(556);
     ascii.forEach((b, i) => { breiten[0x20 + i] = b; });
+    // Akzentbuchstaben (z.B. é, ç, ñ, ã) sind in Helvetica so breit wie ihr
+    // Grundbuchstabe — wichtig für Spanisch, Französisch, Portugiesisch.
+    for (let code = 0xc0; code <= 0xff; code++) {
+        const grund = String.fromCharCode(code).normalize('NFD')[0];
+        if (/[A-Za-z]/.test(grund)) breiten[code] = ascii[grund.charCodeAt(0) - 0x20];
+    }
     for (const [code, b] of Object.entries(extra)) breiten[Number(code)] = b;
     return breiten;
 }

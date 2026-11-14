@@ -90,3 +90,27 @@ test('Deutsch bleibt ohne Unterschriftszeile (unverändert)', () => {
     assert.ok(text.endsWith('Mit freundlichen Grüßen\n\nMax Mustermann'));
     assert.ok(!text.includes('____'));
 });
+
+// --- Spanisch, Französisch, Portugiesisch: neutral wie Englisch (ab 2.0.2) ---
+
+const ERWARTET = {
+    es: { kern: 'Por la presente cancelo el contrato arriba indicado en la fecha más próxima posible.', bestaetigung: 'Les ruego que me confirmen la cancelación por escrito.', anrede: 'Estimados señores:', gruss: 'Atentamente,', betreff: 'Cancelación: FitLife\nNúmero de contrato: V-123\nNúmero de cliente: K-987' },
+    fr: { kern: 'Par la présente, je résilie le contrat mentionné ci-dessus à la date la plus proche possible.', bestaetigung: 'Je vous remercie de bien vouloir me confirmer cette résiliation par écrit.', anrede: 'Madame, Monsieur,', gruss: 'Veuillez agréer, Madame, Monsieur, mes salutations distinguées.', betreff: 'Objet\u00A0: résiliation – FitLife\nNuméro de contrat\u00A0: V-123\nNuméro de client\u00A0: K-987' },
+    pt: { kern: 'Venho por meio desta cancelar o contrato acima indicado na data mais próxima possível.', bestaetigung: 'Solicito que confirmem o cancelamento por escrito.', anrede: 'Prezados senhores,', gruss: 'Atenciosamente,', betreff: 'Cancelamento: FitLife\nNúmero do contrato: V-123\nNúmero de cliente: K-987' }
+};
+
+for (const [code, e] of Object.entries(ERWARTET)) {
+    test(`${code}: neutrales Kündigungsschreiben mit Vertragsdaten, Kernsatz, Bestätigung und Unterschriftszeile`, () => {
+        setzeSprache(code);
+        const abo = { name: 'FitLife', vertragspartner: 'FitLife SA\nCalle 5\n28001 Madrid', vertragsnummer: 'V-123', kundennummer: 'K-987' };
+        const text = erzeugeSchreibenText(abo, { name: 'Ana', strasse: 'Calle 1', plzOrt: '28002 Madrid', email: '' }, HEUTE);
+        const teile = text.split('\n\n');
+        assert.equal(teile[0], 'Ana\nCalle 1\n28002 Madrid');
+        assert.equal(teile[1], 'FitLife SA\nCalle 5\n28001 Madrid');
+        assert.match(teile[2], /2026/);
+        assert.equal(teile[3], e.betreff);
+        assert.deepEqual(teile.slice(4), [e.anrede, e.kern, e.bestaetigung, e.gruss, '_______________________\nAna']);
+        assert.ok(!/§|BGB|fristgerecht|Kündigung|Sehr geehrte|Grüßen/.test(text), text);
+        setzeSprache('de');
+    });
+}

@@ -36,8 +36,9 @@ test('ermittleSprache(): automatisch nach Gerätesprache', () => {
     assert.equal(ermittleSprache('auto', ['de']), 'de');
     assert.equal(ermittleSprache('auto', ['de-AT', 'en-US']), 'de');
     assert.equal(ermittleSprache('auto', ['en-US']), 'en');
-    assert.equal(ermittleSprache('auto', ['fr-FR']), 'en');
-    assert.equal(ermittleSprache('auto', ['es-ES', 'de-DE']), 'en', 'nur die erste (bevorzugte) Sprache zählt');
+    assert.equal(ermittleSprache('auto', ['it-IT']), 'en');
+    assert.equal(ermittleSprache('auto', ['ja-JP']), 'en');
+    assert.equal(ermittleSprache('auto', ['it-IT', 'de-DE']), 'en', 'nur die erste (bevorzugte) Sprache zählt');
     assert.equal(ermittleSprache('auto', []), 'en');
     assert.equal(ermittleSprache('auto', 'dev'), 'en', '"dev" ist kein Deutsch');
 });
@@ -142,6 +143,84 @@ test('Datenschutz nennt in beiden Sprachen alle gespeicherten Angaben', () => {
     for (const w of ['contract number', 'customer number', "provider's address", 'sender details for the cancellation letter', 'stored only locally', 'not transmitted']) {
         assert.ok(en.includes(w), `en: ${w}`);
     }
+});
+
+// --- Spanisch, Französisch, Portugiesisch (ab 2.0.2) ---
+
+const WEITERE = ['es', 'fr', 'pt'];
+
+test('Automatisch: es/fr/pt starten in ihrer Sprache, Varianten eingeschlossen', () => {
+    assert.equal(ermittleSprache('auto', ['es-ES']), 'es');
+    assert.equal(ermittleSprache('auto', ['es-MX']), 'es');
+    assert.equal(ermittleSprache('auto', ['es']), 'es');
+    assert.equal(ermittleSprache('auto', ['fr-FR']), 'fr');
+    assert.equal(ermittleSprache('auto', ['fr-CA']), 'fr');
+    assert.equal(ermittleSprache('auto', ['pt-BR']), 'pt');
+    assert.equal(ermittleSprache('auto', ['pt-PT']), 'pt');
+    assert.equal(ermittleSprache('auto', ['pt_BR']), 'pt');
+    assert.equal(ermittleSprache('auto', ['fr-FR', 'de-DE']), 'fr');
+    assert.equal(ermittleSprache('auto', ['es', 'pt']), 'es');
+});
+
+test('Feste Einstellung es/fr/pt schlägt Gerätesprache', () => {
+    assert.equal(ermittleSprache('es', ['de-DE']), 'es');
+    assert.equal(ermittleSprache('fr', ['en-US']), 'fr');
+    assert.equal(ermittleSprache('pt', ['de-DE']), 'pt');
+});
+
+for (const code of WEITERE) {
+    test(`${code}: vollständig, nur bekannte Schlüssel, gleiche Platzhalter, nichts leer`, () => {
+        const fehlend = Object.keys(SPRACHEN.de).filter((k) => !(k in SPRACHEN[code]));
+        assert.deepEqual(fehlend, []);
+        for (const [k, v] of Object.entries(SPRACHEN[code])) {
+            assert.ok(k in SPRACHEN.de, `unbekannter Schlüssel: ${k}`);
+            assert.equal(platzhalter(v), platzhalter(SPRACHEN.de[k]), `Platzhalter in ${k}`);
+            assert.ok(typeof v === 'string' && v.trim().length > 0, k);
+        }
+        assert.equal(SPRACHEN[code]['kalender.wochentage'].split(',').length, 7);
+        assert.equal(SPRACHEN[code]['kalender.monate'].split(',').length, 12);
+    });
+
+    test(`${code}: Datenschutz und Impressum beginnen mit dem Hinweis auf die deutsche Fassung`, () => {
+        const ersterText = (html) => html.replace(/<[^>]+>/g, '\n').split('\n').map((z) => z.trim()).find(Boolean);
+        const hinweis = { es: 'En caso de duda, prevalece la versión alemana.', fr: 'En cas de doute, la version allemande fait foi.', pt: 'Em caso de dúvida, prevalece a versão alemã.' }[code];
+        assert.equal(ersterText(SPRACHEN[code]['datenschutz.inhalt']), hinweis);
+        assert.equal(ersterText(SPRACHEN[code]['impressum.inhalt']), hinweis);
+    });
+
+    test(`${code}: Hilfe und Datenschutz haben dieselbe Gliederung wie Deutsch`, () => {
+        const anzahl = (html, tag) => (html.match(new RegExp(`<${tag}[ >]`, 'g')) || []).length;
+        for (const tag of ['h3', 'li', 'ol', 'ul', 'p']) {
+            assert.equal(anzahl(SPRACHEN[code]['hilfe.inhalt'], tag), anzahl(SPRACHEN.de['hilfe.inhalt'], tag), `Hilfe ${tag}`);
+        }
+        assert.equal(anzahl(SPRACHEN[code]['datenschutz.inhalt'], 'h3'), anzahl(SPRACHEN.de['datenschutz.inhalt'], 'h3'));
+    });
+
+    test(`${code}: keine deutschen Wörter/Umlaute (Ausnahme: Name des Inhabers)`, () => {
+        for (const [k, v] of Object.entries(SPRACHEN[code])) {
+            const ohne = v.replace(/Jens Hübeler/g, '');
+            assert.ok(!/[äöüÄÖÜß]/.test(ohne), `${k}: ${v.slice(0, 80)}`);
+            assert.ok(!/\b(und|oder|nicht|Kündigung|Abo)\b/.test(ohne.replace(/Abo-Warner/g, '')), `${k}: ${v.slice(0, 80)}`);
+        }
+    });
+
+    test(`${code}: Datum im Format der Region`, () => {
+        setzeSprache(code);
+        assert.equal(formatiereDatum('2026-11-05', `${code}-${code === 'pt' ? 'BR' : code.toUpperCase()}`), '05/11/2026');
+        setzeSprache('de');
+    });
+}
+
+test('Datenschutz in allen Sprachen nennt die gespeicherten Vertragsangaben', () => {
+    const woerter = { es: ['número de contrato', 'número de cliente', 'dirección del proveedor', 'remitente'], fr: ['numéro de contrat', 'numéro de client', 'adresse du prestataire', 'expéditeur'], pt: ['número do contrato', 'número de cliente', 'endereço do fornecedor', 'remetente'] };
+    for (const code of WEITERE) for (const w of woerter[code]) assert.ok(SPRACHEN[code]['datenschutz.inhalt'].includes(w), `${code}: ${w}`);
+});
+
+test('Französisch: geschützte Leerzeichen vor Doppelpunkt/Fragezeichen', () => {
+    for (const [k, v] of Object.entries(SPRACHEN.fr)) {
+        assert.ok(!/ [:;?!](\s|$|<)/.test(v), `${k}: ${v.slice(0, 80)}`);
+    }
+    assert.equal(SPRACHEN.fr['karte.naechsteZahlung'], 'Prochain paiement\u00A0: {datum}');
 });
 
 // --- Vollständigkeit ---
