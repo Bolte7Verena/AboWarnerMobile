@@ -33,7 +33,7 @@ Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
 - Zweig „sprachen“ mit 5 Sprachen fertig, NICHT veröffentlicht.
 - Nächste Schritte in dieser Reihenfolge:
   1. [ ] Jens schaut die Vorschau an
-  2. [ ] Veralteten Produkttext zu Abo-Warner Pro korrigieren (Kontoauszüge, CSV-Export, „Apps in Vorbereitung“ raus, an die echten Funktionen der App anpassen)
+  2. [x] Veralteten Produkttext zu Abo-Warner Pro korrigieren, in allen 5 Sprachen (15.11.2026, Commit 7519bfa im Zweig „sprachen“, nicht veröffentlicht)
   3. [ ] Neuen Cloudflare-API-Token auf diesem Rechner einrichten
   4. [ ] Veröffentlichen
   5. [ ] Projekt auf GitHub sichern
@@ -179,7 +179,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] appvektor.com: Vorschau ansehen und Veröffentlichen freigeben (Jens), dann veröffentlichen
 - [ ] appvektor.com: Cloudflare-Token (CLOUDFLARE_API_TOKEN) auf dem neuen Rechner einrichten – ist hier noch nicht gesetzt
 - [ ] appvektor.com: Projekt auf GitHub sichern (Git ist jetzt angelegt, aber noch ohne GitHub)
-- [ ] appvektor.com: Produkttext zu Abo-Warner Pro prüfen (nennt noch Kontoauszug-Erkennung, CSV-Export und „Apps in Vorbereitung“)
+- [x] appvektor.com: Produkttext zu Abo-Warner Pro in allen 5 Sprachen auf den aktuellen Stand gebracht: iPhone und Android, Einmalkauf 4,99 €, alles lokal, in Prüfung bei Apple und Google; Foto-Funktion bewusst nicht erwähnt (15.11.2026, Zweig sprachen, nur lokal)
 - [ ] Link in der App zu appvektor.com öffnet die Seite in der gerade gewählten App-Sprache (Adressen stehen jetzt fest, z. B. appvektor.com/en/)
 - [ ] wieticktkiwirklich.com (Buchseite) auf Englisch, mit Hinweis „English edition in preparation“
 - [ ] abo-warner-pro.com: Englisch ist schon da, später Spanisch/Französisch/Portugiesisch passend zur App
