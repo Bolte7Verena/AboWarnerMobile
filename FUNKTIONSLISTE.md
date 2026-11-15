@@ -4,7 +4,7 @@ Die eine Übersicht für Jens, Kira und Lilly.
 [x] = erledigt, [ ] = offen.
 Lilly hält diese Liste nach jedem erledigten Auftrag aktuell.
 
-Stand: 14.11.2026
+Stand: 15.11.2026
 
 ---
 
@@ -12,9 +12,17 @@ Stand: 14.11.2026
 
 Alles wird für den weltweiten Markt gebaut. Jede App, jede Webseite und jedes Buch mindestens auf Deutsch UND Englisch, mit automatischer Spracherkennung und Umschalter. Weitere Sprachen nach Markt.
 
+## FESTE REGEL: ECHTES IPHONE
+
+Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
+
 ---
 
-## STAND 14.11.2026 ABENDS / NÄCHSTE SCHRITTE
+## STAND 15.11.2026 / NÄCHSTE SCHRITTE
+
+**Neu am 15.11.2026**
+- PC aufgerüstet: 12 GB RAM, Windows läuft jetzt auf einer SSD (C:). Die alte Windows-Platte heißt jetzt F: (alte Windows-Kopie, vorerst nicht löschen). G: ist unverändert G:. Node, Git, Java und Android-SDK werden weiter gefunden (alle auf G:).
+- Fehler auf echtem iPhone (iPhone 17 Pro Max, iOS 26.6.1, Version 2.0.1 über TestFlight): Beim Antippen von Eingabefeldern zoomt iOS hinein, die App wird breiter als der Bildschirm und rechts abgeschnitten (sichtbar im Formular „Neues Abo"). Ursache: Schriftgröße der Eingabefelder 14px, iOS zoomt bei unter 16px. Muss in 2.0.1 (master) UND im Update behoben werden, bevor das Apple-Video gemacht wird (siehe Abschnitt 3 und 4).
 
 **App (G:\AboWarnerMobile)**
 - Zweig update-2.0.2 mit Paket 1 bis 5 fertig.
@@ -138,6 +146,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 
 ## 3. Noch offen für das Update
 
+- [ ] iPhone-Zoom beim Antippen von Eingabefeldern beheben (Schrift der Eingabefelder mindestens 16px), danach auf echtem iPhone prüfen (gefunden 15.11.2026)
 - [ ] Foto-Funktion auf echtem iPhone testen (Codemagic-Build)
 - [ ] Erkennungsqualität Tesseract auf Jens' Android-Handy testen
 - [ ] Übersetzungen ES/FR/PT: Bedeutung prüfen (Kira anhand von Screenshots), Gegenleser optional später
@@ -153,6 +162,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 
 ## 4. Vor dem Start in den Stores (kein App-Code, nur zur Übersicht)
 
+- [ ] Apple: iPhone-Zoom beim Antippen von Eingabefeldern in Version 2.0.1 beheben, neuen TestFlight-Build auf echtem iPhone prüfen – VOR dem Bildschirmvideo (gefunden 15.11.2026)
 - [ ] Apple: iPhone-Bildschirmvideo + Antworten auf Punkte 2–6 der Ablehnung (Guideline 2.1)
 - [ ] Apple: DSA-Händlerprüfung neu einreichen (Antworten von María und Flexdienst abwarten)
 - [ ] Google: Produktionsantrag frühestens ca. 24.11.2026 (12 Tester, 14 Tage)
