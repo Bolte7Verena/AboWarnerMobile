@@ -44,14 +44,14 @@ Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
 - [x] Git eingerichtet, Ausgangsstand = live gesichert (15.11.2026, Commit 4051e31)
 - [x] Login-Knopf entfernt, „Automatische Erkennung“ raus, Texte/FAQ/Preis auf den echten Stand der App, DE/EN/ES/FR/PT mit Sprachwähler (15.11.2026, Commit 1ca5b79, nicht veröffentlicht)
 - [ ] Japanisch und Norwegisch liegen noch im Code (abgeschaltet, alte Texte mit „Automatischer Erkennung“) – Entscheidung Jens
-- [ ] Web-Werkzeug /dashboard (Abo-Scanner mit automatischer Erkennung, CSV-Export) ist weiter online erreichbar und in der Sitemap – Entscheidung Jens: behalten, verstecken oder entfernen
-- [ ] Impressum und Datenschutz nur auf Deutsch; Datenschutz beschreibt noch den Web-Scanner
+- [x] Web-Werkzeug /dashboard versteckt (liefert „nicht gefunden“, Code bleibt), aus der Sitemap, Datenschutz angepasst (Entscheidung Jens, 15.11.2026, Commit e7dadbe)
+- [x] Impressum und Datenschutz in DE/EN/ES/FR/PT mit „Im Zweifel gilt die deutsche Fassung“; Preis überall 4,99 €, auch auf Englisch (15.11.2026, Commit e7dadbe)
 - [ ] Veröffentlichen (Cloudflare-Token), auf GitHub sichern (kein Remote)
 
 **wieticktkiwirklich.com (G:\wie-tickt-ki-wirklich, Zweig main)**
 - [x] Git war schon da, Stand = live (Commit c0190e7)
 - [x] DE/EN/ES/FR/PT mit Sprachwähler und eigenen Adressen (/en/ usw.), fremde Sprachen sagen „Buch erscheint auf Deutsch“ (15.11.2026, Commit cf948bf, nicht veröffentlicht)
-- [ ] Impressum und Datenschutz nur auf Deutsch
+- [x] Impressum und Datenschutz in DE/EN/ES/FR/PT mit „Im Zweifel gilt die deutsche Fassung“ (15.11.2026, Commit d359db2)
 - [ ] Veröffentlichen (Cloudflare-Token), auf GitHub sichern (kein Remote)
 
 **Danach**
