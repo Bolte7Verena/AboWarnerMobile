@@ -34,7 +34,7 @@ Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
 - Nächste Schritte in dieser Reihenfolge:
   1. [ ] Jens schaut die Vorschau an
   2. [x] Veralteten Produkttext zu Abo-Warner Pro korrigieren, in allen 5 Sprachen (15.11.2026, Commit 7519bfa im Zweig „sprachen“, nicht veröffentlicht)
-  3. [x] „Wer steckt dahinter?“, Grundsatz „Fairer Preis“, echter App-Screenshot in der Produktkarte (15.11.2026, Commit a200dbe)
+  3. [x] „Wer steckt dahinter?“, Grundsatz „Fairer Preis“, echter App-Screenshot in der Produktkarte (15.11.2026, Commit a200dbe; zugeschnitten auf die Abo-Liste, größer, Commit c598679)
   4. [ ] Neuen Cloudflare-API-Token auf diesem Rechner einrichten (Jens und Kira)
   5. [ ] Veröffentlichen
   6. [ ] Projekt auf GitHub sichern (kein Remote; privates Repo muss Jens anlegen)
