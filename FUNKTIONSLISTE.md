@@ -146,7 +146,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 
 ## 3. Noch offen für das Update
 
-- [ ] iPhone-Zoom beim Antippen von Eingabefeldern beheben (Schrift der Eingabefelder mindestens 16px), danach auf echtem iPhone prüfen (gefunden 15.11.2026)
+- [ ] iPhone-Zoom beim Antippen von Eingabefeldern beheben (Schrift der Eingabefelder mindestens 16px), danach auf echtem iPhone prüfen (gefunden 15.11.2026; im Code behoben 15.11.2026 in update-2.0.2, iPhone-Test offen)
 - [ ] Foto-Funktion auf echtem iPhone testen (Codemagic-Build)
 - [ ] Erkennungsqualität Tesseract auf Jens' Android-Handy testen
 - [ ] Übersetzungen ES/FR/PT: Bedeutung prüfen (Kira anhand von Screenshots), Gegenleser optional später
@@ -162,7 +162,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 
 ## 4. Vor dem Start in den Stores (kein App-Code, nur zur Übersicht)
 
-- [ ] Apple: iPhone-Zoom beim Antippen von Eingabefeldern in Version 2.0.1 beheben, neuen TestFlight-Build auf echtem iPhone prüfen – VOR dem Bildschirmvideo (gefunden 15.11.2026)
+- [ ] Apple: iPhone-Zoom beim Antippen von Eingabefeldern in Version 2.0.1 beheben, neuen TestFlight-Build auf echtem iPhone prüfen – VOR dem Bildschirmvideo (gefunden 15.11.2026; im Code behoben im Zweig fix-2.0.1-zoom, auf GitHub, Codemagic-Build und iPhone-Test offen)
 - [ ] Apple: iPhone-Bildschirmvideo + Antworten auf Punkte 2–6 der Ablehnung (Guideline 2.1)
 - [ ] Apple: DSA-Händlerprüfung neu einreichen (Antworten von María und Flexdienst abwarten)
 - [ ] Google: Produktionsantrag frühestens ca. 24.11.2026 (12 Tester, 14 Tage)
