@@ -158,7 +158,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] Google: Produktionsantrag frühestens ca. 24.11.2026 (12 Tester, 14 Tage)
 - [ ] Google: Preise zurückstellen – Deutschland 0,09 EUR und Polen 0,39 PLN auf Endpreis 4,99 EUR
 - [ ] Google: DSA-Händlerstatus angeben, Frist 1. Februar 2027
-- [ ] Upload-Schlüssel und keystore.properties auf USB-Stick sichern
+- [x] Upload-Schlüssel und keystore.properties auf USB-Stick sichern (15.11.2026, Intenso-Stick, Ordner AppVektor-Sicherung-2026-11-15, zusammen mit G:\Geschäftsunterlagen; Apple-Schlüssel .p8/Zertifikate nicht auf diesem Rechner gefunden)
 
 ---
 
