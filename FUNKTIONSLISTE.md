@@ -34,13 +34,28 @@ Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
 - Nächste Schritte in dieser Reihenfolge:
   1. [ ] Jens schaut die Vorschau an
   2. [x] Veralteten Produkttext zu Abo-Warner Pro korrigieren, in allen 5 Sprachen (15.11.2026, Commit 7519bfa im Zweig „sprachen“, nicht veröffentlicht)
-  3. [ ] Neuen Cloudflare-API-Token auf diesem Rechner einrichten
-  4. [ ] Veröffentlichen
-  5. [ ] Projekt auf GitHub sichern
-  6. [ ] Link in der App auf die Sprach-Adressen umstellen (appvektor.com/de/, /en/, /es/, /fr/, /pt/)
+  3. [x] „Wer steckt dahinter?“, Grundsatz „Fairer Preis“, echter App-Screenshot in der Produktkarte (15.11.2026, Commit a200dbe)
+  4. [ ] Neuen Cloudflare-API-Token auf diesem Rechner einrichten (Jens und Kira)
+  5. [ ] Veröffentlichen
+  6. [ ] Projekt auf GitHub sichern (kein Remote; privates Repo muss Jens anlegen)
+  7. [ ] Link in der App auf die Sprach-Adressen umstellen (appvektor.com/de/, /en/, /es/, /fr/, /pt/)
+
+**abo-warner-pro.com (G:\minimalist-landing-gen-main, Zweig main)**
+- [x] Git eingerichtet, Ausgangsstand = live gesichert (15.11.2026, Commit 4051e31)
+- [x] Login-Knopf entfernt, „Automatische Erkennung“ raus, Texte/FAQ/Preis auf den echten Stand der App, DE/EN/ES/FR/PT mit Sprachwähler (15.11.2026, Commit 1ca5b79, nicht veröffentlicht)
+- [ ] Japanisch und Norwegisch liegen noch im Code (abgeschaltet, alte Texte mit „Automatischer Erkennung“) – Entscheidung Jens
+- [ ] Web-Werkzeug /dashboard (Abo-Scanner mit automatischer Erkennung, CSV-Export) ist weiter online erreichbar und in der Sitemap – Entscheidung Jens: behalten, verstecken oder entfernen
+- [ ] Impressum und Datenschutz nur auf Deutsch; Datenschutz beschreibt noch den Web-Scanner
+- [ ] Veröffentlichen (Cloudflare-Token), auf GitHub sichern (kein Remote)
+
+**wieticktkiwirklich.com (G:\wie-tickt-ki-wirklich, Zweig main)**
+- [x] Git war schon da, Stand = live (Commit c0190e7)
+- [x] DE/EN/ES/FR/PT mit Sprachwähler und eigenen Adressen (/en/ usw.), fremde Sprachen sagen „Buch erscheint auf Deutsch“ (15.11.2026, Commit cf948bf, nicht veröffentlicht)
+- [ ] Impressum und Datenschutz nur auf Deutsch
+- [ ] Veröffentlichen (Cloudflare-Token), auf GitHub sichern (kein Remote)
 
 **Danach**
-- [ ] abo-warner-pro.com und die Buchseite genauso auf 5 Sprachen mit eigenen Adressen umbauen.
+- [ ] abo-warner-pro.com auf eigene Adressen je Sprache umbauen (bisher Erkennung + Umschalter ohne eigene Adresse)
 
 ---
 
@@ -181,8 +196,8 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] appvektor.com: Projekt auf GitHub sichern (Git ist jetzt angelegt, aber noch ohne GitHub)
 - [x] appvektor.com: Produkttext zu Abo-Warner Pro in allen 5 Sprachen auf den aktuellen Stand gebracht: iPhone und Android, Einmalkauf 4,99 €, alles lokal, in Prüfung bei Apple und Google; Foto-Funktion bewusst nicht erwähnt (15.11.2026, Zweig sprachen, nur lokal)
 - [ ] Link in der App zu appvektor.com öffnet die Seite in der gerade gewählten App-Sprache (Adressen stehen jetzt fest, z. B. appvektor.com/en/)
-- [ ] wieticktkiwirklich.com (Buchseite) auf Englisch, mit Hinweis „English edition in preparation“
-- [ ] abo-warner-pro.com: Englisch ist schon da, später Spanisch/Französisch/Portugiesisch passend zur App
+- [x] wieticktkiwirklich.com (Buchseite) in DE/EN/ES/FR/PT, fremde Sprachen mit Hinweis „Buch erscheint auf Deutsch“ (15.11.2026, nur lokal)
+- [x] abo-warner-pro.com in DE/EN/ES/FR/PT, Texte passend zur App 2.0.1 (15.11.2026, nur lokal)
 - [ ] Buch nach Fertigstellung ins Englische übersetzen (eigenes Projekt)
 - [ ] Buch zuerst nur auf Deutsch veröffentlichen (Print-on-Demand, E-Book), um zu sehen, wie es läuft
 - [ ] Buch weltweit: Amazon Kindle Translate prüfen (Beta nur auf Einladung, Deutsch → Englisch, danach weitere Sprachen; Rechte an der Übersetzung klären; nur E-Book)
