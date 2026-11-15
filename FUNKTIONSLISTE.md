@@ -36,7 +36,7 @@ Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
   2. [x] Veralteten Produkttext zu Abo-Warner Pro korrigieren, in allen 5 Sprachen (15.11.2026, Commit 7519bfa im Zweig „sprachen“, nicht veröffentlicht)
   3. [x] „Wer steckt dahinter?“, Grundsatz „Fairer Preis“, echter App-Screenshot in der Produktkarte (15.11.2026, Commit a200dbe; zugeschnitten auf die Abo-Liste, größer, Commit c598679)
   4. [x] Neuen Cloudflare-API-Token auf diesem Rechner einrichten (15.11.2026, Benutzervariable CLOUDFLARE_API_TOKEN, wrangler whoami ok; Worker appvektor, tanstack-start-ts = abo-warner-pro.com, wieticktkiwirklich sichtbar)
-  5. [ ] Veröffentlichen
+  5. [x] Veröffentlicht (15.11.2026, Zweig sprachen, live geprüft)
   6. [ ] Projekt auf GitHub sichern (kein Remote; privates Repo muss Jens anlegen)
   7. [ ] Link in der App auf die Sprach-Adressen umstellen (appvektor.com/de/, /en/, /es/, /fr/, /pt/)
 
@@ -46,13 +46,15 @@ Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
 - [ ] Japanisch und Norwegisch liegen noch im Code (abgeschaltet, alte Texte mit „Automatischer Erkennung“) – Entscheidung Jens
 - [x] Web-Werkzeug /dashboard versteckt (liefert „nicht gefunden“, Code bleibt), aus der Sitemap, Datenschutz angepasst (Entscheidung Jens, 15.11.2026, Commit e7dadbe)
 - [x] Impressum und Datenschutz in DE/EN/ES/FR/PT mit „Im Zweifel gilt die deutsche Fassung“; Preis überall 4,99 €, auch auf Englisch (15.11.2026, Commit e7dadbe)
-- [ ] Veröffentlichen (Cloudflare-Token), auf GitHub sichern (kein Remote)
+- [x] Veröffentlicht auf Worker tanstack-start-ts (15.11.2026, live geprüft: 5 Sprachen, Rechtsseiten, /dashboard = 404)
+- [ ] Auf GitHub sichern (kein Remote)
 
 **wieticktkiwirklich.com (G:\wie-tickt-ki-wirklich, Zweig main)**
 - [x] Git war schon da, Stand = live (Commit c0190e7)
 - [x] DE/EN/ES/FR/PT mit Sprachwähler und eigenen Adressen (/en/ usw.), fremde Sprachen sagen „Buch erscheint auf Deutsch“ (15.11.2026, Commit cf948bf, nicht veröffentlicht)
 - [x] Impressum und Datenschutz in DE/EN/ES/FR/PT mit „Im Zweifel gilt die deutsche Fassung“ (15.11.2026, Commit d359db2)
-- [ ] Veröffentlichen (Cloudflare-Token), auf GitHub sichern (kein Remote)
+- [x] Veröffentlicht (15.11.2026, live geprüft: 5 Sprachen, Weiterleitung nach Browsersprache, Rechtsseiten)
+- [ ] Auf GitHub sichern (kein Remote)
 
 **Danach**
 - [ ] abo-warner-pro.com auf eigene Adressen je Sprache umbauen (bisher Erkennung + Umschalter ohne eigene Adresse)
@@ -191,7 +193,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 
 - [x] appvektor.com in 5 Sprachen gebaut (Deutsch, Englisch, Spanisch, Französisch, Portugiesisch), wie in der App: automatische Erkennung nach Browsersprache, Umschalter (Weltkugel), Wahl wird gemerkt, Impressum und Datenschutz in allen Sprachen mit „Im Zweifel gilt die deutsche Fassung“ (14.11.2026, Projekt G:\appvektor-landing, Zweig sprachen, nur lokal)
 - [x] appvektor.com: feste Adressen je Sprache (/de/, /en/, /es/, /fr/, /pt/ + /impressum, /datenschutz), Titel, Beschreibung und lang je Sprache für Google
-- [ ] appvektor.com: Vorschau ansehen und Veröffentlichen freigeben (Jens), dann veröffentlichen
+- [x] appvektor.com: veröffentlicht (15.11.2026)
 - [x] appvektor.com: Cloudflare-Token (CLOUDFLARE_API_TOKEN) auf dem neuen Rechner eingerichtet (15.11.2026)
 - [ ] appvektor.com: Projekt auf GitHub sichern (Git ist jetzt angelegt, aber noch ohne GitHub)
 - [x] appvektor.com: Produkttext zu Abo-Warner Pro in allen 5 Sprachen auf den aktuellen Stand gebracht: iPhone und Android, Einmalkauf 4,99 €, alles lokal, in Prüfung bei Apple und Google; Foto-Funktion bewusst nicht erwähnt (15.11.2026, Zweig sprachen, nur lokal)
