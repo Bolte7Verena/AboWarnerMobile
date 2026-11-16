@@ -8,9 +8,9 @@ export default {
     'kopf.hilfe': 'Ayuda',
     'kopf.sprache': 'Idioma',
     'start.titel': 'Resumen de suscripciones',
-    'start.subline': 'Tu vigilancia',
+    'start.subline': 'Todo bajo control',
     'start.untertitel': 'Ten todos tus contratos, costes y plazos de cancelación en un solo lugar.',
-    'suche.platzhalter': 'Buscar o filtrar suscripciones …',
+    'suche.platzhalter': 'Buscar o filtrar suscripciones…',
     'knopf.neuesAbo': 'Nueva suscripción',
 
     // --- Casillas de resumen ---
@@ -83,9 +83,9 @@ export default {
     'frist.wochen.eins': '{anzahl} semana',
     'frist.monate': '{anzahl} meses',
     'frist.monate.eins': '{anzahl} mes',
-    'feld.vertragsnummer': 'Número de contrato',
-    'feld.kundennummer': 'Número de cliente',
-    'feld.vertragspartner': 'Proveedor (nombre de la empresa y dirección)',
+    'feld.vertragsnummer': 'N.º de contrato',
+    'feld.kundennummer': 'N.º de cliente',
+    'feld.vertragspartner': 'Proveedor (nombre y dirección)',
     'feld.vertragspartnerPlatzhalter': 'p. ej. Empresa Ejemplo S.L.\nAtención al cliente\nCalle Ejemplo 1\n12345 Ciudad Ejemplo',
     'feld.gekuendigtZum': 'Cancelada, el contrato termina el',
     'feld.fehler': 'Rellena todos los campos correctamente (incluida la fecha).',
@@ -321,7 +321,7 @@ export default {
     'hilfe.titel': 'Ayuda',
     'hilfe.inhalt': `
                 <h3>¿Qué hace la app?</h3>
-                <p>Abo-Warner Pro vigila tus suscripciones y contratos: cuánto cuestan, cuándo pagas y hasta cuándo puedes cancelar. 7 días antes de que termine un plazo de cancelación, la app te avisa con una notificación, si permites las notificaciones. Todos tus datos se quedan solo en tu móvil.</p>
+                <p>Abo-Warner Pro tiene bajo control tus suscripciones y contratos: cuánto cuestan, cuándo pagas y hasta cuándo puedes cancelar. 7 días antes de que termine un plazo de cancelación, la app te avisa con una notificación, si permites las notificaciones. Todos tus datos se quedan solo en tu móvil.</p>
 
                 <h3>¿Cómo añado una suscripción?</h3>
                 <ol>

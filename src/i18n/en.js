@@ -12,9 +12,9 @@ export default {
     'kopf.hilfe': 'Help',
     'kopf.sprache': 'Language',
     'start.titel': 'Subscription overview',
-    'start.subline': 'Your watchlist',
+    'start.subline': 'Everything at a glance',
     'start.untertitel': 'Keep all your contracts, costs and cancellation deadlines in one place.',
-    'suche.platzhalter': 'Search or filter subscriptions …',
+    'suche.platzhalter': 'Search or filter subscriptions…',
     'knopf.neuesAbo': 'New subscription',
 
     // --- Overview tiles ---

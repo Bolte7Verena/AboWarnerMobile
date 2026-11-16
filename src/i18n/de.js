@@ -10,9 +10,9 @@ export default {
     'kopf.hilfe': 'Hilfe',
     'kopf.sprache': 'Sprache',
     'start.titel': 'Abo-Übersicht',
-    'start.subline': 'Deine Überwachung',
+    'start.subline': 'Alles im Blick',
     'start.untertitel': 'Behalte alle Verträge, Kosten und Kündigungsfristen an einem Ort.',
-    'suche.platzhalter': 'Abos durchsuchen oder filtern …',
+    'suche.platzhalter': 'Abos durchsuchen oder filtern…',
     'knopf.neuesAbo': 'Neues Abo',
 
     // --- Übersichtskacheln ---
@@ -87,7 +87,7 @@ export default {
     'frist.monate.eins': '{anzahl} Monat',
     'feld.vertragsnummer': 'Vertragsnummer',
     'feld.kundennummer': 'Kundennummer',
-    'feld.vertragspartner': 'Vertragspartner (Firmenname und Anschrift)',
+    'feld.vertragspartner': 'Vertragspartner (Name und Anschrift)',
     'feld.vertragspartnerPlatzhalter': 'z.B. Musterfirma GmbH\nKundenservice\nMusterstraße 1\n12345 Musterstadt',
     'feld.gekuendigtZum': 'Gekündigt zum (Vertragsende)',
     'feld.fehler': 'Bitte alle Felder korrekt ausfüllen (inkl. Datum).',
