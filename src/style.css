@@ -82,12 +82,16 @@
 }
 
 * { box-sizing: border-box; }
-html, body { height: 100%; }
+html, body { height: 100%; max-width: 100%; overflow-x: hidden; }
+/* iOS: Schrift nicht eigenmächtig vergrößern (z. B. beim Drehen), Zoom-Ursache ausschließen. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
     margin: 0;
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh; /* folgt der WebView-Höhe, auch wenn die Tastatur sie verkleinert */
+    width: 100%;
     overflow: hidden;
     background-color: var(--background);
     color: var(--foreground);
@@ -185,7 +189,7 @@ p { margin: 0; }
 
 /* Form */
 #abo-form { display: flex; flex-direction: column; gap: 1rem; }
-.form-group { flex: 1; }
+.form-group { flex: 1; min-width: 0; }
 .form-group label { display: block; margin-bottom: 0.375rem; font-size: 0.8rem; font-weight: 500; color: var(--foreground); }
 .form-row { display: flex; gap: 0.75rem; }
 
@@ -193,6 +197,8 @@ p { margin: 0; }
     display: flex;
     height: 2.25rem;
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
     border-radius: var(--radius-md);
     border: 1px solid var(--input);
     background: transparent;
@@ -208,6 +214,9 @@ p { margin: 0; }
 .input-control[type="number"]::-webkit-inner-spin-button,
 .input-control[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .input-control[type="number"] { appearance: textfield; -moz-appearance: textfield; }
+/* iOS-Datumsfeld (Bearbeiten-Formular) hat sonst eine feste Mindestbreite und ragt über den Rand. */
+.input-control[type="date"] { -webkit-appearance: none; appearance: none; display: block; min-width: 0; }
+.input-control[type="date"]::-webkit-date-and-time-value { text-align: left; }
 
 /* Datumsfeld (ersetzt <input type="date">) */
 .date-input-wrap { position: relative; }
@@ -224,7 +233,7 @@ p { margin: 0; }
        würde es unsichtbar hinter dem Modal rendern. */
     position: fixed;
     z-index: 110;
-    width: 16.5rem;
+    width: min(16.5rem, calc(100vw - 1rem));
     max-height: min(22rem, calc(100vh - 6rem));
     display: flex;
     flex-direction: column;
@@ -375,7 +384,7 @@ p { margin: 0; }
    gewonnene volle Breite auf großen Monitoren tatsächlich genutzt wird (mehrere
    Spalten) und auf schmalen Fenstern automatisch auf eine Spalte zurückfällt,
    ganz ohne eigene Media-Query. */
-.abo-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; list-style: none; padding: 0; margin: 0; }
+.abo-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 1rem; list-style: none; padding: 0; margin: 0; }
 .abo-karte {
     position: relative;
     overflow: hidden;
@@ -477,7 +486,8 @@ p { margin: 0; }
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1.5rem;
+    padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+    overflow: hidden;
     background: oklch(0 0 0 / 0.6);
     backdrop-filter: blur(4px);
 }
@@ -489,9 +499,12 @@ p { margin: 0; }
 .modal-overlay[hidden] { display: none; }
 .modal-dialog {
     width: 100%;
-    max-width: 34rem;
-    max-height: calc(100vh - 3rem);
+    min-width: 0;
+    max-width: min(34rem, 100%);
+    max-height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0 auto;
     border-radius: var(--radius-2xl);
     padding: 1.75rem;
     box-shadow: var(--shadow-glow);
@@ -537,8 +550,8 @@ p { margin: 0; }
        bzw. dem Home-Indicator verschwinden oder nicht antippbar sein. */
     bottom: calc(1.5rem + env(safe-area-inset-bottom));
     z-index: 90;
-    width: 100%;
-    max-width: 22rem;
+    width: min(22rem, calc(100vw - 2rem));
+    max-width: calc(100vw - 2rem);
     padding: 1.25rem;
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-glow);

@@ -2,5 +2,16 @@
   "appId": "com.abowarner.pro",
   "appName": "Abo-Warner Pro",
   "webDir": "www",
-  "backgroundColor": "#15141f"
+  "backgroundColor": "#15141f",
+  "zoomEnabled": false,
+  "ios": {
+    "zoomEnabled": false,
+    "contentInset": "never"
+  },
+  "plugins": {
+    "Keyboard": {
+      "resize": "native",
+      "resizeOnFullScreen": true
+    }
+  }
 }
