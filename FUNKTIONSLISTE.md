@@ -37,7 +37,7 @@ Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
   3. [x] „Wer steckt dahinter?“, Grundsatz „Fairer Preis“, echter App-Screenshot in der Produktkarte (15.11.2026, Commit a200dbe; zugeschnitten auf die Abo-Liste, größer, Commit c598679)
   4. [x] Neuen Cloudflare-API-Token auf diesem Rechner einrichten (15.11.2026, Benutzervariable CLOUDFLARE_API_TOKEN, wrangler whoami ok; Worker appvektor, tanstack-start-ts = abo-warner-pro.com, wieticktkiwirklich sichtbar)
   5. [x] Veröffentlicht (15.11.2026, Zweig sprachen, live geprüft)
-  6. [ ] Projekt auf GitHub sichern (kein Remote; privates Repo muss Jens anlegen)
+  6. [x] Auf GitHub gesichert (16.11.2026, siehe Abschnitt „GitHub-Sicherung“)
   7. [ ] Link in der App auf die Sprach-Adressen umstellen (appvektor.com/de/, /en/, /es/, /fr/, /pt/)
 
 **abo-warner-pro.com (G:\minimalist-landing-gen-main, Zweig main)**
@@ -48,14 +48,14 @@ Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
 - [x] Impressum und Datenschutz in DE/EN/ES/FR/PT mit „Im Zweifel gilt die deutsche Fassung“; Preis überall 4,99 €, auch auf Englisch (15.11.2026, Commit e7dadbe)
 - [x] Veröffentlicht auf Worker tanstack-start-ts (15.11.2026, live geprüft: 5 Sprachen, Rechtsseiten, /dashboard = 404)
 - [x] Tote Knöpfe („Bald in den Stores“ u. a.) zu schlichten Schildern „Bald für iPhone und Android“ in 5 Sprachen, live, geprüft auf 360/390 px (16.11.2026)
-- [ ] Auf GitHub sichern (kein Remote)
+- [x] Auf GitHub gesichert (16.11.2026, siehe Abschnitt „GitHub-Sicherung“)
 
 **wieticktkiwirklich.com (G:\wie-tickt-ki-wirklich, Zweig main)**
 - [x] Git war schon da, Stand = live (Commit c0190e7)
 - [x] DE/EN/ES/FR/PT mit Sprachwähler und eigenen Adressen (/en/ usw.), fremde Sprachen sagen „Buch erscheint auf Deutsch“ (15.11.2026, Commit cf948bf, nicht veröffentlicht)
 - [x] Impressum und Datenschutz in DE/EN/ES/FR/PT mit „Im Zweifel gilt die deutsche Fassung“ (15.11.2026, Commit d359db2)
 - [x] Veröffentlicht (15.11.2026, live geprüft: 5 Sprachen, Weiterleitung nach Browsersprache, Rechtsseiten)
-- [ ] Auf GitHub sichern (kein Remote)
+- [x] Auf GitHub gesichert (16.11.2026, siehe Abschnitt „GitHub-Sicherung“)
 
 **Danach**
 - [ ] abo-warner-pro.com auf eigene Adressen je Sprache umbauen (bisher Erkennung + Umschalter ohne eigene Adresse)
@@ -196,7 +196,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] appvektor.com: feste Adressen je Sprache (/de/, /en/, /es/, /fr/, /pt/ + /impressum, /datenschutz), Titel, Beschreibung und lang je Sprache für Google
 - [x] appvektor.com: veröffentlicht (15.11.2026)
 - [x] appvektor.com: Cloudflare-Token (CLOUDFLARE_API_TOKEN) auf dem neuen Rechner eingerichtet (15.11.2026)
-- [ ] appvektor.com: Projekt auf GitHub sichern (Git ist jetzt angelegt, aber noch ohne GitHub)
+- [x] appvektor.com: Projekt auf GitHub gesichert (16.11.2026)
 - [x] appvektor.com: Produkttext zu Abo-Warner Pro in allen 5 Sprachen auf den aktuellen Stand gebracht: iPhone und Android, Einmalkauf 4,99 €, alles lokal, in Prüfung bei Apple und Google; Foto-Funktion bewusst nicht erwähnt (15.11.2026, Zweig sprachen, nur lokal)
 - [ ] Link in der App zu appvektor.com öffnet die Seite in der gerade gewählten App-Sprache (Adressen stehen jetzt fest, z. B. appvektor.com/en/)
 - [x] wieticktkiwirklich.com (Buchseite) in DE/EN/ES/FR/PT, fremde Sprachen mit Hinweis „Buch erscheint auf Deutsch“ (15.11.2026, nur lokal)
@@ -205,6 +205,21 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] Buch zuerst nur auf Deutsch veröffentlichen (Print-on-Demand, E-Book), um zu sehen, wie es läuft
 - [ ] Buch weltweit: Amazon Kindle Translate prüfen (Beta nur auf Einladung, Deutsch → Englisch, danach weitere Sprachen; Rechte an der Übersetzung klären; nur E-Book)
 - [ ] Hörbuch prüfen (eigener Schritt, echte Stimme oder KI-Stimme)
+
+---
+
+## GITHUB-SICHERUNG (Stand 16.11.2026)
+
+Alle Repos privat, Konto Bolte7Verena. Anmeldung über den Git Credential Manager, kein Token in der Remote-URL. Vor dem ersten Push die komplette Historie auf Zugangsdaten geprüft (keine gefunden).
+
+| Ordner auf dem Medion | GitHub-Repo | Zweige auf GitHub | Live-Seite |
+|---|---|---|---|
+| G:AboWarnerMobile (+ Arbeitsordner G:AboWarnerMobile-fix-zoom) | Bolte7Verena/AboWarnerMobile | master (2.0.1 in Prüfung), fix-2.0.1-zoom, update-2.0.2 | – (App) |
+| G:appvektor-landing | Bolte7Verena/appvektor-landing | sprachen (= live, Standardzweig), main (alter Stand vor den Sprachen) | appvektor.com (Worker appvektor) |
+| G:minimalist-landing-gen-main | Bolte7Verena/abo-warner-pro-landing | main | abo-warner-pro.com (Worker tanstack-start-ts) |
+| G:wie-tickt-ki-wirklich | Bolte7Verena/wieticktkiwirklich | main | wieticktkiwirklich.com (Worker wieticktkiwirklich) |
+
+Nicht in Git: G:abo-warner-www-redirect (kleiner Worker, leitet www.abo-warner-pro.com um).
 
 ---
 
