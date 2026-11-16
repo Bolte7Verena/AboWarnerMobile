@@ -214,12 +214,11 @@ Alle Repos privat, Konto Bolte7Verena. Anmeldung über den Git Credential Manage
 
 | Ordner auf dem Medion | GitHub-Repo | Zweige auf GitHub | Live-Seite |
 |---|---|---|---|
-| G:AboWarnerMobile (+ Arbeitsordner G:AboWarnerMobile-fix-zoom) | Bolte7Verena/AboWarnerMobile | master (2.0.1 in Prüfung), fix-2.0.1-zoom, update-2.0.2 | – (App) |
-| G:appvektor-landing | Bolte7Verena/appvektor-landing | sprachen (= live, Standardzweig), main (alter Stand vor den Sprachen) | appvektor.com (Worker appvektor) |
-| G:minimalist-landing-gen-main | Bolte7Verena/abo-warner-pro-landing | main | abo-warner-pro.com (Worker tanstack-start-ts) |
-| G:wie-tickt-ki-wirklich | Bolte7Verena/wieticktkiwirklich | main | wieticktkiwirklich.com (Worker wieticktkiwirklich) |
-
-Nicht in Git: G:abo-warner-www-redirect (kleiner Worker, leitet www.abo-warner-pro.com um).
+| G:\AboWarnerMobile (+ Arbeitsordner G:\AboWarnerMobile-fix-zoom) | Bolte7Verena/AboWarnerMobile | master (2.0.1 in Prüfung), fix-2.0.1-zoom, update-2.0.2 | – (App) |
+| G:\appvektor-landing | Bolte7Verena/appvektor-landing | sprachen (= live, Standardzweig), main (alter Stand vor den Sprachen) | appvektor.com (Worker appvektor) |
+| G:\minimalist-landing-gen-main | Bolte7Verena/abo-warner-pro-landing | main | abo-warner-pro.com (Worker tanstack-start-ts) |
+| G:\wie-tickt-ki-wirklich | Bolte7Verena/wieticktkiwirklich | main | wieticktkiwirklich.com (Worker wieticktkiwirklich) |
+| G:\abo-warner-www-redirect | Bolte7Verena/abo-warner-www-redirect | main | www.abo-warner-pro.com → abo-warner-pro.com (Worker abo-warner-www-redirect; Code = live, 16.11.2026) |
 
 ---
 
