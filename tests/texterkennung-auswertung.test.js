@@ -206,3 +206,58 @@ test('findeDatum: Formate in allen Sprachen, ungültige Daten nie', () => {
     assert.equal(findeDatum('31.02.2027'), null);
     assert.equal(findeDatum('kein Datum'), null);
 });
+
+// --- Ab 2.0.2: vergangenes Datum (Rechnung) -> nächste Zahlung nach Turnus ---
+import { vorschlagNaechsteZahlung } from '../src/texterkennung-auswertung.js';
+import { naechsteZahlungAb } from '../src/calculator.js';
+
+const HEUTE = new Date(2026, 10, 16); // 16.11.2026
+
+test('Rechnungsdatum wird als letzte Zahlung erkannt (nicht als nächste)', () => {
+    const e = werteTextAus(z(`
+        Rechnungsdatum 01.11.2026
+        Betrag 9,99 €
+        monatlich
+    `));
+    assert.equal(e.naechsteZahlung, undefined);
+    assert.equal(e.letzteZahlung, '2026-11-01');
+});
+
+test('Rechnungsdatum in EN/ES/FR/PT', () => {
+    assert.equal(werteTextAus(['Invoice date: 05/10/2026']).letzteZahlung, '2026-10-05');
+    assert.equal(werteTextAus(['Fecha de factura: 03/09/2026']).letzteZahlung, '2026-09-03');
+    assert.equal(werteTextAus(['Date de facture : 12/08/2026']).letzteZahlung, '2026-08-12');
+    assert.equal(werteTextAus(['Data da fatura: 20/10/2026']).letzteZahlung, '2026-10-20');
+});
+
+test('Nennt der Text die nächste Zahlung, wird kein Rechnungsdatum genommen', () => {
+    const e = werteTextAus(['Rechnungsdatum 01.11.2026', 'Nächste Zahlung 01.12.2026']);
+    assert.equal(e.naechsteZahlung, '2026-12-01');
+    assert.equal(e.letzteZahlung, undefined);
+});
+
+test('Vergangene Zahlung wird je Turnus auf die nächste vorgerückt', () => {
+    assert.deepEqual(vorschlagNaechsteZahlung({ letzteZahlung: '2026-11-01' }, 'Monatlich', HEUTE), { datum: '2026-12-01', original: '2026-11-01', vorgerueckt: true });
+    assert.equal(vorschlagNaechsteZahlung({ letzteZahlung: '2026-10-01' }, 'Vierteljährlich', HEUTE).datum, '2027-01-01');
+    assert.equal(vorschlagNaechsteZahlung({ letzteZahlung: '2026-03-20' }, 'Halbjährlich', HEUTE).datum, '2027-03-20');
+    assert.equal(vorschlagNaechsteZahlung({ letzteZahlung: '2025-12-02' }, 'Jährlich', HEUTE).datum, '2026-12-02');
+    // Mehrere Schritte (Rechnung von vor Monaten)
+    assert.equal(vorschlagNaechsteZahlung({ letzteZahlung: '2026-06-10' }, 'Monatlich', HEUTE).datum, '2026-12-10');
+});
+
+test('Monatsende wandert nicht ab (31.01. -> 28.02. -> 31.03.)', () => {
+    assert.equal(naechsteZahlungAb('2026-01-31', 'Monatlich', new Date(2026, 1, 10)), '2026-02-28');
+    assert.equal(naechsteZahlungAb('2026-01-31', 'Monatlich', new Date(2026, 2, 5)), '2026-03-31');
+    assert.equal(naechsteZahlungAb('2024-02-29', 'Jährlich', new Date(2025, 0, 1)), '2025-02-28');
+});
+
+test('Heutiges oder künftiges Datum bleibt unverändert', () => {
+    assert.deepEqual(vorschlagNaechsteZahlung({ naechsteZahlung: '2026-11-16' }, 'Monatlich', HEUTE), { datum: '2026-11-16', original: '2026-11-16', vorgerueckt: false });
+    assert.equal(vorschlagNaechsteZahlung({ naechsteZahlung: '2027-01-05' }, 'Jährlich', HEUTE).vorgerueckt, false);
+    assert.equal(vorschlagNaechsteZahlung({}, 'Monatlich', HEUTE), null);
+    assert.equal(naechsteZahlungAb('kein Datum', 'Monatlich', HEUTE), '');
+});
+
+test('Vergangene "nächste Zahlung" (z. B. "Payment date") wird ebenfalls vorgerückt', () => {
+    assert.equal(vorschlagNaechsteZahlung({ naechsteZahlung: '2026-11-03' }, 'Monatlich', HEUTE).datum, '2026-12-03');
+});

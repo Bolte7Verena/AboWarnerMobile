@@ -13,6 +13,22 @@
  * Französisch, Portugiesisch.
  */
 
+import { naechsteZahlungAb } from './calculator.js';
+
+/**
+ * Datum für "Nächste Zahlung" aus den Foto-Vorschlägen. Bevorzugt die genannte
+ * nächste Zahlung, sonst das Rechnungs-/Zahlungsdatum. Liegt das Datum in der
+ * Vergangenheit, wird es anhand des Turnus auf die nächste Zahlung vorgerückt.
+ * Rückgabe: { datum, original, vorgerueckt } oder null.
+ */
+export function vorschlagNaechsteZahlung(vorschlag, turnus, heute = new Date()) {
+    const original = (vorschlag && (vorschlag.naechsteZahlung || vorschlag.letzteZahlung)) || '';
+    if (!original) return null;
+    const datum = naechsteZahlungAb(original, turnus, heute);
+    if (!datum) return null;
+    return { datum, original, vorgerueckt: datum !== original };
+}
+
 // Ganzes Wort (Buchstaben vorher/nachher nicht erlaubt), Unicode-fähig.
 const wort = (muster) => `(?<![\\p{L}\\p{N}])(?:${muster})(?![\\p{L}])`;
 const regex = (muster, flags = 'iu') => new RegExp(muster, flags);
@@ -211,14 +227,29 @@ const STICHWORT_NAECHSTE = regex(wort([
     'pr(?:ó|o)ximo\\s+(?:pagamento|d(?:é|e)bito|vencimento)', 'vencimento', 'renova(?:r(?:á|a))?\\s+em', 'data\\s+de\\s+(?:cobran(?:ç|c)a|vencimento|renova(?:ç|c)(?:ã|a)o)', 'ser(?:á|a)\\s+cobrado\\s+em'
 ].join('|')));
 
-function findeNaechsteZahlung(zeilen, optionen) {
+// Datum einer bereits erfolgten Zahlung (Rechnung, Beleg, Kauf). Wird nur genutzt,
+// wenn keine "nächste Zahlung" im Text steht; das Formular rückt es dann
+// turnusgerecht auf die nächste Zahlung vor (calculator.js naechsteZahlungAb).
+const STICHWORT_LETZTE = regex(wort([
+    'rechnungsdatum', 'rechnung\\s+vom', 'datum\\s+der\\s+rechnung', 'belegdatum', 'kaufdatum', 'bestelldatum', '(?:bezahlt|gezahlt|belastet|gebucht)\\s+am',
+    'invoice\\s+date', 'date\\s+of\\s+invoice', 'invoice\\s+issued(?:\\s+on)?', 'receipt\\s+date', 'purchase\\s+date', 'order\\s+date', 'paid\\s+on', 'date\\s+paid',
+    'fecha\\s+de\\s+(?:la\\s+)?(?:factura|emisi(?:ó|o)n|compra|pedido)', 'pagado\\s+el', 'factura\\s+del',
+    'date\\s+de\\s+(?:la\\s+)?(?:facture|commande)', 'date\\s+d[\'’]\\s?(?:achat|(?:é|e)mission)', 'factur(?:é|e)e?\\s+le', 'pay(?:é|e)e?\\s+le', 'facture\\s+du',
+    'data\\s+d[ae]\\s+(?:fatura|emiss(?:ã|a)o|compra|pedido)', 'pago\\s+em', 'fatura\\s+de'
+].join('|')));
+
+function findeDatumNachStichwort(zeilen, stichwort, optionen) {
     for (let i = 0; i < zeilen.length; i++) {
-        const m = STICHWORT_NAECHSTE.exec(zeilen[i]);
+        const m = stichwort.exec(zeilen[i]);
         if (!m) continue;
         const datum = findeDatum(zeilen[i].slice(m.index), optionen) || (i + 1 < zeilen.length ? findeDatum(zeilen[i + 1], optionen) : null);
         if (datum) return datum;
     }
     return null;
+}
+
+function findeNaechsteZahlung(zeilen, optionen) {
+    return findeDatumNachStichwort(zeilen, STICHWORT_NAECHSTE, optionen);
 }
 
 // --- Anbieter: Name und Anschrift ---
@@ -316,7 +347,14 @@ export function werteTextAus(zeilen, optionen = {}) {
     if (turnus) ergebnis.turnus = turnus;
 
     const datum = findeNaechsteZahlung(saubere, optionen);
-    if (datum) ergebnis.naechsteZahlung = zuISO(datum);
+    if (datum) {
+        ergebnis.naechsteZahlung = zuISO(datum);
+    } else {
+        // Keine "nächste Zahlung" genannt: Rechnungs-/Zahlungsdatum merken,
+        // das Formular schlägt daraus die nächste Zahlung vor.
+        const letzte = findeDatumNachStichwort(saubere, STICHWORT_LETZTE, optionen);
+        if (letzte) ergebnis.letzteZahlung = zuISO(letzte);
+    }
 
     const kundennummer = findeNummer(saubere, LABEL_KUNDE);
     if (kundennummer) ergebnis.kundennummer = kundennummer;

@@ -17,8 +17,8 @@
  */
 
 import { t, tAnzahl, aktuelleSprache, formatiereDatum } from './i18n.js';
-import { formatiereZahlDE } from './calculator.js';
-import { werteTextAus } from './texterkennung-auswertung.js';
+import { formatiereZahlDE, naechsteZahlungAb } from './calculator.js';
+import { werteTextAus, vorschlagNaechsteZahlung } from './texterkennung-auswertung.js';
 
 const MAX_KANTE = 2400; // Pixel, genügt für gut lesbaren Text
 
@@ -86,9 +86,23 @@ function markiere(el) {
     el.addEventListener('change', () => el.classList.remove('vom-foto'), { once: true });
 }
 
-// Trägt die Vorschläge in leere Felder ein. Rückgabe: Anzahl übernommener Angaben.
+// Setzt das Feld "Nächste Zahlung" (über den Kalender, falls vorhanden).
+function setzeZahlungsdatum(iso, datumsauswahl) {
+    const feld = (id) => document.getElementById(id);
+    if (datumsauswahl && datumsauswahl.setzeDatum) {
+        datumsauswahl.setzeDatum(iso);
+    } else {
+        feld('input-datum-iso').value = iso;
+        feld('input-datum').value = formatiereDatum(iso);
+    }
+}
+
+// Trägt die Vorschläge in leere Felder ein.
+// Rückgabe: { anzahl, datum } – datum ist gesetzt, wenn ein vergangenes Datum
+// (z. B. Rechnungsdatum) auf die nächste Zahlung vorgerückt wurde.
 export function uebernehmeVorschlaege(vorschlag, { datumsauswahl } = {}) {
     let anzahl = 0;
+    let vorgerueckt = null;
     const feld = (id) => document.getElementById(id);
     const setzeText = (id, wert) => {
         const el = feld(id);
@@ -116,15 +130,18 @@ export function uebernehmeVorschlaege(vorschlag, { datumsauswahl } = {}) {
         markiere(el);
         anzahl++;
     }
-    if (vorschlag.naechsteZahlung && !feld('input-datum-iso').value) {
-        if (datumsauswahl && datumsauswahl.setzeDatum) {
-            datumsauswahl.setzeDatum(vorschlag.naechsteZahlung);
-        } else {
-            feld('input-datum-iso').value = vorschlag.naechsteZahlung;
-            feld('input-datum').value = formatiereDatum(vorschlag.naechsteZahlung);
-        }
-        markiere(feld('input-datum'));
+    // Datum: liegt es in der Vergangenheit (z. B. Rechnungsdatum), wird anhand des
+    // Turnus die NÄCHSTE Zahlung vorgeschlagen. Der Nutzer kann es vor dem Speichern ändern.
+    const datumVorschlag = vorschlagNaechsteZahlung(vorschlag, feld('input-turnus').value);
+    if (datumVorschlag && !feld('input-datum-iso').value) {
+        setzeZahlungsdatum(datumVorschlag.datum, datumsauswahl);
+        const datumFeld = feld('input-datum');
+        markiere(datumFeld);
+        // Ändert der Nutzer danach den Turnus, wird neu vorgerückt – solange er das Datum nicht selbst geändert hat.
+        datumFeld.dataset.fotoOriginal = datumVorschlag.vorgerueckt ? datumVorschlag.original : '';
+        datumFeld.dataset.fotoGesetzt = datumVorschlag.datum;
         anzahl++;
+        if (datumVorschlag.vorgerueckt) vorgerueckt = datumVorschlag;
     }
     const weitere = [
         setzeText('input-vertragsnummer', vorschlag.vertragsnummer),
@@ -132,7 +149,7 @@ export function uebernehmeVorschlaege(vorschlag, { datumsauswahl } = {}) {
         setzeText('input-vertragspartner', vorschlag.vertragspartner)
     ];
     if (weitere.some(Boolean)) feld('weitere-angaben').open = true;
-    return anzahl;
+    return { anzahl, datum: vorgerueckt };
 }
 
 function zeigeStatus(text, art = '') {
@@ -155,8 +172,10 @@ async function verarbeiteDatei(datei, optionen) {
         } finally {
             bild = null; // Bilddaten sofort verwerfen
         }
-        const anzahl = uebernehmeVorschlaege(werteTextAus(zeilen, { monatZuerst: monatZuerst() }), optionen);
-        zeigeStatus(anzahl > 0 ? tAnzahl('foto.erkannt', anzahl) : t('foto.nichts'), anzahl > 0 ? 'erfolg' : '');
+        const { anzahl, datum } = uebernehmeVorschlaege(werteTextAus(zeilen, { monatZuerst: monatZuerst() }), optionen);
+        let meldung = anzahl > 0 ? tAnzahl('foto.erkannt', anzahl) : t('foto.nichts');
+        if (datum) meldung += ` ${t('foto.datumVorgerueckt', { original: formatiereDatum(datum.original), datum: formatiereDatum(datum.datum) })}`;
+        zeigeStatus(meldung, anzahl > 0 ? 'erfolg' : '');
     } catch (error) {
         zeigeStatus(error && error.code === 'NICHT_VERFUEGBAR' ? t('foto.nurApp') : t('foto.fehler'), 'fehler');
     } finally {
@@ -167,6 +186,29 @@ async function verarbeiteDatei(datei, optionen) {
 }
 
 export function initFotoEinlesen(optionen = {}) {
+    // Vom Foto vorgerücktes Datum folgt einem späteren Turnus-Wechsel, solange der
+    // Nutzer das Datum nicht selbst geändert hat.
+    const turnusFeld = document.getElementById('input-turnus');
+    turnusFeld.addEventListener('change', () => {
+        const datumFeld = document.getElementById('input-datum');
+        const iso = document.getElementById('input-datum-iso');
+        const original = datumFeld.dataset.fotoOriginal;
+        if (!original || iso.value !== datumFeld.dataset.fotoGesetzt) return;
+        const neu = naechsteZahlungAb(original, turnusFeld.value);
+        if (!neu) return;
+        setzeZahlungsdatum(neu, optionen.datumsauswahl);
+        datumFeld.dataset.fotoGesetzt = neu;
+    });
+    // Nach dem Speichern/Schließen (Formular-Reset) nichts vom letzten Foto behalten.
+    const formular = document.getElementById('abo-form');
+    if (formular) {
+        formular.addEventListener('reset', () => {
+            const datumFeld = document.getElementById('input-datum');
+            delete datumFeld.dataset.fotoOriginal;
+            delete datumFeld.dataset.fotoGesetzt;
+        });
+    }
+
     const aufnehmen = document.getElementById('input-foto-kamera');
     const auswaehlen = document.getElementById('input-foto-datei');
     const auswahl = document.getElementById('foto-auswahl');

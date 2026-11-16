@@ -104,6 +104,7 @@ export default {
     'foto.laeuft': 'Leyendo el texto …',
     'foto.erkannt': 'Se han rellenado {anzahl} datos. Revísalos y corrígelos si hace falta. Lo que no se ha reconocido con seguridad queda vacío.',
     'foto.erkannt.eins': 'Se ha rellenado 1 dato. Revísalo y corrígelo si hace falta. Lo que no se ha reconocido con seguridad queda vacío.',
+    'foto.datumVorgerueckt': 'La fecha de la imagen ({original}) ya pasó, así que se ha puesto el {datum} como próximo pago, según la frecuencia de pago. Revísalo, por favor.',
     'foto.nichts': 'No se ha reconocido nada con seguridad en la imagen. Introduce los datos tú mismo.',
     'foto.fehler': 'No se pudo leer la imagen. Prueba con una foto más nítida o introduce los datos tú mismo.',
     'foto.nurApp': 'El reconocimiento de texto solo está disponible en la app del móvil.',

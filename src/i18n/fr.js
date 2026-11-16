@@ -105,6 +105,7 @@ export default {
     'foto.laeuft': 'Lecture du texte …',
     'foto.erkannt': '{anzahl} informations reprises. Veuillez les vérifier et les corriger si nécessaire. Ce qui n’a pas été reconnu avec certitude reste vide.',
     'foto.erkannt.eins': '1 information reprise. Veuillez la vérifier et la corriger si nécessaire. Ce qui n’a pas été reconnu avec certitude reste vide.',
+    'foto.datumVorgerueckt': 'La date de l’image ({original}) est passée : le {datum} a donc été indiqué comme prochain paiement, selon la fréquence. Veuillez vérifier.',
     'foto.nichts': 'Rien n’a pu être reconnu avec certitude sur l’image. Veuillez saisir les informations vous-même.',
     'foto.fehler': 'L’image n’a pas pu être lue. Essayez avec une photo plus nette ou saisissez les informations vous-même.',
     'foto.nurApp': 'La reconnaissance de texte n’est disponible que dans l’application sur votre téléphone.',

@@ -106,6 +106,7 @@ export default {
     'foto.laeuft': 'Text wird gelesen …',
     'foto.erkannt': '{anzahl} Angaben übernommen. Bitte prüfe sie und korrigiere sie bei Bedarf. Was nicht sicher erkannt wurde, bleibt leer.',
     'foto.erkannt.eins': '1 Angabe übernommen. Bitte prüfe sie und korrigiere sie bei Bedarf. Was nicht sicher erkannt wurde, bleibt leer.',
+    'foto.datumVorgerueckt': 'Das Datum auf dem Bild ({original}) liegt in der Vergangenheit. Als nächste Zahlung ist deshalb der {datum} eingetragen, passend zum Turnus. Bitte prüfe es.',
     'foto.nichts': 'Auf dem Bild wurde nichts sicher erkannt. Bitte trag die Angaben selbst ein.',
     'foto.fehler': 'Das Bild konnte nicht gelesen werden. Versuch es mit einem schärferen Foto oder trag die Angaben selbst ein.',
     'foto.nurApp': 'Die Texterkennung gibt es nur in der App auf dem Handy.',

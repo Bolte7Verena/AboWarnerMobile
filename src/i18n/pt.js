@@ -104,6 +104,7 @@ export default {
     'foto.laeuft': 'Lendo o texto …',
     'foto.erkannt': '{anzahl} informações preenchidas. Confira e corrija se necessário. O que não foi reconhecido com segurança fica vazio.',
     'foto.erkannt.eins': '1 informação preenchida. Confira e corrija se necessário. O que não foi reconhecido com segurança fica vazio.',
+    'foto.datumVorgerueckt': 'A data da imagem ({original}) já passou, por isso {datum} foi inserida como próximo pagamento, de acordo com a frequência. Confira, por favor.',
     'foto.nichts': 'Nada foi reconhecido com segurança na imagem. Informe os dados você mesmo.',
     'foto.fehler': 'Não foi possível ler a imagem. Tente uma foto mais nítida ou informe os dados você mesmo.',
     'foto.nurApp': 'O reconhecimento de texto só está disponível no app do celular.',

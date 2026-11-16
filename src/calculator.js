@@ -95,6 +95,24 @@ export function minusMonate(datum, monate) {
     return new Date(jahr, monat, Math.min(datum.getDate(), letzterTag));
 }
 
+// Nächster Zahlungstermin ab heute (ab 2.0.2, für "Per Foto einlesen"):
+// Liegt das Datum in der Vergangenheit (z. B. Rechnungsdatum), wird es um ganze
+// Turnus-Schritte vorgerückt, bis es heute oder später ist. Jeder Schritt wird
+// vom Ausgangsdatum aus gerechnet und aufs Monatsende geklemmt, damit der Tag
+// nicht abwandert (31.01. -> 28.02. -> 31.03., nicht 28.03.).
+// Rückgabe: ISO-Datum ("2026-12-01") oder '' bei ungültigem Datum.
+export function naechsteZahlungAb(datum, turnus, heute = new Date()) {
+    const start = parseDatumISO(datum);
+    if (!start) return '';
+    const stichtag = new Date(heute.getFullYear(), heute.getMonth(), heute.getDate());
+    const monate = TURNUS_MONATE[turnus] || 1;
+    let kandidat = start;
+    for (let schritt = 1; kandidat < stichtag && schritt <= 1200; schritt++) {
+        kandidat = minusMonate(start, -schritt * monate);
+    }
+    return formatiereDatumISO(kandidat);
+}
+
 // Zahlungsdatum minus Frist (Tage, Wochen oder Kalendermonate).
 function fristVorZahlung(zahlung, angabe) {
     if (angabe.einheit === 'monate') return minusMonate(zahlung, angabe.anzahl);

@@ -108,6 +108,7 @@ export default {
     'foto.laeuft': 'Reading text …',
     'foto.erkannt': '{anzahl} details filled in. Please check them and correct them if needed. Anything not recognised reliably stays empty.',
     'foto.erkannt.eins': '1 detail filled in. Please check it and correct it if needed. Anything not recognised reliably stays empty.',
+    'foto.datumVorgerueckt': 'The date on the image ({original}) is in the past, so {datum} has been entered as the next payment, based on the billing cycle. Please check it.',
     'foto.nichts': 'Nothing could be recognised reliably in the image. Please enter the details yourself.',
     'foto.fehler': 'The image could not be read. Try a sharper photo or enter the details yourself.',
     'foto.nurApp': 'Text recognition is only available in the app on your phone.',
