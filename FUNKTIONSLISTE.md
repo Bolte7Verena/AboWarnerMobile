@@ -4,7 +4,7 @@ Die eine Übersicht für Jens, Kira und Lilly.
 [x] = erledigt, [ ] = offen.
 Lilly hält diese Liste nach jedem erledigten Auftrag aktuell.
 
-Stand: 15.11.2026
+Stand: 16.11.2026
 
 ---
 
@@ -47,6 +47,7 @@ Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
 - [x] Web-Werkzeug /dashboard versteckt (liefert „nicht gefunden“, Code bleibt), aus der Sitemap, Datenschutz angepasst (Entscheidung Jens, 15.11.2026, Commit e7dadbe)
 - [x] Impressum und Datenschutz in DE/EN/ES/FR/PT mit „Im Zweifel gilt die deutsche Fassung“; Preis überall 4,99 €, auch auf Englisch (15.11.2026, Commit e7dadbe)
 - [x] Veröffentlicht auf Worker tanstack-start-ts (15.11.2026, live geprüft: 5 Sprachen, Rechtsseiten, /dashboard = 404)
+- [x] Tote Knöpfe („Bald in den Stores“ u. a.) zu schlichten Schildern „Bald für iPhone und Android“ in 5 Sprachen, live, geprüft auf 360/390 px (16.11.2026)
 - [ ] Auf GitHub sichern (kein Remote)
 
 **wieticktkiwirklich.com (G:\wie-tickt-ki-wirklich, Zweig main)**
@@ -163,7 +164,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 
 ## 3. Noch offen für das Update
 
-- [ ] iPhone-Zoom beim Antippen von Eingabefeldern beheben (Schrift der Eingabefelder mindestens 16px), danach auf echtem iPhone prüfen (gefunden 15.11.2026; im Code behoben 15.11.2026 in update-2.0.2, iPhone-Test offen)
+- [ ] iPhone-Zoom beim Antippen von Eingabefeldern: 16px allein reichte nicht (Build 2). Am 16.11.2026 vollständig behoben (Zoom aus, Tastatur-Plugin, seitlicher Überlauf, Ansicht springt zurück; Playwright-WebKit-Test 360/390/440 px ok), Commit 156568e in update-2.0.2 – Test auf echtem iPhone offen
 - [ ] Foto-Funktion auf echtem iPhone testen (Codemagic-Build)
 - [ ] Erkennungsqualität Tesseract auf Jens' Android-Handy testen
 - [ ] Übersetzungen ES/FR/PT: Bedeutung prüfen (Kira anhand von Screenshots), Gegenleser optional später
@@ -179,7 +180,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 
 ## 4. Vor dem Start in den Stores (kein App-Code, nur zur Übersicht)
 
-- [ ] Apple: iPhone-Zoom beim Antippen von Eingabefeldern in Version 2.0.1 beheben, neuen TestFlight-Build auf echtem iPhone prüfen – VOR dem Bildschirmvideo (gefunden 15.11.2026; im Code behoben im Zweig fix-2.0.1-zoom, auf GitHub, Codemagic-Build und iPhone-Test offen)
+- [ ] Apple: iPhone-Zoom in Version 2.0.1 – Build 2 hat es NICHT behoben; Build 3 mit vollständigem Fix im Zweig fix-2.0.1-zoom (6845a36, auf GitHub, 16.11.2026). Offen: Codemagic-Workflow „iOS – Build, Sign & TestFlight“ auf diesem Zweig starten, auf echtem iPhone prüfen – VOR dem Bildschirmvideo
 - [ ] Apple: iPhone-Bildschirmvideo + Antworten auf Punkte 2–6 der Ablehnung (Guideline 2.1)
 - [ ] Apple: DSA-Händlerprüfung neu einreichen (Antworten von María und Flexdienst abwarten)
 - [ ] Google: Produktionsantrag frühestens ca. 24.11.2026 (12 Tester, 14 Tage)
