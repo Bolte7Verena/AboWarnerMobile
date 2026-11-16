@@ -57,7 +57,10 @@ export function initDatePicker({ inputEl, hiddenEl, wrapEl, popoverEl, formEl })
         // Das Popover hängt (siehe oeffnen()) direkt an <body>, nicht mehr in
         // .date-input-wrap — position:fixed-Koordinaten daher in echten
         // Viewport-Pixeln berechnen statt relativ über CSS calc(100% + ...).
-        popoverEl.style.left = `${wrapRect.left}px`;
+        // Nie über den rechten oder linken Bildschirmrand hinaus (schmale iPhones).
+        const RAND = 8;
+        const maxLinks = window.innerWidth - popoverRect.width - RAND;
+        popoverEl.style.left = `${Math.max(RAND, Math.min(wrapRect.left, maxLinks))}px`;
         if (brauchtFlip) {
             popoverEl.style.top = 'auto';
             popoverEl.style.bottom = `${window.innerHeight - wrapRect.top + ABSTAND}px`;

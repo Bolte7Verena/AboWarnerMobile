@@ -16,6 +16,29 @@ import { seedDemoDatenFallsNoetig } from './demo-seed.js';
 window.zeigeAbos = zeigeAbos;
 window.neuesAboSpeichern = neuesAboSpeichern;
 
+// iOS: Nach dem Auf- und Zugehen der Tastatur kann die WebView seitlich bzw. nach
+// unten verschoben bleiben. Die Seite selbst scrollt nie (body overflow: hidden,
+// gescrollt wird nur .main) – darum die Fensterposition immer auf 0/0 zurücksetzen,
+// sobald kein Eingabefeld mehr aktiv ist, und seitlich sofort.
+function setzeAnsichtZurueck() {
+    const aktiv = document.activeElement;
+    const tipptGerade = aktiv && aktiv.matches && aktiv.matches('input, select, textarea');
+    if (window.scrollX !== 0 || document.documentElement.scrollLeft !== 0 || document.body.scrollLeft !== 0) {
+        window.scrollTo(0, tipptGerade ? window.scrollY : 0);
+        document.documentElement.scrollLeft = 0;
+        document.body.scrollLeft = 0;
+    }
+    if (!tipptGerade && window.scrollY !== 0) {
+        window.scrollTo(0, 0);
+    }
+}
+document.addEventListener('focusout', () => setTimeout(setzeAnsichtZurueck, 120));
+window.addEventListener('scroll', setzeAnsichtZurueck, { passive: true });
+window.addEventListener('resize', setzeAnsichtZurueck);
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', setzeAnsichtZurueck);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         // 1. Lokalisierung über den Capacitor-Adapter abrufen
