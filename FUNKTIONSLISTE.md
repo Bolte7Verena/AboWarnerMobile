@@ -156,6 +156,15 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Datenschutz in allen 5 Sprachen um die Foto-Funktion ergänzt
 - [x] Test-App „AWP Test“ für Android, läuft neben der Store-Version
 
+**Paket 6 – Feinschliff (16.11.2026)**
+- [x] iPhone-Zoom-Fix aus 2.0.1 übernommen (Zoom aus, Tastatur-Plugin, kein seitlicher Überlauf)
+- [x] Untertitel „Alles im Blick“ (EN Everything at a glance, ES Todo bajo control, FR Tout sous contrôle, PT Tudo sob controle)
+- [x] Suchfeld-Platzhalter ohne Leerzeichen vor „…“
+- [x] Layout 5 Sprachen bei 360/390 px: Titel max. 2 Zeilen, Felder bündig, kürzere Beschriftungen (PT „Frequência“, FR „Fréquence“ u. a.), Kachel-Texte nicht mehr abgeschnitten
+- [x] Foto: Rechnungs-/Zahlungsdatum wird erkannt; liegt es in der Vergangenheit, schlägt die App die nächste Zahlung nach dem Turnus vor (änderbar)
+- [x] Neue Test-APK gebaut: G:\AboWarnerMobile\builds\AWP-Test-2026-11-16.apk (installiert sich über die alte AWP Test, gleicher Debug-Schlüssel)
+- [ ] Diese APK auf Jens' Handy testen (Foto mit Rechnung, Portugiesisch-Ansicht)
+
 **Geprüft**
 - [x] Keine Daten verlassen das Handy, kein Analytics-, Tracking- oder Werbe-SDK (14.11.2026)
 - [x] Android-App ohne Internet-, Kamera- und Foto-Berechtigung
