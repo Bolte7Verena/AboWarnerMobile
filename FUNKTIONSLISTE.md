@@ -4,7 +4,7 @@ Die eine Übersicht für Jens, Kira und Lilly.
 [x] = erledigt, [ ] = offen.
 Lilly hält diese Liste nach jedem erledigten Auftrag aktuell.
 
-Stand: 16.11.2026
+Stand: 22.11.2026
 
 ---
 
@@ -165,6 +165,17 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Neue Test-APK gebaut: G:\AboWarnerMobile\builds\AWP-Test-2026-11-16.apk (installiert sich über die alte AWP Test, gleicher Debug-Schlüssel)
 - [ ] Diese APK auf Jens' Handy testen (Foto mit Rechnung, Portugiesisch-Ansicht)
 
+**Paket 7 – Korrekturen aus dem Screenshot-Lauf (22.11.2026)**
+- [x] Foto: Anschrift wird auch mit „ust“, „vat“, „fax“, „bic“ im Wort erkannt (z. B. Industriestraße)
+- [x] Beträge landesüblich: Englisch mit Punkt, Tausendertrennung in allen Sprachen (2.466,00 / 2,466.00 / 2 466,00)
+- [x] Eingabe versteht alle Schreibweisen (1.299,99 / 1,299.99 / 1 299,99)
+- [x] Französisch: kürzerer Suchtext „Rechercher un abonnement…“
+- [x] Fußzeile scrollt mit statt dauerhaft Platz zu nehmen; weniger Leerraum über der Suche (Handy)
+- [x] Karten: Preis immer rechts neben dem Namen, Trennlinie mit Abstand, drei Knöpfe in einer Zeile (geprüft ab 320 px)
+- [x] Kündigungsschreiben: Textfeld nutzt die freie Höhe, Knöpfe bleiben sichtbar
+- [x] Fristen-Hinweis beim Start deckend, auf dem Handy in voller Breite
+- [ ] Neue Test-APK bauen und auf Jens' Handy ansehen (neues Layout)
+
 **Geprüft**
 - [x] Keine Daten verlassen das Handy, kein Analytics-, Tracking- oder Werbe-SDK (14.11.2026)
 - [x] Android-App ohne Internet-, Kamera- und Foto-Berechtigung
@@ -178,7 +189,11 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] Erkennungsqualität Tesseract auf Jens' Android-Handy testen
 - [ ] Übersetzungen ES/FR/PT: Bedeutung prüfen (Kira anhand von Screenshots), Gegenleser optional später
 - [ ] Versionsnummer auf 2.0.2 setzen (erst kurz vor Einreichung)
-- [ ] Store-Screenshots neu erzeugen (Deutsch und Englisch, später ggf. ES/FR/PT)
+- [x] Store-Screenshots erzeugt: 135 Bilder, 5 Sprachen, iPhone 6,9 und 6,3 Zoll, iPad 13 Zoll, Google Play (22.11.2026 neu nach den Korrekturen, Ordner store-screenshots, nur lokal, nicht auf GitHub und nicht hochgeladen)
+- [ ] Screenshots ansehen und freigeben (Jens, Kira)
+- [ ] WICHTIG: In Amerika (Zeitzonen westlich von London) zeigt die App Zahlungs- und Kündigungstermine einen Tag zu früh, auch in 2.0.1. Vor dem Start in USA/Brasilien beheben
+- [ ] Entscheidung: Währung wählbar machen (Summen sind immer Euro; Brasilien bekommt EUR vorgeschlagen; unbekannte oder klein geschriebene Währungen werden 1:1 als Euro gerechnet)
+- [ ] Entscheidung: Datum je Land (App-Sprache und Gerätesprache verschieden), Wochenbeginn im Kalender, landesübliche Kündigungsschreiben
 - [ ] Store-Texte Englisch, Spanisch, Französisch, Portugiesisch (schreibt Kira)
 - [ ] Datenschutzseite auf abo-warner-pro.com anpassen (neue Felder, Foto-Funktion, Link zu appvektor.com) – anderes Projekt
 - [ ] Hinweis an Apple in den Prüfnotizen (Link zu appvektor.com, in der App wird nichts verkauft)
