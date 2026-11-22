@@ -7,7 +7,8 @@
  * Inhalt: Name, Kosten, Turnus, nächste Zahlung, Kündigung möglich bis,
  * Status (läuft / gekündigt zum ... / beendet), dazu die Summe der laufenden
  * Kosten pro Monat und pro Jahr (gleiche Berechnung wie die Übersichtskacheln
- * der App). Datumsangaben deutsch (TT.MM.JJJJ). A4 quer.
+ * der App). Datum und Beträge landesüblich. Querformat: A4, in den USA und
+ * anderen Letter-Ländern US-Letter (siehe papierformat in region.js).
  */
 
 import { PdfDokument } from './pdf.js';
@@ -17,10 +18,10 @@ import {
     parseDatumISO, sortiereAbos
 } from './calculator.js';
 import { t, tAnzahl, tWert, formatiereDatum, formatiereZahl, formatiereBetrag } from './i18n.js';
+import { papierformat } from './region.js';
 
-const BREITE = 842; // A4 quer
-const HOEHE = 595;
 const RAND = 40;
+const A4_BREITE = 842; // für dieses Maß sind die Spalten unten angegeben
 const ZEILENHOEHE = 20;
 const SCHRIFT = 9.5;
 const GRAU = [0.42, 0.45, 0.5];
@@ -28,14 +29,20 @@ const DUNKEL = [0.1, 0.12, 0.18];
 
 // x = linke Kante (bzw. rechte Kante bei ausrichtung 'rechts'), w = Breite.
 // Spaltentitel aus der Sprachdatei (erst beim Erzeugen, nicht beim Laden).
-const SPALTEN = [
+const SPALTEN_A4 = [
     { titel: 'pdf.spalteAbo', x: RAND, w: 190 },
     { titel: 'pdf.spalteKosten', x: 330, w: 90, ausrichtung: 'rechts' },
     { titel: 'pdf.spalteTurnus', x: 345, w: 90 },
     { titel: 'pdf.spalteZahlung', x: 440, w: 95 },
     { titel: 'pdf.spalteKuendigung', x: 540, w: 115 },
-    { titel: 'pdf.spalteStatus', x: 665, w: BREITE - RAND - 665 }
+    { titel: 'pdf.spalteStatus', x: 665, w: A4_BREITE - RAND - 665 }
 ];
+
+// Spalten auf die Papierbreite umgerechnet (US-Letter ist schmaler).
+function spaltenFuer(breite) {
+    const faktor = (breite - 2 * RAND) / (A4_BREITE - 2 * RAND);
+    return SPALTEN_A4.map((s) => ({ ...s, x: RAND + (s.x - RAND) * faktor, w: s.w * faktor }));
+}
 
 // Eine Tabellenzeile als Texte je Spalte.
 export function erzeugeZeile(abo, heute = new Date()) {
@@ -66,7 +73,9 @@ export function dateinameUebersicht(heute = new Date()) {
     return `${t('datei.pdf')}-${formatiereDatumISO(heute)}.pdf`;
 }
 
-export function erzeugeUebersichtPdf(alleAbos, heute = new Date()) {
+export function erzeugeUebersichtPdf(alleAbos, heute = new Date(), papier = papierformat()) {
+    const { breite: BREITE, hoehe: HOEHE } = papier;
+    const SPALTEN = spaltenFuer(BREITE);
     const pdf = new PdfDokument({ breite: BREITE, hoehe: HOEHE, titel: t('pdf.titel') });
     const abos = sortiereAbos(alleAbos, heute);
     const laufende = alleAbos.filter((abo) => !istVertragBeendet(abo, heute));

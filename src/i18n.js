@@ -19,6 +19,7 @@ import es from './i18n/es.js';
 import fr from './i18n/fr.js';
 import pt from './i18n/pt.js';
 import { formatiereDatumDE, formatiereZahlDE, parseBetrag, parseDatumISO } from './calculator.js';
+import { anzeigeRegion, geraeteSprachen } from './region.js';
 
 export const SPRACHEN = { de, en, es, fr, pt };
 export const SPRACH_EINSTELLUNG_KEY = 'abo-warner:sprache';
@@ -61,11 +62,6 @@ export function speichereSpracheinstellung(wert) {
     }
 }
 
-function geraeteSprachen() {
-    if (typeof navigator === 'undefined') return [];
-    return navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
-}
-
 // Beim App-Start: Sprache aus Einstellung + Gerät bestimmen und aktivieren.
 export function initSprache() {
     setzeSprache(ermittleSprache(ladeSpracheinstellung(), geraeteSprachen()));
@@ -98,15 +94,16 @@ export function tAnzahl(schluessel, anzahl, params = {}) {
     return t(key, { anzahl, ...params });
 }
 
-// Anzeige eines Datums. Deutsch: immer TT.MM.JJJJ. Andere Sprachen: Format
-// der Geräte-Region (z.B. en-US 11/15/2026, en-GB 15/11/2026), immer mit
+// Anzeige eines Datums. Deutsch: immer TT.MM.JJJJ. Andere Sprachen: Format der
+// App-Sprache im Land des Geräts (en-US 11/15/2026, en-GB 15/11/2026, siehe
+// anzeigeRegion) — nie das Format einer fremden Gerätesprache. Immer mit
 // lateinischen Ziffern, gregorianischem Kalender (sonst z.B. Iran: Jahr 1405,
 // Thailand: 2569) und ohne Steuerzeichen (wichtig auch für die PDF).
 export function formatiereDatum(datum, locale) {
     if (aktiv === 'de') return formatiereDatumDE(datum);
     const d = parseDatumISO(datum);
     if (!d) return '';
-    const ziel = locale || geraeteSprachen().find(Boolean) || 'en-US';
+    const ziel = locale || anzeigeRegion(aktiv);
     try {
         return new Intl.DateTimeFormat(ziel, { year: 'numeric', month: '2-digit', day: '2-digit', numberingSystem: 'latn', calendar: 'gregory' })
             .format(d)
@@ -117,15 +114,8 @@ export function formatiereDatum(datum, locale) {
 }
 
 // --- Zahlen und Beträge (landesüblich) ---
-// Es gilt die Region des Geräts, wenn sie zur App-Sprache passt (z.B. es-MX
-// 2,436.00, de-CH 2’436.00), sonst die Grundregion der App-Sprache. So steht in
-// der englischen App nie ein deutsches Komma.
-const ZAHLEN_REGION = { de: 'de-DE', en: 'en-GB', es: 'es-ES', fr: 'fr-FR', pt: 'pt-BR' };
-
-function zahlenRegion() {
-    const passend = geraeteSprachen().find((l) => String(l || '').toLowerCase().split(/[-_]/)[0] === aktiv);
-    return passend && passend.includes('-') ? passend : ZAHLEN_REGION[aktiv];
-}
+// Wie beim Datum: Format der App-Sprache im Land des Geräts (z.B. es-MX
+// 2,436.00, de-CH 2’436.00). So steht in der englischen App nie ein deutsches Komma.
 
 function zahlText(betrag, gruppierung, locale) {
     const wert = parseBetrag(betrag);
@@ -133,7 +123,7 @@ function zahlText(betrag, gruppierung, locale) {
     try {
         // Gruppierung "always": auch vierstellige Beträge (2.436,00), was
         // Spanisch und Portugiesisch (Portugal) sonst weglassen würden.
-        return new Intl.NumberFormat(locale || zahlenRegion(), {
+        return new Intl.NumberFormat(locale || anzeigeRegion(aktiv), {
             minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn', useGrouping: gruppierung ? 'always' : false
         }).format(zahl).replace(/\u202f/g, '\u00a0'); // schmales Leerzeichen fehlt in der App-Schrift
     } catch (error) {

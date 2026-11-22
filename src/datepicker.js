@@ -5,9 +5,15 @@
  */
 
 import { t, formatiereDatum } from './i18n.js';
+import { wochenbeginn } from './region.js';
 
-// Wochentage (Montag zuerst) und Monatsnamen aus der Sprachdatei.
-const wochentage = () => t('kalender.wochentage').split(',');
+// Wochentage und Monatsnamen aus der Sprachdatei. In der Datei steht Montag
+// zuerst; angezeigt wird ab dem Wochenbeginn des Landes (USA/Brasilien: Sonntag).
+const wochentage = () => {
+    const ab = (wochenbeginn() + 6) % 7;
+    const tage = t('kalender.wochentage').split(',');
+    return [...tage.slice(ab), ...tage.slice(0, ab)];
+};
 const monate = () => t('kalender.monate').split(',');
 
 const ICON_CHEVRON_LEFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
@@ -21,7 +27,7 @@ function zuISO(datum) {
     return `${datum.getFullYear()}-${pad(datum.getMonth() + 1)}-${pad(datum.getDate())}`;
 }
 
-// Anzeige im Eingabefeld: Deutsch TT.MM.JJJJ, sonst Format der Geräte-Region.
+// Anzeige im Eingabefeld: Deutsch TT.MM.JJJJ, sonst Format der App-Sprache im Land des Geräts.
 function zuDeutschemFormat(datum) {
     return formatiereDatum(datum);
 }
@@ -80,7 +86,7 @@ export function initDatePicker({ inputEl, hiddenEl, wrapEl, popoverEl, formEl })
     }
 
     function render() {
-        const ersterTagWochentag = (new Date(sichtJahr, sichtMonat, 1).getDay() + 6) % 7;
+        const ersterTagWochentag = (new Date(sichtJahr, sichtMonat, 1).getDay() - wochenbeginn() + 7) % 7;
         const tageImMonat = new Date(sichtJahr, sichtMonat + 1, 0).getDate();
         const tageVormonat = new Date(sichtJahr, sichtMonat, 0).getDate();
 
