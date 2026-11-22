@@ -24,16 +24,27 @@ export const TURNUS_MONATE = {
 export function ermittleEffektivesZahlungsdatum(naechsteZahlung, turnus) {
     const heute = new Date();
     heute.setHours(0, 0, 0, 0);
-    // Reine Datumstexte ("2027-01-15") immer als LOKALES Datum lesen. new Date(...)
-    // nähme UTC-Mitternacht an: in Amerika wäre das der Vortag (15.01. -> 14.01.).
-    const nurDatum = typeof naechsteZahlung === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(naechsteZahlung.trim());
-    const datum = nurDatum ? parseDatumISO(naechsteZahlung) : new Date(naechsteZahlung);
-    const monate = TURNUS_MONATE[turnus] || 1;
-
-    while (datum < heute) {
-        datum.setMonth(datum.getMonth() + monate);
+    const start = leseZahlungsdatum(naechsteZahlung);
+    if (!start) return new Date(NaN);
+    for (let schritt = 0; ; schritt++) {
+        const datum = zahlungNach(start, turnus, schritt);
+        if (datum >= heute) return datum;
     }
-    return datum;
+}
+
+// Gespeichertes Zahlungsdatum als lokale Mitternacht (oder null).
+// Reine Datumstexte ("2027-01-15") immer als LOKALES Datum lesen. new Date(...)
+// nähme UTC-Mitternacht an: in Amerika wäre das der Vortag (15.01. -> 14.01.).
+function leseZahlungsdatum(wert) {
+    const nurDatum = typeof wert === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(wert.trim());
+    return parseDatumISO(nurDatum ? wert : new Date(wert));
+}
+
+// Der n-te Zahlungstermin nach dem eingetragenen. Immer vom Ausgangsdatum aus
+// gerechnet und aufs Monatsende geklemmt: 31.10. -> 30.11. -> 31.12. (nicht
+// 01.12., und der 31. geht nach einem kurzen Monat nicht verloren).
+function zahlungNach(start, turnus, schritte) {
+    return minusMonate(start, -schritte * (TURNUS_MONATE[turnus] || 1));
 }
 
 // Wandelt ein ISO-Datum ("2026-11-15") in ein Date um — als LOKALES Datum
@@ -136,15 +147,15 @@ function fristVorZahlung(zahlung, angabe) {
 export function ermittleKuendigungsfrist(abo, heute = new Date()) {
     const stichtag = parseDatumISO(heute);
     const angabe = ermittleFristAngabe(abo);
-    const start = parseDatumISO(ermittleEffektivesZahlungsdatum(abo.naechsteZahlung, abo.turnus));
-    if (!stichtag || !start || !Number.isFinite(angabe.anzahl) || angabe.anzahl < 0) return null;
+    const start = leseZahlungsdatum(abo.naechsteZahlung);
+    const naechste = parseDatumISO(ermittleEffektivesZahlungsdatum(abo.naechsteZahlung, abo.turnus));
+    if (!stichtag || !start || !naechste || !Number.isFinite(angabe.anzahl) || angabe.anzahl < 0) return null;
 
-    const monate = TURNUS_MONATE[abo.turnus] || 1;
-    const zahlung = new Date(start);
-    for (let i = 0; i < 1000; i++) {
+    for (let schritt = 0; schritt < 5000; schritt++) {
+        const zahlung = zahlungNach(start, abo.turnus, schritt);
+        if (zahlung < naechste) continue;
         const frist = fristVorZahlung(zahlung, angabe);
-        if (frist >= stichtag) return { fristDatum: frist, zahlungsDatum: new Date(zahlung) };
-        zahlung.setMonth(zahlung.getMonth() + monate);
+        if (frist >= stichtag) return { fristDatum: frist, zahlungsDatum: zahlung };
     }
     return null;
 }
