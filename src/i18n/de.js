@@ -69,7 +69,7 @@ export default {
     'feld.name': 'Abo-Name',
     'feld.namePlatzhalter': 'z.B. Netflix',
     'feld.kosten': 'Kosten',
-    'feld.kostenPlatzhalter': 'z.B. 29,99',
+    'feld.kostenPlatzhalter': 'z.B. {betrag}',
     'feld.waehrung': 'Währung',
     'feld.turnus': 'Turnus',
     'feld.kategorie': 'Kategorie',

@@ -6,6 +6,7 @@
  */
 import { Calculator, FRIST_EINHEITEN, MAX_FRIST, istFristZuLang, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, parseFristAnzahl, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
+import { initBetragsfeld } from './betragsfeld.js';
 import { t, tAnzahl, tWert, formatiereDatum, formatiereZahlEingabe, formatiereBetrag } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung, frageDatum, zeigeMeldung } from './bestaetigung.js';
@@ -279,7 +280,7 @@ function erzeugeAboBearbeitenFormular(abo) {
             <div class="form-row">
                 <div class="form-group">
                     <label>${t('feld.kosten')}</label>
-                    <input type="text" inputmode="decimal" class="input-control" data-feld="kosten" value="${escapeAttr(formatiereZahlEingabe(abo.kosten))}" placeholder="${escapeHtml(t('feld.kostenPlatzhalter'))}">
+                    <input type="text" inputmode="decimal" class="input-control" data-feld="kosten" value="${escapeAttr(formatiereZahlEingabe(abo.kosten))}" placeholder="${escapeHtml(t('feld.kostenPlatzhalter', { betrag: formatiereZahlEingabe(29.99) }))}">
                 </div>
                 <div class="form-group">
                     <label>${t('feld.waehrung')}</label>
@@ -540,6 +541,7 @@ function verdrahteDatumsfeld(form, feldName) {
 
 function zeigeBearbeitenModus(kachel, abo) {
     kachel.innerHTML = erzeugeAboBearbeitenFormular(abo);
+    initBetragsfeld(kachel.querySelector('[data-feld="kosten"]'));
     verdrahteDatumsfeld(kachel.querySelector('.abo-edit-form'), 'naechsteZahlung');
     verdrahteDatumsfeld(kachel.querySelector('.abo-edit-form'), 'probeEndeAm');
     const probeSchalter = kachel.querySelector('[data-feld="probeabo"]');

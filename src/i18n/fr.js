@@ -68,7 +68,7 @@ export default {
     'feld.name': 'Nom de l’abonnement',
     'feld.namePlatzhalter': 'p. ex. Netflix',
     'feld.kosten': 'Coût',
-    'feld.kostenPlatzhalter': 'p. ex. 29,99',
+    'feld.kostenPlatzhalter': 'p. ex. {betrag}',
     'feld.waehrung': 'Devise',
     'feld.turnus': 'Fréquence',
     'feld.kategorie': 'Catégorie',

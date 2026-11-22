@@ -62,7 +62,7 @@ test('Alte Daten mit unsinniger Frist: nicht grün, Sicherung bleibt einlesbar',
 });
 
 test('Mehrdeutige Beträge werden nicht geraten', () => {
-    for (const wert of ['1.2.3', '1,2,3', '1..5', '12.34.56']) assert.ok(isNaN(parseBetrag(wert)), wert);
+    for (const wert of ['1.2.3', '1,2,3', '1..5', '12.34.56', '1.250.5000']) assert.ok(isNaN(parseBetrag(wert)), wert);
     assert.equal(parseBetrag('1.234.567'), 1234567);
     assert.equal(parseBetrag('5,-'), 5);
 });

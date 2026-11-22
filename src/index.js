@@ -9,6 +9,7 @@ import './api.js';
 import { initSprache, wendeAufDokumentAn } from './i18n.js';
 import { zeigeAbos, neuesAboSpeichern, initDatenSichern, aktualisiereBeiNeuemTag } from './app.js';
 import { initDatePicker } from './datepicker.js';
+import { initBetragsfeld } from './betragsfeld.js';
 import { zeigeFaelligkeitshinweisFallsNoetig, planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { initRechtliches } from './rechtliches.js';
 import { initHilfe } from './hilfe.js';
@@ -106,6 +107,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         initDatenSichern();
         initHilfe();
         initSprachwahl();
+
+        initBetragsfeld(document.getElementById('input-kosten'));
 
         const zahlungsDatum = initDatePicker({
             inputEl: document.getElementById('input-datum'),

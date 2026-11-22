@@ -71,7 +71,7 @@ export default {
     'feld.name': 'Subscription name',
     'feld.namePlatzhalter': 'e.g., Netflix',
     'feld.kosten': 'Cost',
-    'feld.kostenPlatzhalter': 'e.g., 29.99',
+    'feld.kostenPlatzhalter': 'e.g., {betrag}',
     'feld.waehrung': 'Currency',
     'feld.turnus': 'Billing cycle',
     'feld.kategorie': 'Category',

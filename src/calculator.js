@@ -274,6 +274,22 @@ export function parseFristAnzahl(eingabe) {
     return text === '' ? NaN : Math.trunc(Number(text));
 }
 
+// Andere Schreibweisen von Ziffern, Punkt und Komma, wie manche Tastaturen sie
+// liefern (６．９９, ٦٫٩٩, 6·99), auf 0-9 . , bringen.
+export function normalisiereZiffern(text) {
+    return String(text ?? '')
+        .normalize('NFKC')
+        .replace(/[\u0660-\u0669]/g, (z) => String(z.charCodeAt(0) - 0x660))
+        .replace(/[\u06f0-\u06f9]/g, (z) => String(z.charCodeAt(0) - 0x6f0))
+        .replace(/[\u0966-\u096f]/g, (z) => String(z.charCodeAt(0) - 0x966))
+        .replace(/[\u066b\u3002\u00b7\u2024\u2027\u2219\u22c5]/g, '.')
+        .replace(/\u066c/g, '')
+        .replace(/[\u201a\u060c\u3001]/g, ',');
+}
+
+// Währungszeichen oder -kürzel vor der Zahl ("€12", "R$ 14,99", "CHF 20").
+const WAEHRUNG_DAVOR = /^(?:\p{L}{0,3}\p{Sc}|[A-Za-z]{2,3}\.?)\s*(?=[\d.,])/u;
+
 // Parst einen Betrag aus einer Nutzereingabe — unabhängig von der Sprache:
 // "29,99", "29.99", "1.299,99", "1,299.99", "1 299,99" (auch mit geschütztem
 // Leerzeichen) und "1'299.99". Kommen Punkt und Komma vor, ist das hintere das
@@ -287,19 +303,39 @@ export function parseBetrag(eingabe) {
     if (typeof eingabe === 'number') return eingabe;
     if (typeof eingabe !== 'string') return NaN;
 
-    const treffer = /^[+-]?[\d.,]*\d[\d.,]*/.exec(eingabe.replace(/[\s'’]/g, ''));
+    const text = normalisiereZiffern(eingabe)
+        .trim()
+        .replace(WAEHRUNG_DAVOR, '')
+        .replace(/(\d)['’](?=\d)/g, '$1')
+        // Manche Tastaturen fügen nach einem Punkt ein Leerzeichen ein ("6. 99").
+        .replace(/\s*([.,])\s*/g, '$1')
+        // Leerzeichen nur als Tausendertrennzeichen ("1 299"), nie "6 99" -> 699.
+        .replace(/(\d)\s+(?=\d{3}(?!\d))/g, '$1')
+        .replace(/^([+-])\s+/, '$1');
+    const treffer = /^[+-]?[\d.,]*\d[\d.,]*/.exec(text);
     if (!treffer) return NaN;
+    // Stehen dahinter noch Ziffern, wurde nicht alles verstanden: lieber
+    // nachfragen, als still einen Teil (z. B. die Cent) zu verlieren.
+    if (/\d/.test(text.slice(treffer[0].length))) return NaN;
+
     const zahl = treffer[0];
+    if (/[.,]{2}/.test(zahl)) return NaN;
     const punkt = zahl.lastIndexOf('.');
     const komma = zahl.lastIndexOf(',');
     if (punkt >= 0 && komma >= 0) {
-        const tausender = punkt > komma ? /,/g : /\./g;
-        return parseFloat(zahl.replace(tausender, '').replace(',', '.'));
+        const [dezimal, tausender] = punkt > komma ? ['.', ','] : [',', '.'];
+        // Das Dezimalzeichen darf nur einmal vorkommen ("1.250,50", nicht "1.250,50,3").
+        if (zahl.split(dezimal).length > 2) return NaN;
+        return parseFloat(zahl.split(tausender).join('').replace(dezimal, '.'));
     }
     const istTausender = /^[+-]?\d{1,3}([.,])\d{3}(?:\1\d{3})*$/.test(zahl) && !/^[+-]?0[.,]/.test(zahl);
+    if (istTausender) return parseFloat(zahl.replace(/[.,]/g, ''));
+    // "1.250.50": Tastatur ohne zweites Trennzeichen, das letzte ist das Dezimalzeichen.
+    const mehrfach = /^([+-]?\d{1,3}(?:[.,]\d{3})+)[.,](\d{1,2})$/.exec(zahl);
+    if (mehrfach) return parseFloat(`${mehrfach[1].replace(/[.,]/g, '')}.${mehrfach[2]}`);
     // Mehrere Trennzeichen ohne gültige Dreiergruppen ("1.2.3"): lieber nachfragen als raten.
-    if (!istTausender && (zahl.match(/[.,]/g) || []).length > 1) return NaN;
-    return parseFloat(istTausender ? zahl.replace(/[.,]/g, '') : zahl.replace(',', '.'));
+    if ((zahl.match(/[.,]/g) || []).length > 1) return NaN;
+    return parseFloat(zahl.replace(',', '.'));
 }
 
 // Reine Zahl im deutschen Format (Komma, immer 2 Nachkommastellen, ohne

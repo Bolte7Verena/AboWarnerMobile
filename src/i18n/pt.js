@@ -67,7 +67,7 @@ export default {
     'feld.name': 'Nome da assinatura',
     'feld.namePlatzhalter': 'ex.: Netflix',
     'feld.kosten': 'Custo',
-    'feld.kostenPlatzhalter': 'ex.: 29,99',
+    'feld.kostenPlatzhalter': 'ex.: {betrag}',
     'feld.waehrung': 'Moeda',
     'feld.turnus': 'Frequência',
     'feld.kategorie': 'Categoria',
