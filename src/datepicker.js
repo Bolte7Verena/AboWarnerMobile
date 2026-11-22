@@ -136,6 +136,8 @@ export function initDatePicker({ inputEl, hiddenEl, wrapEl, popoverEl, formEl })
                 ausgewaehltesDatum = new Date(sichtJahr, sichtMonat, parseInt(btn.dataset.tag, 10));
                 inputEl.value = zuDeutschemFormat(ausgewaehltesDatum);
                 hiddenEl.value = zuISO(ausgewaehltesDatum);
+                // Auswahl melden (z.B. rote Markierung "Datum fehlt" entfernen).
+                inputEl.dispatchEvent(new Event('change', { bubbles: true }));
                 schliessen();
             });
         });

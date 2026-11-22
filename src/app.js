@@ -4,9 +4,10 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, FRIST_EINHEITEN, MAX_BETRAG, MAX_FRIST, istFristZuLang, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, parseFristAnzahl, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
+import { Calculator, FRIST_EINHEITEN, istFristZuLang, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, parseFristAnzahl, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { initBetragsfeld } from './betragsfeld.js';
+import { pruefeEingabe, zeigeFeldFehler, loescheFeldFehler } from './pflichtfelder.js';
 import { t, tAnzahl, tWert, formatiereDatum, formatiereZahlEingabe, formatiereBetrag } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung, frageDatum, zeigeMeldung } from './bestaetigung.js';
@@ -375,13 +376,6 @@ function erzeugeAboBearbeitenFormular(abo) {
     `;
 }
 
-// Fehlertext zu einer Eingabe oder '' wenn alles stimmt.
-function eingabeFehler(abo, fristAnzahl, fristEinheit) {
-    if (istFristZuLang(fristAnzahl, fristEinheit)) return t('feld.fehlerFrist', { max: tAnzahl(`frist.${fristEinheit}`, MAX_FRIST[fristEinheit]) });
-    if (!(abo.kosten >= 0 && abo.kosten <= MAX_BETRAG)) return t('feld.fehlerBetrag', { betrag: formatiereZahlEingabe(29.99) });
-    return Calculator.istGueltig(abo) ? '' : t('feld.fehler');
-}
-
 // Probeabo-Felder zum Speichern. Schalter aus: Felder entfallen (undefined
 // wird beim Speichern als JSON weggelassen). Schalter an ohne Datum: ungültig
 // (probeEndeAm leer), istGueltig meldet dann den Fehler.
@@ -580,9 +574,21 @@ function zeigeBearbeitenModus(kachel, abo) {
             if (gekuendigtZum) aktualisiertesAbo.gekuendigtZum = gekuendigtZum;
         }
 
-        const fehler = eingabeFehler(aktualisiertesAbo, parseFristAnzahl(feld('fristAnzahl')), feld('fristEinheit'));
-        if (fehler) {
-            if (fehlerEl) fehlerEl.textContent = fehler;
+        const fehler = pruefeEingabe({
+            name: feld('name'), kosten: feld('kosten'), kategorie: feld('kategorie'), naechsteZahlung: feld('naechsteZahlung'),
+            frist: feld('fristAnzahl'), fristEinheit: feld('fristEinheit'),
+            probe: form.querySelector('[data-feld="probeabo"]').checked, probeEnde: feld('probeEndeAm')
+        });
+        if (fehler.length > 0) {
+            const sichtbar = { naechsteZahlung: '[data-datum-anzeige="naechsteZahlung"]', probeEnde: '[data-datum-anzeige="probeEndeAm"]', frist: '[data-feld="fristAnzahl"]' };
+            zeigeFeldFehler(form, fehler, (name) => form.querySelector(sichtbar[name] || `[data-feld="${name}"]`), fehlerEl);
+            return;
+        }
+        loescheFeldFehler(form);
+        fehlerEl.textContent = '';
+        // Sicherheitsnetz: nie etwas Ungültiges speichern.
+        if (!Calculator.istGueltig(aktualisiertesAbo)) {
+            fehlerEl.textContent = t('feld.fehler');
             return;
         }
 
@@ -743,14 +749,25 @@ async function speichereNeuesAbo() {
     // in Electron ein echtes, synchrones OS-Dialogfenster, das die gesamte
     // Renderer-Oberfläche einfriert, solange es offen ist — landet es unauffällig
     // im Hintergrund, wirkt die komplette App wie "tot", obwohl sie nur wartet.
-    const fehler = eingabeFehler(neuesAbo, parseFristAnzahl(document.getElementById('input-frist').value), document.getElementById('input-frist-einheit').value)
-        || (neuesAbo.kategorie ? '' : t('feld.fehlerKategorie'));
-    if (fehler) {
-        if (fehlerEl) fehlerEl.textContent = fehler;
+    const formular = document.getElementById('abo-form');
+    const wert = (id) => document.getElementById(id).value;
+    const fehler = pruefeEingabe({
+        name: wert('input-name'), kosten: wert('input-kosten'), kategorie: wert('input-kategorie'), naechsteZahlung: wert('input-datum-iso'),
+        frist: wert('input-frist'), fristEinheit: wert('input-frist-einheit'),
+        probe: document.getElementById('input-probe').checked, probeEnde: wert('input-probe-datum-iso')
+    });
+    if (fehler.length > 0) {
+        const sichtbar = { naechsteZahlung: 'input-datum', probeEnde: 'input-probe-datum' };
+        zeigeFeldFehler(formular, fehler, (name) => document.getElementById(sichtbar[name] || `input-${name}`), fehlerEl);
         return false;
     }
-
-    if (fehlerEl) fehlerEl.textContent = '';
+    loescheFeldFehler(formular);
+    fehlerEl.textContent = '';
+    // Sicherheitsnetz: nie etwas Ungültiges speichern.
+    if (!Calculator.istGueltig(neuesAbo)) {
+        fehlerEl.textContent = t('feld.fehler');
+        return false;
+    }
     try {
         await window.api.saveAbo(neuesAbo);
     } catch (error) {

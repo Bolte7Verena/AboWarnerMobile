@@ -83,6 +83,8 @@ function erkennungsSprachen() {
 }
 
 function markiere(el) {
+    // Rote Markierung "fehlt" entfernen (siehe pflichtfelder.js).
+    el.dispatchEvent(new Event('wertgesetzt', { bubbles: true }));
     el.classList.add('vom-foto');
     el.addEventListener('input', () => el.classList.remove('vom-foto'), { once: true });
     el.addEventListener('change', () => el.classList.remove('vom-foto'), { once: true });
