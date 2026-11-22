@@ -174,7 +174,8 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Karten: Preis immer rechts neben dem Namen, Trennlinie mit Abstand, drei Knöpfe in einer Zeile (geprüft ab 320 px)
 - [x] Kündigungsschreiben: Textfeld nutzt die freie Höhe, Knöpfe bleiben sichtbar
 - [x] Fristen-Hinweis beim Start deckend, auf dem Handy in voller Breite
-- [ ] Neue Test-APK bauen und auf Jens' Handy ansehen (neues Layout, Paket 7 und 8)
+- [x] Neue Test-APK gebaut: G:\AboWarnerMobile\builds\AWP-Test-2026-11-22.apk (Paket 7 bis 10, installiert sich über die alte AWP Test)
+- [ ] Test-APK auf Jens' Handy prüfen (Layout, Speichern, Foto, Erinnerungen, Teilen)
 
 **Paket 8 – Andere Länder (22.11.2026)**
 - [x] Terminfehler Amerika behoben: Zahlungs- und Kündigungstermine nicht mehr einen Tag zu früh (nur update-2.0.2, nicht in 2.0.1; gespeicherte Daten waren immer richtig)
@@ -190,7 +191,8 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Kündigungsschreiben je Land: Deutsch, Englisch (GB, USA), Spanisch (Spanien, Lateinamerika), Französisch (Frankreich, Belgien, Schweiz, Kanada), Portugiesisch (Brasilien, Portugal)
 - [x] Französisch „jusqu’au“ statt „avant le“
 - [x] Monatsende: Zahlungen am 29., 30. oder 31. landen in kurzen Monaten am Monatsletzten und danach wieder am richtigen Tag (nur update-2.0.2)
-- [ ] Kündigungsschreiben von Muttersprachlern gegenlesen lassen (alle außer Deutsch; am dringendsten pt-PT, fr-FR, es-LA). Vorlage: store-screenshots/kuendigungsschreiben-pruefen.md (nur lokal)
+- [x] Kündigungsschreiben von Kira gegengelesen und angepasst (22.11.2026, Paket 10)
+- [ ] Kündigungsschreiben von Muttersprachlern gegenlesen lassen (alle außer Deutsch; neu: Einschreiben-Vermerke in de, en, es, pt). Vorlage: store-screenshots/kuendigungsschreiben-pruefen.md (nur lokal)
 - [ ] Kurse vor jedem Update auffrischen (src/waehrungen.js)
 
 **Paket 9 – Amerikanisches Englisch und Fehlersuche (22.11.2026)**
@@ -207,10 +209,21 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Sehr große Summen und PDF-Beträge werden kleiner geschrieben statt abgeschnitten; PDF kennt œ, ™, š, ž
 - [x] Fehlermeldung im Formular verschwindet nach dem Schließen
 - [x] Fremde Angaben in einer Sicherungsdatei (Turnus „constructor“) können die App nicht mehr aufhängen
-- [ ] Entscheidung: Gerätesicherung (iCloud/Google) auch im Datenschutztext IN der App nennen oder auf Android abschalten (allowBackup)
-- [ ] Entscheidung: abos.json zusätzlich als zweite Kopie speichern (ist die Datei beschädigt, startet die App heute leer und überschreibt sie beim nächsten Speichern)
-- [ ] Offen: drei Nachkommastellen (KWD, TND): „1.250“ wird als 1250 gelesen; Beträge mit Währungszeichen davor („€12“) werden abgelehnt; Hinweis fehlt, wenn das Speichern selbst scheitert (Speicher voll)
+- [ ] Offen: drei Nachkommastellen (KWD, TND): „1.250“ wird als 1250 gelesen; Beträge mit Währungszeichen davor („€12“) werden mit Meldung abgelehnt
 - [ ] Englischer Text in der App: von Muttersprachler (USA) gegenlesen lassen
+
+**Paket 10 – Sicher speichern, Briefe, Frist (22.11.2026)**
+
+- [x] Zweite Sicherheitskopie der Abo-Datei (abos-kopie.json): Ist die Hauptdatei beschädigt oder verschwunden, stellt die App die Abos beim Start wieder her und sagt es
+- [x] Beschädigte Dateien werden aufgehoben und nie überschrieben; geht das nicht, ist Speichern gesperrt (mit Hinweis)
+- [x] Jedes Speichern wird zurückgelesen und verglichen; schlägt es fehl, erscheint „Nicht gespeichert“, Eingaben bleiben im Formular (Anlegen, Bearbeiten, Löschen, Kündigen, Sprache/Währung, Absender)
+- [x] Teilen: echter Fehler wird gemeldet (vorher wie „abgebrochen“ behandelt)
+- [x] Gerätesicherung (iCloud/Google) und Sicherheitskopie im Datenschutztext in der App (5 Sprachen)
+- [x] Kündigungsfrist bei der Eingabe höchstens 10 Jahre (3650 Tage, 520 Wochen, 120 Monate); alte Daten mit unsinniger Frist zeigen gelb „Frist prüfen“ statt grün „Sicher“
+- [x] Schreiben: Schalter „Per Einschreiben“ (Standard aus), Vermerk nur dann, in allen 11 Fassungen
+- [x] Schreiben: es-ES-Kernsatz, englischer Betreff „Cancellation – …“, deutsche Unterschriftslinie
+- [x] Schreiben: Von Hand geänderter Text bleibt erhalten, wenn danach Absender oder Einschreiben geändert wird
+- [ ] Datenschutzseite auf abo-warner-pro.com um die zweite Sicherheitskopie und die aufgehobene beschädigte Datei ergänzen (vor dem Start von 2.0.2)
 
 **Geprüft**
 - [x] Keine Daten verlassen das Handy, kein Analytics-, Tracking- oder Werbe-SDK (14.11.2026)
