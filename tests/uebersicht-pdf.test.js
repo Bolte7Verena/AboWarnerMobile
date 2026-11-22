@@ -70,7 +70,7 @@ test('PdfDokument: kuerze() kürzt lange Texte mit …', () => {
 
 test('Übersicht: Zeile eines laufenden Abos mit deutschem Datum', () => {
     const abo = { ...BASIS, id: 'n', name: 'Netflix', naechsteZahlung: zuISO(heutePlusTage(40)) };
-    assert.deepEqual(erzeugeZeile(abo), ['Netflix', '17,99 EUR', 'Monatlich', zuDE(heutePlusTage(40)), zuDE(heutePlusTage(26)), 'läuft']);
+    assert.deepEqual(erzeugeZeile(abo), ['Netflix', '17,99 €', 'Monatlich', zuDE(heutePlusTage(40)), zuDE(heutePlusTage(26)), 'läuft']);
 });
 
 test('Übersicht: gekündigt (laufend), beendet und altes gekündigtes Abo', () => {
@@ -95,8 +95,8 @@ test('Übersicht: enthält Spaltenköpfe, Abos und Summen; keine Webadresse', ()
         assert.ok(text.includes(t), t);
     }
     // 17,99 + 120/12 = 27,99 pro Monat; *12 = 335,88 pro Jahr
-    assert.ok(text.includes('(pro Monat: 27,99 \\200)'));
-    assert.ok(text.includes('(pro Jahr: 335,88 \\200)'));
+    assert.ok(text.includes('(pro Monat: 27,99\\240\\200)'));
+    assert.ok(text.includes('(pro Jahr: 335,88\\240\\200)'));
     assert.ok(!/https?:|www\./i.test(text), 'keine URL in der PDF');
 });
 
@@ -122,7 +122,7 @@ test('Dateiname mit Datum', () => {
 
 test('Übersicht: Beträge landesüblich — Englisch mit Punkt, kein "?" bei Französisch', () => {
     const abo = { ...BASIS, id: 'g', name: 'Miete', kosten: 2436, naechsteZahlung: heutePlusTage(40) };
-    for (const [code, betrag] of [['de', '2.436,00 EUR'], ['en', '2,436.00 EUR'], ['es', '2.436,00 EUR'], ['pt', '2.436,00 EUR'], ['fr', '2\u00a0436,00 EUR']]) {
+    for (const [code, betrag] of [['de', '2.436,00\u00a0€'], ['en', '€2,436.00'], ['es', '2.436,00\u00a0€'], ['pt', '€\u00a02.436,00'], ['fr', '2\u00a0436,00\u00a0€']]) {
         setzeSprache(code);
         const region = String(navigator.language || '').slice(0, 2);
         if (region !== code) assert.equal(erzeugeZeile(abo)[1], betrag, code);

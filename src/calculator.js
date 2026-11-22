@@ -1,4 +1,4 @@
-import { WECHSELKURSE } from './waehrungen.js';
+import { rechneUm, normalisiereWaehrung } from './waehrungen.js';
 
 /**
  * Kern-Logik für Währungsumrechnungen und Abo-Berechnungen.
@@ -275,26 +275,34 @@ export function formatiereZahlDE(betrag) {
 
 export const Calculator = {
 
-    // Konvertiert einen Betrag zu EUR mit Sicherung gegen Gleitkommafehler
-    konvertiereZuEUR(betrag, vonWaehrung) {
-        const kurs = WECHSELKURSE[vonWaehrung] || 1.0;
-        const wert = parseBetrag(betrag) * kurs;
-        return Math.round(wert * 100) / 100; // Rundung auf 2 Dezimalstellen
+    // Rechnet einen Betrag mit dem Richtkurs um, auf Cent gerundet.
+    // Unbekannte Währung: null (lieber nicht mitrechnen als falsch).
+    konvertiere(betrag, von, nach) {
+        const wert = rechneUm(parseBetrag(betrag), von, nach);
+        return wert === null ? null : Math.round(wert * 100) / 100;
     },
 
-    // Berechnet monatliche Gesamtkosten in EUR
-    berechneMonatsSumme(abos) {
-        const summe = abos.reduce((acc, abo) => {
-            const kostenEUR = this.konvertiereZuEUR(abo.kosten, abo.waehrung);
+    // Summen pro Monat und Jahr in der Hauptwährung.
+    //   umgerechnet:     true, wenn mindestens ein Betrag umgerechnet wurde ("ca.")
+    //   nichtEnthalten:  Währungen, für die es keinen Kurs gibt (nicht mitgerechnet)
+    berechneSummen(abos, hauptwaehrung = 'EUR') {
+        let monat = 0;
+        let jahr = 0;
+        let umgerechnet = false;
+        const nichtEnthalten = new Set();
+        for (const abo of abos) {
+            const wert = this.konvertiere(abo.kosten, abo.waehrung, hauptwaehrung);
+            if (wert === null) {
+                nichtEnthalten.add(normalisiereWaehrung(abo.waehrung));
+                continue;
+            }
+            if (normalisiereWaehrung(abo.waehrung) !== normalisiereWaehrung(hauptwaehrung)) umgerechnet = true;
             const monate = TURNUS_MONATE[abo.turnus] || 1;
-            return acc + (kostenEUR / monate);
-        }, 0);
-        return Math.round(summe * 100) / 100;
-    },
-
-    // Berechnet jährliche Gesamtkosten in EUR
-    berechneJahresSumme(abos) {
-        return Math.round(this.berechneMonatsSumme(abos) * 12 * 100) / 100;
+            monat += wert / monate;
+            jahr += (wert * 12) / monate;
+        }
+        const runde = (x) => Math.round(x * 100) / 100;
+        return { monat: runde(monat), jahr: runde(jahr), umgerechnet, nichtEnthalten: [...nichtEnthalten] };
     },
 
     // Validiert Abo-Daten vor der Speicherung

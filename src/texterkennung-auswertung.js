@@ -14,6 +14,7 @@
  */
 
 import { naechsteZahlungAb } from './calculator.js';
+import { KURSE_JE_EURO, normalisiereWaehrung } from './waehrungen.js';
 
 /**
  * Datum für "Nächste Zahlung" aus den Foto-Vorschlägen. Bevorzugt die genannte
@@ -86,8 +87,9 @@ function findeNummer(zeilen, label) {
 
 // --- Beträge und Währung ---
 
-const WAEHRUNG_SYMBOL = { '€': 'EUR', 'EUR': 'EUR', '$': 'USD', 'US$': 'USD', 'USD': 'USD', '£': 'GBP', 'GBP': 'GBP', 'CHF': 'CHF', 'R$': 'BRL', 'BRL': 'BRL' };
-const WAEHRUNG = '(R\\$|US\\$|€|EUR|\\$|USD|£|GBP|CHF|BRL)';
+// Symbole und ISO-Codes. Längere zuerst ("R$" vor "$"). Ein einfaches "$" wird
+// je Land gedeutet (optionen.dollar: USA USD, Mexiko MXN ...), siehe werteTextAus.
+const WAEHRUNG = `(R\\$|US\\$|CA\\$|AU\\$|NZ\\$|MX\\$|HK\\$|NT\\$|€|\\$|£|₹|₩|₺|${Object.keys(KURSE_JE_EURO).join('|')})`;
 const ZAHL = '(\\d{1,3}(?:[.,\\s ]\\d{3})+(?:[.,]\\d{2})?|\\d+[.,]\\d{2}|\\d+)';
 const BETRAG_VOR = regex(`${WAEHRUNG}\\s?${ZAHL}(?![\\d])`, 'gu');
 const BETRAG_NACH = regex(`(?<![\\d.,])${ZAHL}\\s?${WAEHRUNG}(?![\\p{L}])`, 'gu');
@@ -113,19 +115,20 @@ export function parseZahl(text) {
     return Number.isFinite(wert) ? wert : NaN;
 }
 
-function betraegeInZeile(zeile) {
+function betraegeInZeile(zeile, dollar) {
     const liste = [];
-    for (const m of zeile.matchAll(BETRAG_VOR)) liste.push({ wert: parseZahl(m[2]), waehrung: WAEHRUNG_SYMBOL[m[1].toUpperCase()] || WAEHRUNG_SYMBOL[m[1]] });
-    for (const m of zeile.matchAll(BETRAG_NACH)) liste.push({ wert: parseZahl(m[1]), waehrung: WAEHRUNG_SYMBOL[m[2].toUpperCase()] || WAEHRUNG_SYMBOL[m[2]] });
+    const code = (zeichen) => (zeichen === '$' ? dollar : normalisiereWaehrung(zeichen));
+    for (const m of zeile.matchAll(BETRAG_VOR)) liste.push({ wert: parseZahl(m[2]), waehrung: code(m[1]) });
+    for (const m of zeile.matchAll(BETRAG_NACH)) liste.push({ wert: parseZahl(m[1]), waehrung: code(m[2]) });
     return liste.filter((b) => Number.isFinite(b.wert) && b.wert > 0 && b.wert < 100000);
 }
 
-function findeBetrag(zeilen) {
+function findeBetrag(zeilen, dollar) {
     const kandidaten = [];
     zeilen.forEach((zeile) => {
         const summe = STICHWORT_SUMME.test(zeile);
         const preis = STICHWORT_PREIS.test(zeile);
-        let betraege = betraegeInZeile(zeile);
+        let betraege = betraegeInZeile(zeile, dollar);
         // Ohne Währungszeichen nur auf beschrifteten Zeilen und nur mit Nachkommastellen.
         if (betraege.length === 0 && (summe || preis)) {
             betraege = [...zeile.matchAll(BETRAG_OHNE)].map((m) => ({ wert: parseZahl(m[1]), waehrung: '' })).filter((b) => b.wert > 0 && b.wert < 100000);
@@ -330,6 +333,7 @@ function zuISO(datum) {
 /**
  * zeilen: erkannter Text, eine Zeile je Eintrag (Reihenfolge wie auf dem Bild).
  * optionen.monatZuerst: true, wenn die Geräte-Region Daten als MM/TT schreibt (USA).
+ * optionen.dollar: Bedeutung eines einfachen "$" (Standard USD, in Mexiko MXN ...).
  * Rückgabe: nur die sicher erkannten Felder, z.B.
  *   { name, kosten, waehrung, turnus, naechsteZahlung (ISO), kundennummer, vertragsnummer, vertragspartner }
  */
@@ -346,7 +350,7 @@ export function werteTextAus(zeilen, optionen = {}) {
     if (name) ergebnis.name = name;
     if (anbieter.anschrift) ergebnis.vertragspartner = anbieter.anschrift;
 
-    const betrag = findeBetrag(saubere);
+    const betrag = findeBetrag(saubere, optionen.dollar || 'USD');
     if (betrag) {
         ergebnis.kosten = betrag.wert;
         if (betrag.waehrung) ergebnis.waehrung = betrag.waehrung;

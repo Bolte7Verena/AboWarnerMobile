@@ -18,6 +18,7 @@
 
 import { t, tAnzahl, aktuelleSprache, formatiereDatum, formatiereZahlEingabe } from './i18n.js';
 import { naechsteZahlungAb } from './calculator.js';
+import { dollarWaehrung } from './waehrungen.js';
 import { werteTextAus, vorschlagNaechsteZahlung } from './texterkennung-auswertung.js';
 
 const MAX_KANTE = 2400; // Pixel, genügt für gut lesbaren Text
@@ -119,7 +120,7 @@ export function uebernehmeVorschlaege(vorschlag, { datumsauswahl } = {}) {
     // ersetzt, wenn der Betrag aus dem Foto stammt und eine Währung dabeistand.
     if (kostenGesetzt && vorschlag.waehrung) {
         const el = feld('input-waehrung');
-        if (el.value !== vorschlag.waehrung) {
+        if (el.value !== vorschlag.waehrung && [...el.options].some((o) => o.value === vorschlag.waehrung)) {
             el.value = vorschlag.waehrung;
             markiere(el);
         }
@@ -172,7 +173,7 @@ async function verarbeiteDatei(datei, optionen) {
         } finally {
             bild = null; // Bilddaten sofort verwerfen
         }
-        const { anzahl, datum } = uebernehmeVorschlaege(werteTextAus(zeilen, { monatZuerst: monatZuerst() }), optionen);
+        const { anzahl, datum } = uebernehmeVorschlaege(werteTextAus(zeilen, { monatZuerst: monatZuerst(), dollar: dollarWaehrung() }), optionen);
         let meldung = anzahl > 0 ? tAnzahl('foto.erkannt', anzahl) : t('foto.nichts');
         if (datum) meldung += ` ${t('foto.datumVorgerueckt', { original: formatiereDatum(datum.original), datum: formatiereDatum(datum.datum) })}`;
         zeigeStatus(meldung, anzahl > 0 ? 'erfolg' : '');

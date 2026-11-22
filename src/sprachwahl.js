@@ -1,7 +1,7 @@
 /**
- * sprachwahl.js | Sprachwahl über das Weltkugel-Symbol oben rechts:
+ * sprachwahl.js | Sprache und Hauptwährung über das Weltkugel-Symbol oben rechts:
  * Automatisch (Sprache des Geräts) / Deutsch / English / Español /
- * Français / Português.
+ * Français / Português; darunter die Währung, in der die Summen stehen.
  *
  * Die Wahl wird gespeichert (i18n.js, localStorage). Nach einer Änderung
  * lädt die App einmal neu — so stehen garantiert alle Texte (auch bereits
@@ -10,12 +10,22 @@
  */
 
 import { ladeSpracheinstellung, speichereSpracheinstellung } from './i18n.js';
+import { ladeWaehrungseinstellung, speichereWaehrungseinstellung, ermittleHauptwaehrung } from './waehrungen.js';
+import { hauptwaehrungsOptionen } from './waehrungsauswahl.js';
 
 export function initSprachwahl({ neuLaden = () => window.location.reload() } = {}) {
     const overlay = document.getElementById('sprache-modal-overlay');
     const optionen = () => [...overlay.querySelectorAll('input[name="sprache"]')];
 
+    const waehrungEl = document.getElementById('input-hauptwaehrung');
+
+    async function fuelleWaehrung() {
+        const abos = await window.api.loadAbos();
+        waehrungEl.innerHTML = hauptwaehrungsOptionen(ladeWaehrungseinstellung(), ermittleHauptwaehrung(abos, 'auto'));
+    }
+
     function oeffne() {
+        fuelleWaehrung();
         const aktuell = ladeSpracheinstellung();
         optionen().forEach((radio) => { radio.checked = radio.value === aktuell; });
         overlay.hidden = false;
@@ -29,11 +39,13 @@ export function initSprachwahl({ neuLaden = () => window.location.reload() } = {
 
     function uebernehme() {
         const gewaehlt = (optionen().find((radio) => radio.checked) || {}).value || 'auto';
-        if (gewaehlt === ladeSpracheinstellung()) {
+        const waehrung = waehrungEl.value || ladeWaehrungseinstellung();
+        if (gewaehlt === ladeSpracheinstellung() && waehrung === ladeWaehrungseinstellung()) {
             schliesse();
             return;
         }
         speichereSpracheinstellung(gewaehlt);
+        speichereWaehrungseinstellung(waehrung);
         neuLaden();
     }
 

@@ -6,7 +6,7 @@
 export default {
     // --- Cabecera, introducción, barra de herramientas ---
     'kopf.hilfe': 'Ayuda',
-    'kopf.sprache': 'Idioma',
+    'kopf.sprache': 'Idioma y moneda',
     'start.titel': 'Resumen de suscripciones',
     'start.subline': 'Todo bajo control',
     'start.untertitel': 'Ten todos tus contratos, costes y plazos de cancelación en un solo lugar.',
@@ -18,6 +18,8 @@ export default {
     'stat.monat': 'Coste / mes',
     'stat.jahr': 'Coste / año',
     'stat.fristen': 'Plazos urgentes',
+    'summe.ca': 'aprox.',
+    'summe.nichtEnthalten': 'No incluido: {liste} (sin tipo de cambio)',
 
     // --- Lista, filtros, tarjetas ---
     'filter.alle': 'Todas',
@@ -65,7 +67,6 @@ export default {
     'feld.kosten': 'Coste',
     'feld.kostenPlatzhalter': 'p. ej. 29,99',
     'feld.waehrung': 'Moneda',
-    'feld.waehrungPlatzhalter': 'p. ej. EUR',
     'feld.turnus': 'Frecuencia de pago',
     'feld.kategorie': 'Categoría',
     'feld.naechsteZahlung': 'Próximo pago',
@@ -235,17 +236,20 @@ export default {
     'pdf.gekuendigt': 'cancelada',
     'pdf.leer': 'No hay suscripciones guardadas.',
     'pdf.summe': 'Total de suscripciones activas ({anzahl}):',
-    'pdf.proMonat': 'al mes: {betrag} €',
-    'pdf.proJahr': 'al año: {betrag} €',
+    'pdf.proMonat': 'al mes: {betrag}',
+    'pdf.proJahr': 'al año: {betrag}',
     'pdf.hinweis': 'Las suscripciones canceladas se incluyen hasta el fin del contrato.',
-    'pdf.fremdwaehrung': ' Otras monedas se convierten a euros con un tipo de cambio aproximado.',
+    'pdf.fremdwaehrung': ' Las demás monedas se convierten a {waehrung} con un tipo de cambio de referencia (aprox.).',
     'pdf.seite': 'Página {seite} de {anzahl}',
     'pdf.fusszeile': 'Creado con Abo-Warner Pro – todos los datos sin garantía, basados en tus propias entradas.',
 
     // --- Idioma ---
-    'sprache.titel': 'Idioma',
+    'sprache.titel': 'Idioma y moneda',
     'sprache.auto': 'Automático (idioma del dispositivo)',
     'sprache.uebernehmen': 'Aplicar',
+    'waehrung.titel': 'Moneda principal',
+    'waehrung.hinweis': 'Para los totales. Las suscripciones en otras monedas se convierten con un tipo de cambio fijo de referencia (noviembre de 2026, «aprox.»). Tus suscripciones no cambian.',
+    'waehrung.auto': 'Automática ({code})',
 
     // --- Pie de página, textos legales, contacto ---
     'fuss.datenschutz': 'Privacidad',
@@ -348,6 +352,9 @@ export default {
                     <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Verde:</strong> Quedan más de 30 días.</li>
                     <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Etiqueta gris «Cancelada, termina el …»:</strong> La suscripción está cancelada. Hasta esa fecha, la tarjeta se queda en su sitio habitual, porque hasta entonces sigues pagando. Después se vuelve más pálida y pasa al final de la lista.</li>
                 </ul>
+
+                <h3>¿En qué moneda aparecen los totales?</h3>
+                <p>En tu moneda principal. La app la propone según tu país. Puedes cambiarla con el globo terráqueo de arriba a la derecha. Si tienes suscripciones en otras monedas, la app las convierte con un tipo de cambio fijo de referencia y añade «aprox.», porque no consulta tipos de cambio en internet.</p>
 
                 <h3>¿Cómo cancelo?</h3>
                 <ol>

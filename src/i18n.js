@@ -20,6 +20,7 @@ import fr from './i18n/fr.js';
 import pt from './i18n/pt.js';
 import { formatiereDatumDE, formatiereZahlDE, parseBetrag, parseDatumISO } from './calculator.js';
 import { anzeigeRegion, geraeteSprachen } from './region.js';
+import { normalisiereWaehrung } from './waehrungen.js';
 
 export const SPRACHEN = { de, en, es, fr, pt };
 export const SPRACH_EINSTELLUNG_KEY = 'abo-warner:sprache';
@@ -141,9 +142,48 @@ export function formatiereZahlEingabe(betrag, locale) {
     return zahlText(betrag, false, locale);
 }
 
-// Betrag mit Währung, z.B. "14,99 EUR" bzw. "14.99 EUR".
-export function formatiereBetrag(betrag, waehrung, locale) {
-    return `${formatiereZahl(betrag, locale)} ${waehrung || 'EUR'}`;
+// Betrag mit Währung, landesüblich: "14,99 €", "€14.99", "R$ 14,99", "$14.99".
+// Unbekannte Währungen (z.B. aus alten Daten) stehen unverändert dahinter.
+// nurCode: ISO-Code statt Symbol ("14,99 EUR").
+export function formatiereBetrag(betrag, waehrung, locale, { nurCode = false } = {}) {
+    const code = normalisiereWaehrung(waehrung || 'EUR');
+    if (/^[A-Z]{3}$/.test(code)) {
+        try {
+            const wert = parseBetrag(betrag);
+            const zahl = Number.isFinite(wert) ? wert : 0;
+            const ziel = locale || anzeigeRegion(aktiv);
+            const basis = { style: 'currency', currency: code, currencyDisplay: nurCode ? 'code' : 'symbol', numberingSystem: 'latn', useGrouping: 'always' };
+            // Landesübliche Nachkommastellen (Yen: keine), aber nie Cent verschlucken.
+            const stellen = Number.isInteger(zahl) ? new Intl.NumberFormat(ziel, basis).resolvedOptions().maximumFractionDigits : 2;
+            return new Intl.NumberFormat(ziel, { ...basis, minimumFractionDigits: Math.min(stellen, 2), maximumFractionDigits: 2 })
+                .format(zahl)
+                .replace(/\u202f/g, '\u00a0')
+                .replace(/[\u200e\u200f\u061c]/g, '');
+        } catch (error) {
+            // weiter unten: einfacher Rückfall
+        }
+    }
+    return `${formatiereZahl(betrag, locale)} ${code}`;
+}
+
+// Symbol einer Währung für Auswahllisten ("€", "R$"), sonst der Code selbst.
+export function waehrungsSymbol(code) {
+    try {
+        const teil = new Intl.NumberFormat(anzeigeRegion(aktiv), { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol' })
+            .formatToParts(0).find((p) => p.type === 'currency');
+        return teil ? teil.value : code;
+    } catch (error) {
+        return code;
+    }
+}
+
+// Name einer Währung in der App-Sprache ("Euro", "Brasilianischer Real").
+export function waehrungsName(code) {
+    try {
+        return new Intl.DisplayNames([anzeigeRegion(aktiv)], { type: 'currency' }).of(code) || code;
+    } catch (error) {
+        return code;
+    }
 }
 
 // Füllt alle markierten Texte in index.html:

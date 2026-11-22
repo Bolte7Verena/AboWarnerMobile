@@ -55,12 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const config = await window.api.getLocaleConfig();
         window.appConfig = config;
 
-        // 2. Regionale Landeswährung als editierbaren Startwert vorschlagen
-        if (config.waehrung) {
-            const waehrungInput = document.getElementById('input-waehrung');
-            waehrungInput.value = config.waehrung;
-            waehrungInput.setAttribute('value', config.waehrung);
-        }
+        // 2. Währungsauswahl: Vorbelegt wird sie in zeigeAbos() mit der Hauptwährung.
 
         // 3. UI-Ereignisse verdrahten
         const modalOverlay = document.getElementById('abo-modal-overlay');

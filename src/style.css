@@ -349,7 +349,11 @@ p { margin: 0; }
 .stat-body { min-width: 0; }
 /* Darf zweizeilig umbrechen statt mit „…“ abgeschnitten zu werden (EN/ES bei 360 px). */
 .stat-label { white-space: normal; overflow-wrap: break-word; line-height: 1.25; font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); }
-.stat-value { margin-top: 0.125rem; font-family: var(--font-display); font-size: 0.875rem; font-weight: 600; color: var(--foreground); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stat-value { margin-top: 0.125rem; font-family: var(--font-display); font-size: 0.875rem; font-weight: 600; color: var(--foreground); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+/* "ca." vor umgerechneten Summen; der Betrag selbst bricht nie um. */
+.stat-ca { font-size: 0.6875rem; font-weight: 500; color: var(--muted-foreground); }
+.stat-betrag { white-space: nowrap; }
+.stat-hinweis { grid-column: 1 / -1; font-size: 0.75rem; color: var(--muted-foreground); overflow-wrap: anywhere; }
 .stat-value.tone-primary { color: var(--primary); }
 .stat-value.tone-warning { color: var(--accent-amber); }
 
@@ -627,6 +631,9 @@ p { margin: 0; }
 .sprache-option { display: flex; align-items: center; gap: 0.625rem; padding: 0.625rem 0.5rem; border-radius: var(--radius-md); font-size: 0.875rem; cursor: pointer; }
 .sprache-option:hover { background: oklch(1 0 0 / 0.05); }
 .sprache-option input { width: 1.05rem; height: 1.05rem; accent-color: var(--primary); }
+
+.waehrung-wahl { display: flex; flex-direction: column; gap: 0.5rem; padding-top: 0.875rem; border-top: 1px solid oklch(1 0 0 / 0.08); }
+.waehrung-wahl-titel { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; }
 
 /* Hilfe ("?" oben rechts + Hilfe-Seite) */
 .hilfe-btn { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; border: 1px solid var(--input); background: transparent; color: var(--muted-foreground); cursor: pointer; transition: color 0.15s, background-color 0.15s; }

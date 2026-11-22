@@ -8,7 +8,7 @@
 export default {
     // --- Kopf, Einleitung, Werkzeugleiste ---
     'kopf.hilfe': 'Hilfe',
-    'kopf.sprache': 'Sprache',
+    'kopf.sprache': 'Sprache und Währung',
     'start.titel': 'Abo-Übersicht',
     'start.subline': 'Alles im Blick',
     'start.untertitel': 'Behalte alle Verträge, Kosten und Kündigungsfristen an einem Ort.',
@@ -20,6 +20,8 @@ export default {
     'stat.monat': 'Kosten / Monat',
     'stat.jahr': 'Kosten / Jahr',
     'stat.fristen': 'Fristen fällig',
+    'summe.ca': 'ca.',
+    'summe.nichtEnthalten': 'Nicht eingerechnet: {liste} (kein Kurs hinterlegt)',
 
     // --- Liste, Filter, Karten ---
     'filter.alle': 'Alle',
@@ -67,7 +69,6 @@ export default {
     'feld.kosten': 'Kosten',
     'feld.kostenPlatzhalter': 'z.B. 29,99',
     'feld.waehrung': 'Währung',
-    'feld.waehrungPlatzhalter': 'z.B. EUR',
     'feld.turnus': 'Turnus',
     'feld.kategorie': 'Kategorie',
     'feld.naechsteZahlung': 'Nächste Zahlung',
@@ -238,17 +239,20 @@ export default {
     'pdf.gekuendigt': 'gekündigt',
     'pdf.leer': 'Keine Abos gespeichert.',
     'pdf.summe': 'Summe der laufenden Abos ({anzahl}):',
-    'pdf.proMonat': 'pro Monat: {betrag} €',
-    'pdf.proJahr': 'pro Jahr: {betrag} €',
+    'pdf.proMonat': 'pro Monat: {betrag}',
+    'pdf.proJahr': 'pro Jahr: {betrag}',
     'pdf.hinweis': 'Gekündigte Abos zählen bis zu ihrem Vertragsende mit.',
-    'pdf.fremdwaehrung': ' Andere Währungen sind mit einem Richtkurs in Euro umgerechnet.',
+    'pdf.fremdwaehrung': ' Andere Währungen sind mit einem Richtkurs in {waehrung} umgerechnet (ca.).',
     'pdf.seite': 'Seite {seite} von {anzahl}',
     'pdf.fusszeile': 'Erstellt mit Abo-Warner Pro – alle Angaben ohne Gewähr, Grundlage sind deine eigenen Eingaben.',
 
     // --- Sprache ---
-    'sprache.titel': 'Sprache',
+    'sprache.titel': 'Sprache und Währung',
     'sprache.auto': 'Automatisch (Sprache des Geräts)',
     'sprache.uebernehmen': 'Übernehmen',
+    'waehrung.titel': 'Hauptwährung',
+    'waehrung.hinweis': 'Für die Summen. Abos in anderen Währungen werden mit einem festen Richtkurs umgerechnet (Stand November 2026, „ca.“). Deine Abos selbst ändern sich dadurch nicht.',
+    'waehrung.auto': 'Automatisch ({code})',
 
     // --- Fußzeile, Rechtliches, Kontakt ---
     'fuss.datenschutz': 'Datenschutz',
@@ -347,6 +351,9 @@ export default {
                     <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Grün:</strong> Noch mehr als 30 Tage Zeit.</li>
                     <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Graues Etikett „Gekündigt zum …“:</strong> Das Abo ist gekündigt. Bis zu diesem Datum bleibt die Karte ganz normal an ihrem Platz, denn so lange zahlst du noch. Danach wird sie blasser und rutscht ans Ende der Liste.</li>
                 </ul>
+
+                <h3>In welcher Währung stehen die Summen?</h3>
+                <p>In deiner Hauptwährung. Die App schlägt sie nach deinem Land vor. Ändern kannst du sie über die Weltkugel oben rechts. Hast du Abos in anderen Währungen, rechnet die App mit einem festen Richtkurs um und schreibt „ca.“ davor, denn sie holt keine Kurse aus dem Internet.</p>
 
                 <h3>Wie kündige ich?</h3>
                 <ol>

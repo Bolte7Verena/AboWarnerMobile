@@ -11,13 +11,14 @@
  * anderen Letter-Ländern US-Letter (siehe papierformat in region.js).
  */
 
-import { PdfDokument } from './pdf.js';
+import { PdfDokument, istDarstellbar } from './pdf.js';
+import { ermittleHauptwaehrung } from './waehrungen.js';
 import {
     Calculator, ermittleEffektivesZahlungsdatum, ermittleHandlungsDatum, istProbezeitLaufend,
     formatiereDatumISO, istGekuendigtLaufend, istVertragBeendet,
     parseDatumISO, sortiereAbos
 } from './calculator.js';
-import { t, tAnzahl, tWert, formatiereDatum, formatiereZahl, formatiereBetrag } from './i18n.js';
+import { t, tAnzahl, tWert, formatiereDatum, formatiereBetrag } from './i18n.js';
 import { papierformat } from './region.js';
 
 const RAND = 40;
@@ -44,6 +45,13 @@ function spaltenFuer(breite) {
     return SPALTEN_A4.map((s) => ({ ...s, x: RAND + (s.x - RAND) * faktor, w: s.w * faktor }));
 }
 
+// Betrag für die PDF: mit Symbol, oder mit ISO-Code, wenn die PDF-Schrift das
+// Symbol nicht kennt (₹, ₺, zł ...).
+function betragPdf(betrag, waehrung) {
+    const text = formatiereBetrag(betrag, waehrung);
+    return istDarstellbar(text) ? text : formatiereBetrag(betrag, waehrung, undefined, { nurCode: true });
+}
+
 // Eine Tabellenzeile als Texte je Spalte.
 export function erzeugeZeile(abo, heute = new Date()) {
     const beendet = istVertragBeendet(abo, heute);
@@ -66,7 +74,7 @@ export function erzeugeZeile(abo, heute = new Date()) {
         else status = t('pdf.gekuendigt');
     }
 
-    return [abo.name, formatiereBetrag(abo.kosten, abo.waehrung), tWert('turnus', abo.turnus), naechsteZahlung, kuendigungBis, status];
+    return [abo.name, betragPdf(abo.kosten, abo.waehrung), tWert('turnus', abo.turnus), naechsteZahlung, kuendigungBis, status];
 }
 
 export function dateinameUebersicht(heute = new Date()) {
@@ -131,13 +139,17 @@ export function erzeugeUebersichtPdf(alleAbos, heute = new Date(), papier = papi
         y = RAND;
     }
     y += 18;
-    const monat = Calculator.berechneMonatsSumme(laufende);
-    const jahr = Calculator.berechneJahresSumme(laufende);
+    const hauptwaehrung = ermittleHauptwaehrung(alleAbos);
+    const summen = Calculator.berechneSummen(laufende, hauptwaehrung);
+    const summe = (wert) => `${summen.umgerechnet ? `${t('summe.ca')} ` : ''}${betragPdf(wert, hauptwaehrung)}`;
+    const proMonat = t('pdf.proMonat', { betrag: summe(summen.monat) });
+    const proJahr = t('pdf.proJahr', { betrag: summe(summen.jahr) });
     pdf.text(RAND, y + 10, t('pdf.summe', { anzahl: tAnzahl('anzahl.abos', laufende.length) }), { groesse: 10, fett: true, farbe: DUNKEL });
-    pdf.text(RAND, y + 27, t('pdf.proMonat', { betrag: formatiereZahl(monat) }), { groesse: 10, farbe: DUNKEL });
-    pdf.text(RAND + 170, y + 27, t('pdf.proJahr', { betrag: formatiereZahl(jahr) }), { groesse: 10, farbe: DUNKEL });
-    const fremdwaehrung = laufende.some((abo) => (abo.waehrung || 'EUR').toUpperCase() !== 'EUR');
-    const hinweis = t('pdf.hinweis') + (fremdwaehrung ? t('pdf.fremdwaehrung') : '');
+    pdf.text(RAND, y + 27, proMonat, { groesse: 10, farbe: DUNKEL });
+    pdf.text(RAND + Math.max(170, pdf.textBreite(proMonat, 10) + 24), y + 27, proJahr, { groesse: 10, farbe: DUNKEL });
+    const hinweis = t('pdf.hinweis')
+        + (summen.umgerechnet ? t('pdf.fremdwaehrung', { waehrung: hauptwaehrung }) : '')
+        + (summen.nichtEnthalten.length > 0 ? ` ${t('summe.nichtEnthalten', { liste: summen.nichtEnthalten.join(', ') })}` : '');
     pdf.text(RAND, y + 43, hinweis, { groesse: 8.5, farbe: GRAU });
 
     // Fußzeile mit Seitenzahlen (erst jetzt ist die Gesamtzahl bekannt)

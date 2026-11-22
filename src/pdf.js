@@ -30,6 +30,11 @@ function zuWinAnsi(zeichen) {
     return 0x3f; // "?"
 }
 
+// Lässt sich der Text in der PDF-Schrift darstellen (sonst stünde "?" da, z.B. bei ₹ oder zł)?
+export function istDarstellbar(text) {
+    return [...String(text)].every((z) => z === '?' || zuWinAnsi(z) !== 0x3f);
+}
+
 function zuCodes(text) {
     return [...String(text).replace(/[\r\n\t]+/g, ' ')].map(zuWinAnsi);
 }

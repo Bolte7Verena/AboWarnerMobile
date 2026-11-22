@@ -12,7 +12,8 @@
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
-import { WaehrungsHelper } from './waehrungen.js';
+import { waehrungFuerLand } from './waehrungen.js';
+import { geraeteRegion } from './region.js';
 import { t } from './i18n.js';
 
 const DATEI_NAME = 'abos.json';
@@ -163,8 +164,8 @@ window.api = {
     // Geräte-/System-Spracheinstellung (z.B. "de-DE").
     getLocaleConfig: async () => {
         const locale = navigator.language || 'de-DE';
-        const [sprachCode, countryCode] = locale.split('-');
-        const waehrung = WaehrungsHelper.holeWaehrungFuerRegion(countryCode || 'DE');
+        const [sprachCode] = locale.split('-');
+        const waehrung = waehrungFuerLand(geraeteRegion());
         return { sprache: sprachCode || 'de', waehrung, daten: {} };
     }
 };

@@ -10,7 +10,7 @@
 export default {
     // --- Header, intro, toolbar ---
     'kopf.hilfe': 'Help',
-    'kopf.sprache': 'Language',
+    'kopf.sprache': 'Language and currency',
     'start.titel': 'Subscription overview',
     'start.subline': 'Everything at a glance',
     'start.untertitel': 'Keep all your contracts, costs and cancellation deadlines in one place.',
@@ -22,6 +22,8 @@ export default {
     'stat.monat': 'Cost / month',
     'stat.jahr': 'Cost / year',
     'stat.fristen': 'Deadlines due',
+    'summe.ca': 'approx.',
+    'summe.nichtEnthalten': 'Not included: {liste} (no exchange rate available)',
 
     // --- List, filters, cards ---
     'filter.alle': 'All',
@@ -69,7 +71,6 @@ export default {
     'feld.kosten': 'Cost',
     'feld.kostenPlatzhalter': 'e.g. 29.99',
     'feld.waehrung': 'Currency',
-    'feld.waehrungPlatzhalter': 'e.g. EUR',
     'feld.turnus': 'Billing cycle',
     'feld.kategorie': 'Category',
     'feld.naechsteZahlung': 'Next payment',
@@ -239,17 +240,20 @@ export default {
     'pdf.gekuendigt': 'cancelled',
     'pdf.leer': 'No subscriptions saved.',
     'pdf.summe': 'Total of active subscriptions ({anzahl}):',
-    'pdf.proMonat': 'per month: {betrag} €',
-    'pdf.proJahr': 'per year: {betrag} €',
+    'pdf.proMonat': 'per month: {betrag}',
+    'pdf.proJahr': 'per year: {betrag}',
     'pdf.hinweis': 'Cancelled subscriptions are included until their contract ends.',
-    'pdf.fremdwaehrung': ' Other currencies are converted to euros at an approximate rate.',
+    'pdf.fremdwaehrung': ' Other currencies are converted to {waehrung} at a reference rate (approx.).',
     'pdf.seite': 'Page {seite} of {anzahl}',
     'pdf.fusszeile': 'Created with Abo-Warner Pro – all information without guarantee, based on your own entries.',
 
     // --- Language ---
-    'sprache.titel': 'Language',
+    'sprache.titel': 'Language and currency',
     'sprache.auto': 'Automatic (device language)',
     'sprache.uebernehmen': 'Apply',
+    'waehrung.titel': 'Main currency',
+    'waehrung.hinweis': 'Used for the totals. Subscriptions in other currencies are converted at a fixed reference rate (as of November 2026, marked “approx.”). Your subscriptions themselves are not changed.',
+    'waehrung.auto': 'Automatic ({code})',
 
     // --- Footer, legal, contact ---
     'fuss.datenschutz': 'Privacy',
@@ -352,6 +356,9 @@ export default {
                     <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Green:</strong> More than 30 days left.</li>
                     <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Grey label “Cancelled, ends …”:</strong> The subscription has been cancelled. Until that date, the card stays in its usual place, because you are still paying until then. After that, it fades and moves to the end of the list.</li>
                 </ul>
+
+                <h3>Which currency are the totals in?</h3>
+                <p>In your main currency. The app suggests it based on your country. You can change it via the globe at the top right. If you have subscriptions in other currencies, the app converts them at a fixed reference rate and adds “approx.”, because it does not fetch rates from the internet.</p>
 
                 <h3>How do I cancel?</h3>
                 <ol>

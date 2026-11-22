@@ -282,10 +282,10 @@ test('formatiereZahl(): Gerät in anderer Sprache — es gilt die App-Sprache', 
 });
 
 test('formatiereBetrag(): hängt die Währung an, ohne Währung EUR', () => {
-    assert.equal(formatiereBetrag(14.99, 'EUR', 'de-DE'), '14,99 EUR');
-    assert.equal(formatiereBetrag(14.99, 'EUR', 'en-GB'), '14.99 EUR');
-    assert.equal(formatiereBetrag(5, undefined, 'de-DE'), '5,00 EUR');
-    assert.equal(formatiereBetrag('kaputt', 'EUR', 'de-DE'), '0,00 EUR');
+    assert.equal(formatiereBetrag(14.99, 'EUR', 'de-DE'), `14,99${NBSP}€`);
+    assert.equal(formatiereBetrag(14.99, 'EUR', 'en-GB'), '€14.99');
+    assert.equal(formatiereBetrag(5, undefined, 'de-DE'), `5,00${NBSP}€`);
+    assert.equal(formatiereBetrag('kaputt', 'EUR', 'de-DE'), `0,00${NBSP}€`);
 });
 
 test('Anzeige und Eingabefeld lassen sich in jeder Sprache wieder als derselbe Betrag lesen', () => {

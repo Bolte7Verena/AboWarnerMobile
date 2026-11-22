@@ -123,7 +123,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="input-waehrung" data-i18n="feld.waehrung"></label>
-                                <input type="text" id="input-waehrung" class="input-control" data-i18n-placeholder="feld.waehrungPlatzhalter" autocomplete="off">
+                                <select id="input-waehrung" class="input-control select-control"></select>
                             </div>
                         </div>
                         <div class="form-row">
@@ -301,6 +301,12 @@
                 <label class="sprache-option"><input type="radio" name="sprache" value="es"><span lang="es">Español</span></label>
                 <label class="sprache-option"><input type="radio" name="sprache" value="fr"><span lang="fr">Français</span></label>
                 <label class="sprache-option"><input type="radio" name="sprache" value="pt"><span lang="pt">Português</span></label>
+            </div>
+            <!-- Hauptwährung für die Summen (ab 2.0.2) -->
+            <div class="waehrung-wahl">
+                <label class="waehrung-wahl-titel" for="input-hauptwaehrung" data-i18n="waehrung.titel"></label>
+                <select id="input-hauptwaehrung" class="input-control select-control"></select>
+                <p class="daten-text" data-i18n="waehrung.hinweis"></p>
             </div>
             <div class="modal-aktionen sprache-aktionen">
                 <button type="button" id="btn-sprache-abbrechen" class="btn btn-outline btn-sm" data-i18n="knopf.abbrechen"></button>

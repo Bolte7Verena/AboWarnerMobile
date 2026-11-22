@@ -7,7 +7,7 @@
 export default {
     // --- En-tête, introduction, barre d'outils ---
     'kopf.hilfe': 'Aide',
-    'kopf.sprache': 'Langue',
+    'kopf.sprache': 'Langue et devise',
     'start.titel': 'Vue d’ensemble des abonnements',
     'start.subline': 'Tout sous contrôle',
     'start.untertitel': 'Gardez tous vos contrats, coûts et délais de résiliation au même endroit.',
@@ -19,6 +19,8 @@ export default {
     'stat.monat': 'Coût / mois',
     'stat.jahr': 'Coût / an',
     'stat.fristen': 'Délais urgents',
+    'summe.ca': 'env.',
+    'summe.nichtEnthalten': 'Non inclus : {liste} (aucun taux disponible)',
 
     // --- Liste, filtres, cartes ---
     'filter.alle': 'Tous',
@@ -66,7 +68,6 @@ export default {
     'feld.kosten': 'Coût',
     'feld.kostenPlatzhalter': 'p. ex. 29,99',
     'feld.waehrung': 'Devise',
-    'feld.waehrungPlatzhalter': 'p. ex. EUR',
     'feld.turnus': 'Fréquence',
     'feld.kategorie': 'Catégorie',
     'feld.naechsteZahlung': 'Prochain paiement',
@@ -236,17 +237,20 @@ export default {
     'pdf.gekuendigt': 'résilié',
     'pdf.leer': 'Aucun abonnement enregistré.',
     'pdf.summe': 'Total des abonnements actifs ({anzahl}) :',
-    'pdf.proMonat': 'par mois : {betrag} €',
-    'pdf.proJahr': 'par an : {betrag} €',
+    'pdf.proMonat': 'par mois : {betrag}',
+    'pdf.proJahr': 'par an : {betrag}',
     'pdf.hinweis': 'Les abonnements résiliés sont comptés jusqu’à la fin du contrat.',
-    'pdf.fremdwaehrung': ' Les autres devises sont converties en euros à un taux approximatif.',
+    'pdf.fremdwaehrung': ' Les autres devises sont converties en {waehrung} à un taux de référence (env.).',
     'pdf.seite': 'Page {seite} sur {anzahl}',
     'pdf.fusszeile': 'Créé avec Abo-Warner Pro – toutes les informations sans garantie, d’après vos propres saisies.',
 
     // --- Langue ---
-    'sprache.titel': 'Langue',
+    'sprache.titel': 'Langue et devise',
     'sprache.auto': 'Automatique (langue de l’appareil)',
     'sprache.uebernehmen': 'Appliquer',
+    'waehrung.titel': 'Devise principale',
+    'waehrung.hinweis': 'Pour les totaux. Les abonnements dans d’autres devises sont convertis à un taux de référence fixe (novembre 2026, « env. »). Vos abonnements eux-mêmes ne changent pas.',
+    'waehrung.auto': 'Automatique ({code})',
 
     // --- Pied de page, mentions légales, contact ---
     'fuss.datenschutz': 'Confidentialité',
@@ -349,6 +353,9 @@ export default {
                     <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Vert :</strong> Plus de 30 jours restants.</li>
                     <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Étiquette grise « Résilié, prend fin le … » :</strong> L’abonnement est résilié. Jusqu’à cette date, la carte reste à sa place habituelle, car vous payez encore jusque-là. Ensuite, elle s’estompe et passe en fin de liste.</li>
                 </ul>
+
+                <h3>Dans quelle devise sont affichés les totaux ?</h3>
+                <p>Dans votre devise principale. L’application la propose selon votre pays. Vous pouvez la modifier via le globe en haut à droite. Si vous avez des abonnements dans d’autres devises, l’application les convertit à un taux de référence fixe et ajoute « env. », car elle ne récupère aucun taux sur Internet.</p>
 
                 <h3>Comment résilier ?</h3>
                 <ol>

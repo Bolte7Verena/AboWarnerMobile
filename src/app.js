@@ -6,11 +6,13 @@
  */
 import { Calculator, FRIST_EINHEITEN, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
-import { t, tAnzahl, tWert, formatiereDatum, formatiereZahl, formatiereZahlEingabe, formatiereBetrag } from './i18n.js';
+import { t, tAnzahl, tWert, formatiereDatum, formatiereZahlEingabe, formatiereBetrag } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung, frageDatum } from './bestaetigung.js';
 import { planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { pruefeSicherung, MAX_DATEIGROESSE_BYTES } from './sicherung.js';
+import { ermittleHauptwaehrung } from './waehrungen.js';
+import { fuelleWaehrungsAuswahl, waehrungsOptionen } from './waehrungsauswahl.js';
 import { erzeugeUebersichtPdf, dateinameUebersicht } from './uebersicht-pdf.js';
 
 // Nach jeder Datenänderung: Liste neu zeichnen UND die nativen
@@ -128,20 +130,29 @@ function berechneStatistiken(alleAbos) {
         (abo) => !abo.gekuendigt && ermittleFristStatus(abo) === 'kritisch'
     ).length;
 
+    const hauptwaehrung = ermittleHauptwaehrung(alleAbos);
     return {
         aktiveAnzahl: aktiveAbos.length,
-        kostenProMonat: Calculator.berechneMonatsSumme(aktiveAbos),
-        kostenProJahr: Calculator.berechneJahresSumme(aktiveAbos),
+        hauptwaehrung,
+        summen: Calculator.berechneSummen(aktiveAbos, hauptwaehrung),
         kritischeAnzahl
     };
 }
 
+// Summe in der Hauptwährung; umgerechnete Summen tragen ein "ca.".
+function summeHtml(betrag, { hauptwaehrung, summen }) {
+    const text = `<span class="stat-betrag">${escapeHtml(formatiereBetrag(betrag, hauptwaehrung))}</span>`;
+    return summen.umgerechnet ? `<span class="stat-ca">${escapeHtml(t('summe.ca'))}</span> ${text}` : text;
+}
+
 function renderStatistiken(statsGrid, statistiken) {
+    const { summen } = statistiken;
     statsGrid.innerHTML = [
         erzeugeStatTile(ICON_LAYERS, t('stat.aktiv'), String(statistiken.aktiveAnzahl), 'primary'),
-        erzeugeStatTile(ICON_WALLET, t('stat.monat'), `${formatiereZahl(statistiken.kostenProMonat)} €`, 'neutral'),
-        erzeugeStatTile(ICON_CALENDAR_CLOCK, t('stat.jahr'), `${formatiereZahl(statistiken.kostenProJahr)} €`, 'primary'),
-        erzeugeStatTile(ICON_ALARM_CLOCK, t('stat.fristen'), String(statistiken.kritischeAnzahl), statistiken.kritischeAnzahl > 0 ? 'warning' : 'neutral')
+        erzeugeStatTile(ICON_WALLET, t('stat.monat'), summeHtml(summen.monat, statistiken), 'neutral'),
+        erzeugeStatTile(ICON_CALENDAR_CLOCK, t('stat.jahr'), summeHtml(summen.jahr, statistiken), 'primary'),
+        erzeugeStatTile(ICON_ALARM_CLOCK, t('stat.fristen'), String(statistiken.kritischeAnzahl), statistiken.kritischeAnzahl > 0 ? 'warning' : 'neutral'),
+        summen.nichtEnthalten.length > 0 ? `<p class="stat-hinweis">${escapeHtml(t('summe.nichtEnthalten', { liste: summen.nichtEnthalten.join(', ') }))}</p>` : ''
     ].join('');
 }
 
@@ -248,7 +259,7 @@ function erzeugeAboBearbeitenFormular(abo) {
                 </div>
                 <div class="form-group">
                     <label>${t('feld.waehrung')}</label>
-                    <input type="text" class="input-control" data-feld="waehrung" value="${escapeAttr(abo.waehrung)}">
+                    <select class="input-control select-control" data-feld="waehrung">${waehrungsOptionen(abo.waehrung)}</select>
                 </div>
             </div>
             <div class="form-row">
@@ -596,7 +607,13 @@ export async function zeigeAbos() {
 
     // 2. Statistik-Kacheln aus den ungefilterten Daten berechnen (unabhängig von
     // Suche/Kategorie-Filter — die vier Kacheln bilden immer den Gesamtbestand ab).
-    renderStatistiken(statsGrid, berechneStatistiken(alleAbos));
+    const statistiken = berechneStatistiken(alleAbos);
+    renderStatistiken(statsGrid, statistiken);
+
+    // 3. Vorschlag im Formular "Neues Abo" (nicht, solange es gerade ausgefüllt wird).
+    if (document.getElementById('abo-modal-overlay').hidden) {
+        fuelleWaehrungsAuswahl(document.getElementById('input-waehrung'), statistiken.hauptwaehrung);
+    }
 
     return alleAbos;
 }

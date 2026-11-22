@@ -31,14 +31,16 @@ test('TURNUS_MONATE enthält alle vier Turnusse mit korrekten Monatszahlen', () 
     assert.equal(TURNUS_MONATE['Jährlich'], 12);
 });
 
-test('konvertiereZuEUR: EUR bleibt unverändert, unbekannte Währung fällt auf Kurs 1.0 zurück', () => {
-    assert.equal(Calculator.konvertiereZuEUR(10, 'EUR'), 10);
-    assert.equal(Calculator.konvertiereZuEUR(10, 'XYZ'), 10);
+test('konvertiere: gleiche Währung bleibt unverändert, unbekannte wird nicht umgerechnet', () => {
+    assert.equal(Calculator.konvertiere(10, 'EUR', 'EUR'), 10);
+    assert.equal(Calculator.konvertiere(10, 'XYZ', 'XYZ'), 10);
+    assert.equal(Calculator.konvertiere(10, 'XYZ', 'EUR'), null);
 });
 
-test('konvertiereZuEUR: USD wird mit dem hinterlegten Kurs umgerechnet', () => {
-    const ergebnis = Calculator.konvertiereZuEUR(100, 'USD');
-    assert.ok(ergebnis > 0 && ergebnis < 100, `USD->EUR sollte < 100 sein, war ${ergebnis}`);
+test('konvertiere: USD wird mit dem hinterlegten Kurs umgerechnet, hin und zurück', () => {
+    const ergebnis = Calculator.konvertiere(100, 'USD', 'EUR');
+    assert.ok(ergebnis > 50 && ergebnis < 150, `USD->EUR unplausibel: ${ergebnis}`);
+    assert.ok(Math.abs(Calculator.konvertiere(ergebnis, 'EUR', 'USD') - 100) < 0.05);
 });
 
 test('berechneMonatsSumme: monatliches und jährliches Abo korrekt anteilig summiert', () => {
@@ -46,12 +48,12 @@ test('berechneMonatsSumme: monatliches und jährliches Abo korrekt anteilig summ
         { kosten: 10, waehrung: 'EUR', turnus: 'Monatlich' },
         { kosten: 24, waehrung: 'EUR', turnus: 'Jährlich' } // 24/12 = 2 pro Monat
     ];
-    assert.equal(Calculator.berechneMonatsSumme(abos), 12);
+    assert.equal(Calculator.berechneSummen(abos, 'EUR').monat, 12);
 });
 
 test('berechneJahresSumme: exakt das 12-fache der Monatssumme', () => {
     const abos = [{ kosten: 10, waehrung: 'EUR', turnus: 'Monatlich' }];
-    assert.equal(Calculator.berechneJahresSumme(abos), 120);
+    assert.equal(Calculator.berechneSummen(abos, 'EUR').jahr, 120);
 });
 
 test('istGueltig: vollständiges, korrektes Abo wird akzeptiert', () => {

@@ -6,7 +6,7 @@
 export default {
     // --- Cabeçalho, introdução, barra de ferramentas ---
     'kopf.hilfe': 'Ajuda',
-    'kopf.sprache': 'Idioma',
+    'kopf.sprache': 'Idioma e moeda',
     'start.titel': 'Visão geral das assinaturas',
     'start.subline': 'Tudo sob controle',
     'start.untertitel': 'Mantenha todos os seus contratos, custos e prazos de cancelamento em um só lugar.',
@@ -18,6 +18,8 @@ export default {
     'stat.monat': 'Custo / mês',
     'stat.jahr': 'Custo / ano',
     'stat.fristen': 'Prazos urgentes',
+    'summe.ca': 'aprox.',
+    'summe.nichtEnthalten': 'Não incluído: {liste} (sem taxa de câmbio)',
 
     // --- Lista, filtros, cartões ---
     'filter.alle': 'Todas',
@@ -65,7 +67,6 @@ export default {
     'feld.kosten': 'Custo',
     'feld.kostenPlatzhalter': 'ex.: 29,99',
     'feld.waehrung': 'Moeda',
-    'feld.waehrungPlatzhalter': 'ex.: EUR',
     'feld.turnus': 'Frequência',
     'feld.kategorie': 'Categoria',
     'feld.naechsteZahlung': 'Próximo pagamento',
@@ -235,17 +236,20 @@ export default {
     'pdf.gekuendigt': 'cancelada',
     'pdf.leer': 'Nenhuma assinatura salva.',
     'pdf.summe': 'Total das assinaturas ativas ({anzahl}):',
-    'pdf.proMonat': 'por mês: {betrag} €',
-    'pdf.proJahr': 'por ano: {betrag} €',
+    'pdf.proMonat': 'por mês: {betrag}',
+    'pdf.proJahr': 'por ano: {betrag}',
     'pdf.hinweis': 'Assinaturas canceladas são incluídas até o fim do contrato.',
-    'pdf.fremdwaehrung': ' Outras moedas são convertidas em euros a uma taxa aproximada.',
+    'pdf.fremdwaehrung': ' Outras moedas são convertidas em {waehrung} por uma taxa de referência (aprox.).',
     'pdf.seite': 'Página {seite} de {anzahl}',
     'pdf.fusszeile': 'Criado com Abo-Warner Pro – todas as informações sem garantia, com base nos seus próprios dados.',
 
     // --- Idioma ---
-    'sprache.titel': 'Idioma',
+    'sprache.titel': 'Idioma e moeda',
     'sprache.auto': 'Automático (idioma do aparelho)',
     'sprache.uebernehmen': 'Aplicar',
+    'waehrung.titel': 'Moeda principal',
+    'waehrung.hinweis': 'Usada nos totais. Assinaturas em outras moedas são convertidas por uma taxa fixa de referência (novembro de 2026, “aprox.”). Suas assinaturas não são alteradas.',
+    'waehrung.auto': 'Automática ({code})',
 
     // --- Rodapé, textos legais, contato ---
     'fuss.datenschutz': 'Privacidade',
@@ -348,6 +352,9 @@ export default {
                     <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Verde:</strong> faltam mais de 30 dias.</li>
                     <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Etiqueta cinza “Cancelada, termina em …”:</strong> a assinatura foi cancelada. Até essa data, o cartão fica no lugar de sempre, porque até lá você ainda paga. Depois, ele fica mais claro e vai para o final da lista.</li>
                 </ul>
+
+                <h3>Em que moeda aparecem os totais?</h3>
+                <p>Na sua moeda principal. O app sugere a moeda de acordo com o seu país. Você pode alterá-la no globo no canto superior direito. Se você tem assinaturas em outras moedas, o app as converte por uma taxa fixa de referência e acrescenta “aprox.”, pois não busca taxas na internet.</p>
 
                 <h3>Como cancelo?</h3>
                 <ol>
