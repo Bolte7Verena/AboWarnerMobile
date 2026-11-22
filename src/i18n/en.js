@@ -1,5 +1,5 @@
 /**
- * en.js | English.
+ * en.js | English (American spelling, since 2.0.2).
  * Terminology aligned with the English version of the website
  * (minimalist-landing-gen-main, src/lib/i18n/resources.ts), e.g.
  * "subscription", "Notice period", "Cancel by", "Active subscriptions",
@@ -31,8 +31,8 @@ export default {
     'status.kritisch': 'Critical',
     'status.warnung': 'Due soon',
     'status.sicher': 'Safe',
-    'status.gekuendigt': 'Cancelled',
-    'karte.gekuendigtZum': 'Cancelled, ends {datum}',
+    'status.gekuendigt': 'Canceled',
+    'karte.gekuendigtZum': 'Canceled, ends {datum}',
     'karte.moeglichBis': 'Cancel by {datum}',
     'karte.probeEndet': 'Trial ends on {datum}',
     'karte.probeBadge': 'Trial',
@@ -58,18 +58,18 @@ export default {
     'kategorie.Streaming': 'Streaming',
     'kategorie.Musik': 'Music',
     'kategorie.Software': 'Software',
-    'kategorie.Sport': 'Sport',
+    'kategorie.Sport': 'Sports',
     'kategorie.Versicherung': 'Insurance',
     'kategorie.Energie': 'Energy',
-    'kategorie.Telekommunikation': 'Telecoms',
+    'kategorie.Telekommunikation': 'Telecom',
     'kategorie.Wohnen': 'Housing',
     'kategorie.Sonstiges': 'Other',
 
     // --- Form fields (new subscription + edit) ---
     'feld.name': 'Subscription name',
-    'feld.namePlatzhalter': 'e.g. Netflix',
+    'feld.namePlatzhalter': 'e.g., Netflix',
     'feld.kosten': 'Cost',
-    'feld.kostenPlatzhalter': 'e.g. 29.99',
+    'feld.kostenPlatzhalter': 'e.g., 29.99',
     'feld.waehrung': 'Currency',
     'feld.turnus': 'Billing cycle',
     'feld.kategorie': 'Category',
@@ -91,8 +91,8 @@ export default {
     'feld.vertragsnummer': 'Contract number',
     'feld.kundennummer': 'Customer number',
     'feld.vertragspartner': 'Provider (company name and address)',
-    'feld.vertragspartnerPlatzhalter': 'e.g. Sample Company Ltd\nCustomer Service\n1 Sample Street\nSample City 12345',
-    'feld.gekuendigtZum': 'Cancelled, contract ends on',
+    'feld.vertragspartnerPlatzhalter': 'e.g., Sample Company, Inc.\nCustomer Service\n1 Sample Street\nSample City, ST 12345',
+    'feld.gekuendigtZum': 'Canceled, contract ends on',
     'feld.fehler': 'Please fill in all fields correctly (including the date).',
     'neu.titel': 'Add new subscription',
     'neu.weitere': 'More details (optional)',
@@ -107,20 +107,20 @@ export default {
     'foto.aufnehmen': 'Take photo',
     'foto.auswaehlen': 'Choose image',
     'foto.laeuft': 'Reading text …',
-    'foto.erkannt': '{anzahl} details filled in. Please check them and correct them if needed. Anything not recognised reliably stays empty.',
-    'foto.erkannt.eins': '1 detail filled in. Please check it and correct it if needed. Anything not recognised reliably stays empty.',
+    'foto.erkannt': '{anzahl} details filled in. Please check them and correct them if needed. Anything not recognized reliably stays empty.',
+    'foto.erkannt.eins': '1 detail filled in. Please check it and correct it if needed. Anything not recognized reliably stays empty.',
     'foto.datumVorgerueckt': 'The date on the image ({original}) is in the past, so {datum} has been entered as the next payment, based on the billing cycle. Please check it.',
-    'foto.nichts': 'Nothing could be recognised reliably in the image. Please enter the details yourself.',
+    'foto.nichts': 'Nothing could be recognized reliably in the image. Please enter the details yourself.',
     'foto.fehler': 'The image could not be read. Try a sharper photo or enter the details yourself.',
     'foto.nurApp': 'Text recognition is only available in the app on your phone.',
 
-    // --- Delete, mark as cancelled ---
+    // --- Delete, mark as canceled ---
     'loeschen.titel': 'Delete this subscription?',
     'loeschen.text': '“{name}” will be permanently removed from your list.',
     'gekuendigt.titel': 'Contract end date',
-    'gekuendigt.text': 'Until which date does “{name}” keep running? Until then, the subscription stays in your list and in your costs. You can change the suggested date, e.g. to match the provider’s confirmation.',
+    'gekuendigt.text': 'On what date does “{name}” end? Until then, the subscription stays in your list and in your costs. You can change the suggested date, e.g., to match the provider’s confirmation.',
     'gekuendigt.label': 'End of contract',
-    'gekuendigt.speichern': 'Save as cancelled',
+    'gekuendigt.speichern': 'Save as canceled',
     'datum.fehlt': 'Please select a date.',
 
     // --- Calendar ---
@@ -129,7 +129,7 @@ export default {
 
     // --- Backup, restore, PDF ---
     'daten.titel': 'Back up your data',
-    'daten.text': 'Your subscriptions are stored only on this device. Create a backup from time to time and keep it somewhere safe, e.g. in your cloud or by emailing it to yourself.',
+    'daten.text': 'Your subscriptions are stored only on this device. Create a backup from time to time and keep it somewhere safe, e.g., in your cloud or by emailing it to yourself.',
     'daten.erstellen': 'Create backup',
     'daten.wiederherstellen': 'Restore backup',
     'daten.pdf': 'Overview as PDF',
@@ -143,7 +143,7 @@ export default {
     'daten.werdenErsetzt': 'Your current {anzahl} will be replaced.',
     'daten.keineVorhanden': 'No subscriptions are saved at the moment.',
     'daten.ersetzen': 'Replace',
-    'daten.abgebrochen': 'Restore cancelled. Nothing was changed.',
+    'daten.abgebrochen': 'Restore canceled. Nothing was changed.',
     'daten.wiederherstellenFehler': 'Restore failed. Please try again.',
     'daten.wiederhergestellt': 'Backup restored: {anzahl}.',
     'daten.pdfErstellt': 'PDF created: {pfad}',
@@ -177,10 +177,10 @@ export default {
     'brief.bitteAusfuellen': 'please fill in',
     'brief.feldName': 'Name',
     'brief.feldNamePlatzhalter': 'Jane Doe',
-    'brief.feldStrasse': 'Street and house number',
+    'brief.feldStrasse': 'Street address',
     'brief.feldStrassePlatzhalter': '1 Sample Street',
-    'brief.feldPlzOrt': 'Postcode and city',
-    'brief.feldPlzOrtPlatzhalter': 'Sample City 12345',
+    'brief.feldPlzOrt': 'City, state and ZIP code',
+    'brief.feldPlzOrtPlatzhalter': 'Sample City, ST 12345',
     'brief.feldEmail': 'Email',
     'brief.feldEmailHinweis': '(optional, for the confirmation)',
     'brief.optional': 'optional',
@@ -193,7 +193,7 @@ export default {
     'brief.schreibenHinweis': '(you can still adjust it here)',
     'brief.kopieren': 'Copy to clipboard',
     'brief.teilen': 'Share as file',
-    'brief.markieren': 'Mark subscription as cancelled',
+    'brief.markieren': 'Mark subscription as canceled',
     'brief.kopiert': 'Copied to clipboard.',
     'brief.kopierenFehler': 'Copying failed — please select and copy the text manually.',
     'brief.gespeichert': 'Saved as: {pfad}',
@@ -201,8 +201,8 @@ export default {
 
     // --- Cancellation letter: text (neutral, no reference to German law) ---
     'brief.platzhalterName': '[Your name]',
-    'brief.platzhalterStrasse': '[Street and house number]',
-    'brief.platzhalterPlzOrt': '[Postcode and city]',
+    'brief.platzhalterStrasse': '[Street address]',
+    'brief.platzhalterPlzOrt': '[City, state and ZIP code]',
 
     // --- Notice at app start and notifications ---
     'hinweis.titel': 'Cancellation deadline ending soon',
@@ -226,14 +226,14 @@ export default {
     'pdf.spalteStatus': 'Status',
     'pdf.laeuft': 'active',
     'pdf.probe': 'Trial until {datum}',
-    'pdf.gekuendigtZum': 'cancelled, ends {datum}',
+    'pdf.gekuendigtZum': 'canceled, ends {datum}',
     'pdf.beendet': 'ended ({datum})',
-    'pdf.gekuendigt': 'cancelled',
+    'pdf.gekuendigt': 'canceled',
     'pdf.leer': 'No subscriptions saved.',
     'pdf.summe': 'Total of active subscriptions ({anzahl}):',
     'pdf.proMonat': 'per month: {betrag}',
     'pdf.proJahr': 'per year: {betrag}',
-    'pdf.hinweis': 'Cancelled subscriptions are included until their contract ends.',
+    'pdf.hinweis': 'Canceled subscriptions are included until their contract ends.',
     'pdf.fremdwaehrung': ' Other currencies are converted to {waehrung} at a reference rate (approx.).',
     'pdf.seite': 'Page {seite} of {anzahl}',
     'pdf.fusszeile': 'Created with Abo-Warner Pro – all information without guarantee, based on your own entries.',
@@ -259,7 +259,7 @@ export default {
     'kontakt.kopieren': 'Copy address',
     'kontakt.kopiert': 'Address copied.',
     'kontakt.kopierenFehler': 'Copying is not possible — select the address and copy it manually.',
-    'kontakt.keinMailProgramm': 'If no mail app opens, copy the address and write to us from your usual email service.',
+    'kontakt.keinMailProgramm': 'If no email app opens, copy the address and write to us from your usual email service.',
     'kontakt.telefon': 'Phone: +49 421 9899 1701',
 
     'datenschutz.inhalt': `
@@ -276,10 +276,10 @@ export default {
 
                 <h3>2. Purpose of processing and data processed</h3>
                 <p>Abo-Warner Pro only processes the data you enter yourself (subscription name, cost, category, payment dates and notice periods and, if you enter them, contract number, customer number, the provider's address and your sender details for the cancellation letter). This data is stored only locally in a file on your device (in the user-specific application data directory of your operating system). It is not transmitted to the provider or to any third party.</p>
-                <p><strong>Scan from photo (optional):</strong> Only when you tap “Scan from photo” and then “Take photo” or “Choose image” does the app open your device’s camera or image picker; only then may your device ask for permission. The image is analysed exclusively on your device (iPhone: Apple’s “Vision” text recognition, which is part of the operating system; Android: the Tesseract text recognition included in the app). It is not saved and not transmitted; temporary files are deleted after reading. The recognised details are only entered into the form as suggestions and are saved only when you tap “Save subscription” yourself. Nothing is transmitted to the provider or to any third party.</p>
+                <p><strong>Scan from photo (optional):</strong> Only when you tap “Scan from photo” and then “Take photo” or “Choose image” does the app open your device’s camera or image picker; only then may your device ask for permission. The image is analyzed exclusively on your device (iPhone: Apple’s “Vision” text recognition, which is part of the operating system; Android: the Tesseract text recognition included in the app). It is not saved and not transmitted; temporary files are deleted after reading. The recognized details are only entered into the form as suggestions and are saved only when you tap “Save subscription” yourself. Nothing is transmitted to the provider or to any third party.</p>
 
                 <h3>3. Server logs, hosting and external services</h3>
-                <p>AppVektor does not operate any server that receives data from the app; accordingly, AppVektor does not hold any server logs about your use of the app. The fonts used by the app are stored locally in the app; the app does not load any content from external servers. No analytics, tracking or advertising services are integrated. If you obtain the app from an app store (e.g. Apple App Store or Google Play), its operator processes the resulting data under its own responsibility.</p>
+                <p>AppVektor does not operate any server that receives data from the app; accordingly, AppVektor does not hold any server logs about your use of the app. The fonts used by the app are stored locally in the app; the app does not load any content from external servers. No analytics, tracking or advertising services are integrated. If you obtain the app from an app store (e.g., Apple App Store or Google Play), its operator processes the resulting data under its own responsibility.</p>
                 <p>At the very bottom of the app you will find a link to appvektor.com. If you tap it, the website opens in your device’s browser; the website’s privacy policy applies there. The app itself does not transmit any data in this process.</p>
 
                 <h3>4. No analytics and no tracking</h3>
@@ -321,23 +321,23 @@ export default {
     'hilfe.titel': 'Help',
     'hilfe.inhalt': `
                 <h3>What does the app do?</h3>
-                <p>Abo-Warner Pro keeps track of your subscriptions and contracts: what they cost, when you pay and until when you can cancel. 7 days before a cancellation deadline ends, the app reminds you with a notification, if you allow notifications. All your data stays on your phone only.</p>
+                <p>Abo-Warner Pro keeps track of your subscriptions and contracts: what they cost, when you pay and the date you can cancel by. 7 days before a cancellation deadline ends, the app reminds you with a notification, if you allow notifications. All your data stays on your phone only.</p>
 
                 <h3>How do I add a subscription?</h3>
                 <ol>
                     <li>Tap “New subscription”.</li>
-                    <li>If you like: tap “Scan from photo” and take a photo of an invoice or contract confirmation (or choose a screenshot). The app suggests the details it recognises, and you check them. The image is read only on your phone and is not saved.</li>
-                    <li>Enter the name, the cost and the billing cycle (how often you pay, e.g. monthly).</li>
+                    <li>If you like: tap “Scan from photo” and take a photo of an invoice or contract confirmation (or choose a screenshot). The app suggests the details it recognizes, and you check them. The image is read only on your phone and is not saved.</li>
+                    <li>Enter the name, the cost and the billing cycle (how often you pay, e.g., monthly).</li>
                     <li>Choose the date of the next payment.</li>
                     <li>Enter the notice period in days, weeks or months (see below).</li>
-                    <li>On a free trial? Switch on “Free trial” and choose when the trial ends. The card then shows “Trial ends on …”, and the app reminds you 3 days before.</li>
+                    <li>On a free trial? Turn on “Free trial” and choose when the trial ends. The card then shows “Trial ends on …”, and the app reminds you 3 days before.</li>
                     <li>If you like: under “More details”, enter the contract number, customer number and the provider’s address. They will then appear in your cancellation letter automatically.</li>
                     <li>Tap “Save subscription”.</li>
                 </ol>
                 <p>You can change everything later with “Edit” on the card.</p>
 
                 <h3>What does the notice period mean?</h3>
-                <p>The notice period tells you how long before the next payment your cancellation must reach the provider. You will find it in your contract. Enter it exactly as it is written there: type the number and choose days, weeks or months next to it. If it says e.g. “3 months”, choose 3 and “Months”. The app then calculates with real calendar months.</p>
+                <p>The notice period tells you how long before the next payment your cancellation must reach the provider. You will find it in your contract. Enter it exactly as it is written there: type the number and choose days, weeks or months next to it. If it says “3 months,” for example, choose 3 and “Months”. The app then calculates with real calendar months.</p>
                 <p>The app works out the date and shows it on every card: “Cancel by …”. Once that date has passed, it shows you the next possible date.</p>
 
                 <h3>What do red, yellow and green mean?</h3>
@@ -345,7 +345,7 @@ export default {
                     <li><span class="hilfe-punkt rot" aria-hidden="true"></span><strong>Red:</strong> 7 days or less until the cancellation deadline. Act now if you no longer want the subscription. At the start of these 7 days you will get a notification.</li>
                     <li><span class="hilfe-punkt gelb" aria-hidden="true"></span><strong>Yellow:</strong> 30 days or less left.</li>
                     <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Green:</strong> More than 30 days left.</li>
-                    <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Grey label “Cancelled, ends …”:</strong> The subscription has been cancelled. Until that date, the card stays in its usual place, because you are still paying until then. After that, it fades and moves to the end of the list.</li>
+                    <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Gray label “Canceled, ends …”:</strong> The subscription has been canceled. Until that date, the card stays in its usual place, because you are still paying until then. After that, it fades and moves to the end of the list.</li>
                 </ul>
 
                 <h3>Which currency are the totals in?</h3>
@@ -355,15 +355,15 @@ export default {
                 <ol>
                     <li>Tap “Cancel contract” on the card.</li>
                     <li>The app writes a ready-made cancellation letter for you. You only need to enter your name and address once.</li>
-                    <li>Copy the letter or share it as a file and send it to the provider. The app does not send anything itself. Ideally, send it in a way that gives you proof (e.g. an email with a confirmation of receipt, or a registered letter).</li>
-                    <li>Tap “Mark subscription as cancelled” and choose the end of the contract. Until then, the subscription stays in your list, because you are still paying. On the last day you will get a notification: “… ends today.”</li>
+                    <li>Copy the letter or share it as a file and send it to the provider. The app does not send anything itself. Ideally, send it in a way that gives you proof (e.g., an email with a confirmation of receipt, or certified mail).</li>
+                    <li>Tap “Mark subscription as canceled” and choose the end of the contract. Until then, the subscription stays in your list, because you are still paying. On the last day you will get a notification: “… ends today.”</li>
                 </ol>
 
                 <h3>How do I back up my data?</h3>
                 <p>Your subscriptions are stored only on this phone. If you delete the app or lose your phone, they are gone. That is why, at the very bottom under “Back up your data”, you will find:</p>
                 <ul>
-                    <li><strong>Create backup:</strong> saves all subscriptions in a file. Keep it somewhere safe, e.g. in your cloud or by emailing it to yourself.</li>
-                    <li><strong>Restore backup:</strong> reads such a file back in, e.g. on a new phone. Please note: the subscriptions on the phone will be replaced.</li>
+                    <li><strong>Create backup:</strong> saves all subscriptions in a file. Keep it somewhere safe, e.g., in your cloud or by emailing it to yourself.</li>
+                    <li><strong>Restore backup:</strong> reads such a file back in, e.g., on a new phone. Please note: the subscriptions on the phone will be replaced.</li>
                     <li><strong>Overview as PDF:</strong> a list to print or share. This is not a backup.</li>
                 </ul>
 

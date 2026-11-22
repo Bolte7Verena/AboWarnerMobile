@@ -174,7 +174,8 @@ export function baueBrief(fassung, angaben, heute) {
 
 // Beschriftung der Adressfelder, wo sie vom Grundtext der Sprache abweicht.
 const FELDER = {
-    'en-US': { feldPlzOrt: 'City, state and ZIP code', feldPlzOrtPlatzhalter: 'Sample City, ST 12345', platzhalterPlzOrt: '[City, state and ZIP code]' },
+    // Grundtext Englisch ist amerikanisch (src/i18n/en.js)
+    'en-GB': { feldPlzOrt: 'Town and postcode', feldPlzOrtPlatzhalter: 'Sample Town AB1 2CD', platzhalterPlzOrt: '[Town and postcode]' },
     'pt-PT': { feldPlzOrt: 'Código postal e localidade', feldPlzOrtPlatzhalter: '1234-567 Localidade', platzhalterPlzOrt: '[Código postal e localidade]' }
 };
 
