@@ -193,6 +193,25 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] Kündigungsschreiben von Muttersprachlern gegenlesen lassen (alle außer Deutsch; am dringendsten pt-PT, fr-FR, es-LA). Vorlage: store-screenshots/kuendigungsschreiben-pruefen.md (nur lokal)
 - [ ] Kurse vor jedem Update auffrischen (src/waehrungen.js)
 
+**Paket 9 – Amerikanisches Englisch und Fehlersuche (22.11.2026)**
+
+- [x] Englische App-Fassung in amerikanischer Schreibweise (canceled, recognized, Telecom …); britische Geräte behalten „Town and postcode“
+- [x] Karte: „1 Tag bis Zahlung“ statt „1 Tage“ (5 Sprachen)
+- [x] Bleibt die App über Mitternacht offen, werden Termine und Erinnerungen beim Zurückkehren erneuert
+- [x] Doppeltes Tippen auf „Speichern“ legt ein Abo nur einmal an
+- [x] Eigene Kategorie aus einer Sicherung bleibt beim Bearbeiten erhalten (wurde vorher zu „Streaming“)
+- [x] Sonderzeichen wie „&copy“ im Namen bleiben beim Bearbeiten unverändert
+- [x] Unmögliche Beträge (unendlich, „1.2.3“) werden abgelehnt; ein kaputter Betrag macht die Summe nicht mehr leer
+- [x] Frist „1e3“ wird als 1000 gelesen statt als 1
+- [x] Sehr lange Namen: Dateiname des Schreibens gekürzt (Teilen schlug sonst fehl), Titel im Brief-Fenster bricht um
+- [x] Sehr große Summen und PDF-Beträge werden kleiner geschrieben statt abgeschnitten; PDF kennt œ, ™, š, ž
+- [x] Fehlermeldung im Formular verschwindet nach dem Schließen
+- [x] Fremde Angaben in einer Sicherungsdatei (Turnus „constructor“) können die App nicht mehr aufhängen
+- [ ] Entscheidung: Gerätesicherung (iCloud/Google) auch im Datenschutztext IN der App nennen oder auf Android abschalten (allowBackup)
+- [ ] Entscheidung: abos.json zusätzlich als zweite Kopie speichern (ist die Datei beschädigt, startet die App heute leer und überschreibt sie beim nächsten Speichern)
+- [ ] Offen: drei Nachkommastellen (KWD, TND): „1.250“ wird als 1250 gelesen; Beträge mit Währungszeichen davor („€12“) werden abgelehnt; Hinweis fehlt, wenn das Speichern selbst scheitert (Speicher voll)
+- [ ] Englischer Text in der App: von Muttersprachler (USA) gegenlesen lassen
+
 **Geprüft**
 - [x] Keine Daten verlassen das Handy, kein Analytics-, Tracking- oder Werbe-SDK (14.11.2026)
 - [x] Android-App ohne Internet-, Kamera- und Foto-Berechtigung
@@ -210,7 +229,8 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] Screenshots ansehen und freigeben (Jens, Kira)
 - [x] Store-Texte in 5 Sprachen auf Stand 2.0.2 vorbereitet, mit Änderungsliste (22.11.2026, store-assets/store-texte.md, nicht hochgeladen)
 - [ ] Store-Texte freigeben (Jens, Kira), ES/FR/PT gegenlesen lassen
-- [ ] Datenschutzseite auf abo-warner-pro.com anpassen (neue Felder, Foto-Funktion, Link zu appvektor.com) – anderes Projekt
+- [x] Datenschutzseite auf abo-warner-pro.com in 5 Sprachen auf Stand 2.0.2 (neue Felder, Foto-Funktion, Link zu appvektor.com, Gerätesicherung; veröffentlicht 22.11.2026, Commit f35d757)
+- [x] Play Console Datensicherheit geprüft (22.11.2026): „keine Daten erhoben, keine geteilt“ passt weiter; in der Console selbst noch von Jens zu vergleichen
 - [ ] Hinweis an Apple in den Prüfnotizen (Link zu appvektor.com, in der App wird nichts verkauft)
 - [ ] Anleitung für Tester, wie man ein Abo richtig einträgt
 - [ ] Gesperrte Dateien vom alten Rechner bereinigen (ios/App/App.xcodeproj/project.pbxproj, android/build/reports/problems/problems-report.html) – als Administrator löschen, dann project.pbxproj mit `git checkout` wiederherstellen
