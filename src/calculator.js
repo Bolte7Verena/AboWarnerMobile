@@ -87,6 +87,14 @@ export function formatiereDatumDE(datum) {
 // abo.kuendigungsfristAnzahl. Fehlen sie, gilt die Frist in Tagen.
 export const FRIST_EINHEITEN = ['tage', 'wochen', 'monate'];
 
+// Höchstwert bei der Eingabe: 10 Jahre. Längere Fristen gibt es bei Abos und
+// Verträgen nicht; ein Tippfehler (999999999 Tage) wird so sofort bemerkt.
+export const MAX_FRIST = { tage: 3650, wochen: 520, monate: 120 };
+
+export function istFristZuLang(anzahl, einheit) {
+    return Number(anzahl) > (MAX_FRIST[einheit] || MAX_FRIST.tage);
+}
+
 // Liefert die Frist so, wie der Nutzer sie eingetragen hat: { anzahl, einheit }.
 export function ermittleFristAngabe(abo) {
     const einheit = abo.kuendigungsfristEinheit;
@@ -201,7 +209,11 @@ export const WARNSCHWELLE_TAGE = 30;
 // Bei ungültigen Daten 'sicher' (kein Fehlalarm, kein Absturz).
 export function ermittleFristStatus(abo, heute = new Date()) {
     const handlung = ermittleHandlungsDatum(abo, heute);
-    if (!handlung) return 'sicher';
+    if (!handlung) {
+        // Alte Daten mit unsinnig langer Frist: nicht als "sicher" (grün) anzeigen.
+        const { anzahl, einheit } = ermittleFristAngabe(abo);
+        return istFristZuLang(anzahl, einheit) ? 'warnung' : 'sicher';
+    }
     const stichtag = parseDatumISO(heute);
     const tageBisFrist = Math.round((handlung.datum - stichtag) / (1000 * 60 * 60 * 24));
     if (tageBisFrist <= KRITISCH_SCHWELLE_TAGE) return 'kritisch';

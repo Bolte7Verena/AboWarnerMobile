@@ -4,7 +4,7 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, FRIST_EINHEITEN, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, parseFristAnzahl, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
+import { Calculator, FRIST_EINHEITEN, MAX_FRIST, istFristZuLang, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, parseFristAnzahl, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { t, tAnzahl, tWert, formatiereDatum, formatiereZahlEingabe, formatiereBetrag } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
@@ -193,7 +193,9 @@ function erzeugeStatusText(abo, status) {
     }
     if (istProbezeitLaufend(abo)) return t('karte.probeEndet', { datum: formatiereDatum(abo.probeEndeAm) });
     const frist = ermittleKuendigungsfrist(abo);
-    return frist ? t('karte.moeglichBis', { datum: formatiereDatum(frist.fristDatum) }) : t(`status.${status}`);
+    if (frist) return t('karte.moeglichBis', { datum: formatiereDatum(frist.fristDatum) });
+    const { anzahl, einheit } = ermittleFristAngabe(abo);
+    return istFristZuLang(anzahl, einheit) ? t('karte.fristPruefen') : t(`status.${status}`);
 }
 
 // Zeile unter dem Preis. Bei gekündigten Abos, deren Vertragsende vor der
@@ -370,6 +372,12 @@ function erzeugeAboBearbeitenFormular(abo) {
             <p class="edit-fehler" aria-live="polite"></p>
         </form>
     `;
+}
+
+// Fehlertext zu einer Eingabe oder '' wenn alles stimmt.
+function eingabeFehler(abo, fristAnzahl, fristEinheit) {
+    if (istFristZuLang(fristAnzahl, fristEinheit)) return t('feld.fehlerFrist', { max: tAnzahl(`frist.${fristEinheit}`, MAX_FRIST[fristEinheit]) });
+    return Calculator.istGueltig(abo) ? '' : t('feld.fehler');
 }
 
 // Probeabo-Felder zum Speichern. Schalter aus: Felder entfallen (undefined
@@ -569,8 +577,9 @@ function zeigeBearbeitenModus(kachel, abo) {
             if (gekuendigtZum) aktualisiertesAbo.gekuendigtZum = gekuendigtZum;
         }
 
-        if (!Calculator.istGueltig(aktualisiertesAbo)) {
-            if (fehlerEl) fehlerEl.textContent = t('feld.fehler');
+        const fehler = eingabeFehler(aktualisiertesAbo, parseFristAnzahl(feld('fristAnzahl')), feld('fristEinheit'));
+        if (fehler) {
+            if (fehlerEl) fehlerEl.textContent = fehler;
             return;
         }
 
@@ -731,8 +740,9 @@ async function speichereNeuesAbo() {
     // in Electron ein echtes, synchrones OS-Dialogfenster, das die gesamte
     // Renderer-Oberfläche einfriert, solange es offen ist — landet es unauffällig
     // im Hintergrund, wirkt die komplette App wie "tot", obwohl sie nur wartet.
-    if (!Calculator.istGueltig(neuesAbo)) {
-        if (fehlerEl) fehlerEl.textContent = t('feld.fehler');
+    const fehler = eingabeFehler(neuesAbo, parseFristAnzahl(document.getElementById('input-frist').value), document.getElementById('input-frist-einheit').value);
+    if (fehler) {
+        if (fehlerEl) fehlerEl.textContent = fehler;
         return false;
     }
 

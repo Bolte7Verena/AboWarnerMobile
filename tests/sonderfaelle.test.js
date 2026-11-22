@@ -5,7 +5,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Calculator, MAX_BETRAG, TURNUS_MONATE, naechsteZahlungAb, parseBetrag, parseFristAnzahl } from '../src/calculator.js';
+import { Calculator, MAX_BETRAG, MAX_FRIST, istFristZuLang, ermittleFristStatus, ermittleKuendigungsfrist, erzeugeFristFelder, TURNUS_MONATE, naechsteZahlungAb, parseBetrag, parseFristAnzahl } from '../src/calculator.js';
 import { normalisiereWaehrung, rechneUm } from '../src/waehrungen.js';
 import { pruefeSicherung } from '../src/sicherung.js';
 import { zuDateiSicheremNamen } from '../src/kuendigungsschreiben.js';
@@ -42,6 +42,23 @@ test('Frist-Eingabe: 1e3 ist 1000, leer und Text sind ungültig', () => {
     assert.equal(parseFristAnzahl('2.5'), 2);
     assert.equal(parseFristAnzahl('0'), 0);
     for (const wert of ['', '  ', 'abc', null, undefined]) assert.ok(isNaN(parseFristAnzahl(wert)), String(wert));
+});
+
+test('Frist: höchstens 10 Jahre, genau am Höchstwert noch erlaubt und berechenbar', () => {
+    for (const [einheit, max] of Object.entries(MAX_FRIST)) {
+        assert.equal(istFristZuLang(max, einheit), false, einheit);
+        assert.equal(istFristZuLang(max + 1, einheit), true, einheit);
+        for (const turnus of Object.keys(TURNUS_MONATE)) assert.ok(ermittleKuendigungsfrist({ ...abo, turnus, ...erzeugeFristFelder(max, einheit) }), `${einheit} ${turnus}`);
+    }
+    assert.equal(istFristZuLang(999999999, 'tage'), true);
+    assert.equal(istFristZuLang(Infinity, 'monate'), true);
+    assert.equal(istFristZuLang(NaN, 'tage'), false, 'leer meldet istGueltig');
+});
+
+test('Alte Daten mit unsinniger Frist: nicht grün, Sicherung bleibt einlesbar', () => {
+    const alt = { ...abo, kuendigungsfristTage: 999999999 };
+    assert.equal(ermittleFristStatus(alt), 'warnung');
+    assert.equal(pruefeSicherung(JSON.stringify([alt])).ok, true);
 });
 
 test('Mehrdeutige Beträge werden nicht geraten', () => {
