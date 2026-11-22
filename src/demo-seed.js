@@ -64,7 +64,8 @@ const DEMO_ABOS = [
 function inTagen(tage) {
     const datum = new Date();
     datum.setDate(datum.getDate() + tage);
-    return datum.toISOString().slice(0, 10);
+    // Lokales Datum (toISOString wäre UTC und damit je nach Zeitzone ein Tag daneben)
+    return `${datum.getFullYear()}-${String(datum.getMonth() + 1).padStart(2, '0')}-${String(datum.getDate()).padStart(2, '0')}`;
 }
 
 export async function seedDemoDatenFallsNoetig() {

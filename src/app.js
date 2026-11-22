@@ -78,6 +78,7 @@ function berechneTageBisZahlung(datum) {
     const heute = new Date();
     heute.setHours(0, 0, 0, 0);
     const ziel = new Date(datum);
+    ziel.setHours(0, 0, 0, 0);
     return Math.round((ziel - heute) / (1000 * 60 * 60 * 24));
 }
 

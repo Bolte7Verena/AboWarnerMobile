@@ -24,7 +24,10 @@ export const TURNUS_MONATE = {
 export function ermittleEffektivesZahlungsdatum(naechsteZahlung, turnus) {
     const heute = new Date();
     heute.setHours(0, 0, 0, 0);
-    const datum = new Date(naechsteZahlung);
+    // Reine Datumstexte ("2027-01-15") immer als LOKALES Datum lesen. new Date(...)
+    // nähme UTC-Mitternacht an: in Amerika wäre das der Vortag (15.01. -> 14.01.).
+    const nurDatum = typeof naechsteZahlung === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(naechsteZahlung.trim());
+    const datum = nurDatum ? parseDatumISO(naechsteZahlung) : new Date(naechsteZahlung);
     const monate = TURNUS_MONATE[turnus] || 1;
 
     while (datum < heute) {
