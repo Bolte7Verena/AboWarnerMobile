@@ -179,7 +179,9 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Zweiter Test auf dem S20 FE mit Stand 22.11.2026 18:53 0106b2a: fast alles in Ordnung, vier Punkte in Paket 12
 - [x] Neue Test-APK mit sichtbarem Stand in der Fußzeile: G:\AboWarnerMobile\builds\AWP-Test-2026-11-22-1853.apk
 - [x] Test-APK Paket 12: G:\AboWarnerMobile\builds\AWP-Test-2026-11-22-2048.apk
-- [ ] Test-APK Paket 12 auf Jens' Handy prüfen (easybell-Rechnung, Schreiben, Euro auf Portugiesisch, PDF-Übersicht mit Ł)
+- [x] Dritter Test auf dem S20 FE mit Stand 22.11.2026 20:48 b490034: Vertragspartner, Schreiben, Erinnerung, Gekündigt-Anzeige in Ordnung; ein Punkt (Meldung bei fehlender Frist) in Paket 13
+- [x] Test-APK Paket 13: G:\AboWarnerMobile\builds\AWP-Test-2026-11-22-2118.apk
+- [ ] Test-APK Paket 13 auf Jens' Handy prüfen
 
 **Paket 8 – Andere Länder (22.11.2026)**
 - [x] Terminfehler Amerika behoben: Zahlungs- und Kündigungstermine nicht mehr einen Tag zu früh (nur update-2.0.2, nicht in 2.0.1; gespeicherte Daten waren immer richtig)
@@ -249,6 +251,14 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Tipp im Schreiben: Einzahl und Mehrzahl, Aufzählung mit „und“ (5 Sprachen)
 - [x] Portugiesisch: Euro hinten („6,99 €“), Real vorn („R$ 6,99“); auf brasilianischen Geräten Euro landesüblich „€ 6,99“
 - [x] PDF-Übersicht: Ł, Ş, Kyrillisch, Japanisch, Hebräisch und Emoji werden gezeichnet statt „?“ (dann Text in der PDF nicht markierbar); Emoji werden beim Kürzen nicht zerschnitten
+
+**Paket 13 – Pflichtfelder**
+
+- [x] Meldung nennt genau das fehlende oder falsche Feld, steht direkt am Feld und unter dem Knopf, Feld rot markiert, App scrollt hin; gilt für Neues Abo und Bearbeiten (5 Sprachen). Bei mehreren Feldern werden alle genannt
+- [x] Markierung verschwindet, sobald das Feld geändert, per Kalender gewählt oder vom Foto ausgefüllt wird
+- [x] Frist mit Nachkommastellen („2.5“) wird gemeldet statt still abgeschnitten
+- [ ] Entscheidung: eigene Auswahl „jederzeit kündbar“ (Einschätzung liegt vor, noch nichts geändert)
+- [ ] Offen: Frist 0 und Zahlung heute: vorgeschlagenes Vertragsende ist der Vortag (gehört zur Entscheidung „jederzeit kündbar“)
 
 **Geprüft**
 - [x] Keine Daten verlassen das Handy, kein Analytics-, Tracking- oder Werbe-SDK (14.11.2026)
