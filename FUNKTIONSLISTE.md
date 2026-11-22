@@ -189,7 +189,8 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Jahressumme nicht mehr aus dem gerundeten Monat gerechnet
 - [x] Kündigungsschreiben je Land: Deutsch, Englisch (GB, USA), Spanisch (Spanien, Lateinamerika), Französisch (Frankreich, Belgien, Schweiz, Kanada), Portugiesisch (Brasilien, Portugal)
 - [x] Französisch „jusqu’au“ statt „avant le“
-- [ ] Kündigungsschreiben von Muttersprachlern gegenlesen lassen (alle außer Deutsch; am dringendsten pt-PT, fr-FR, es-LA)
+- [x] Monatsende: Zahlungen am 29., 30. oder 31. landen in kurzen Monaten am Monatsletzten und danach wieder am richtigen Tag (nur update-2.0.2)
+- [ ] Kündigungsschreiben von Muttersprachlern gegenlesen lassen (alle außer Deutsch; am dringendsten pt-PT, fr-FR, es-LA). Vorlage: store-screenshots/kuendigungsschreiben-pruefen.md (nur lokal)
 - [ ] Kurse vor jedem Update auffrischen (src/waehrungen.js)
 
 **Geprüft**
@@ -205,11 +206,10 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] Erkennungsqualität Tesseract auf Jens' Android-Handy testen
 - [ ] Übersetzungen ES/FR/PT: Bedeutung prüfen (Kira anhand von Screenshots), Gegenleser optional später
 - [ ] Versionsnummer auf 2.0.2 setzen (erst kurz vor Einreichung)
-- [x] Store-Screenshots erzeugt: 135 Bilder, 5 Sprachen, iPhone 6,9 und 6,3 Zoll, iPad 13 Zoll, Google Play (22.11.2026 neu nach den Korrekturen, Ordner store-screenshots, nur lokal, nicht auf GitHub und nicht hochgeladen)
+- [x] Store-Screenshots erzeugt: 135 Bilder, 5 Sprachen, iPhone 6,9 und 6,3 Zoll, iPad 13 Zoll, Google Play (22.11.2026; DE/ES/FR mit Euro, EN mit Dollar im US-Format, PT mit Real; Ordner store-screenshots, nur lokal, nicht auf GitHub und nicht hochgeladen)
 - [ ] Screenshots ansehen und freigeben (Jens, Kira)
-- [ ] Store-Texte: Währung anpassen (Hauptwährung, Richtkurse „ca.“; Hinweis „keine Umrechnung“ in store-texte.md streichen)
-- [ ] Fehler Monatsende: Zahlung am 31. rutscht in kurzen Monaten auf den 1. bis 3. des Folgemonats (auch in 2.0.1)
-- [ ] Store-Texte Englisch, Spanisch, Französisch, Portugiesisch (schreibt Kira)
+- [x] Store-Texte in 5 Sprachen auf Stand 2.0.2 vorbereitet, mit Änderungsliste (22.11.2026, store-assets/store-texte.md, nicht hochgeladen)
+- [ ] Store-Texte freigeben (Jens, Kira), ES/FR/PT gegenlesen lassen
 - [ ] Datenschutzseite auf abo-warner-pro.com anpassen (neue Felder, Foto-Funktion, Link zu appvektor.com) – anderes Projekt
 - [ ] Hinweis an Apple in den Prüfnotizen (Link zu appvektor.com, in der App wird nichts verkauft)
 - [ ] Anleitung für Tester, wie man ein Abo richtig einträgt
