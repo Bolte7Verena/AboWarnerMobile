@@ -151,7 +151,7 @@ export default {
     'daten.erstellen': 'Create backup',
     'daten.wiederherstellen': 'Restore backup',
     'daten.pdf': 'Overview as PDF',
-    'daten.pdfText': 'A list of all your subscriptions to print or share. This is not a backup — to restore your data later, please use “Create backup”.',
+    'daten.pdfText': 'A list of all your subscriptions, only for reading, printing or sharing. This is not a backup: nothing can be restored from the PDF. To be able to restore your data, please use “Create backup”.',
     'daten.erstellt': 'Backup created: {pfad}',
     'daten.erstellenFehler': 'Backup failed — please try again.',
     'daten.zuGross': 'This file is too large to be an Abo-Warner backup. Your existing subscriptions remain unchanged.',
@@ -173,6 +173,7 @@ export default {
     'sicherung.nichtsGeaendert': 'Your existing subscriptions remain unchanged.',
     'sicherung.leer': 'The file is empty.',
     'sicherung.zuGross': 'This file is too large to be an Abo-Warner backup.',
+    'sicherung.istPdf': 'This is a PDF. Nothing can be restored from it. Please choose the file from “Create backup” (ending in .json).',
     'sicherung.unlesbar': 'This file is not an Abo-Warner backup (content cannot be read).',
     'sicherung.fremd': 'This file is not an Abo-Warner backup.',
     'sicherung.keineAbos': 'The backup does not contain any subscriptions.',
@@ -213,7 +214,7 @@ export default {
     'brief.schreiben': 'Your letter',
     'brief.schreibenHinweis': '(you can still adjust it here)',
     'brief.kopieren': 'Copy to clipboard',
-    'brief.teilen': 'Share as file',
+    'brief.teilen': 'Share as PDF',
     'brief.markieren': 'Mark subscription as canceled',
     'brief.kopiert': 'Copied to clipboard.',
     'brief.kopierenFehler': 'Copying failed — please select and copy the text manually.',
@@ -378,16 +379,16 @@ export default {
                 <ol>
                     <li>Tap “Cancel contract” on the card.</li>
                     <li>The app writes a ready-made cancellation letter for you. You only need to enter your name and address once.</li>
-                    <li>Copy the letter or share it as a file and send it to the provider. The app does not send anything itself. Ideally, send it in a way that gives you proof (e.g., an email with a confirmation of receipt, or certified mail).</li>
+                    <li>Copy the letter or share it as a PDF and send it to the provider. The app does not send anything itself. Ideally, send it in a way that gives you proof (e.g., an email with a confirmation of receipt, or certified mail).</li>
                     <li>Tap “Mark subscription as canceled” and choose the end of the contract. Until then, the subscription stays in your list, because you are still paying. On the last day you will get a notification: “… ends today.”</li>
                 </ol>
 
                 <h3>How do I back up my data?</h3>
                 <p>Your subscriptions are stored only on this phone. If you delete the app or lose your phone, they are gone. That is why, at the very bottom under “Back up your data”, you will find:</p>
                 <ul>
-                    <li><strong>Create backup:</strong> saves all subscriptions in a file. Keep it somewhere safe, e.g., in your cloud or by emailing it to yourself.</li>
-                    <li><strong>Restore backup:</strong> reads such a file back in, e.g., on a new phone. Please note: the subscriptions on the phone will be replaced.</li>
-                    <li><strong>Overview as PDF:</strong> a list to print or share. This is not a backup.</li>
+                    <li><strong>Create backup:</strong> saves all subscriptions in a file (ending in .json). Only this file can be used to restore them. Keep it somewhere safe, e.g., in your cloud or by emailing it to yourself.</li>
+                    <li><strong>Restore backup:</strong> reads exactly this file back in, e.g., on a new phone. Please note: the subscriptions on the phone will be replaced.</li>
+                    <li><strong>Overview as PDF:</strong> a list only for reading, printing or sharing. This is not a backup: nothing can be restored from the PDF.</li>
                 </ul>
 
                 <h3>Any questions?</h3>

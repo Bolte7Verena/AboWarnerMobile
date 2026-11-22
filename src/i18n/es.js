@@ -147,7 +147,7 @@ export default {
     'daten.erstellen': 'Crear copia de seguridad',
     'daten.wiederherstellen': 'Restaurar copia de seguridad',
     'daten.pdf': 'Resumen en PDF',
-    'daten.pdfText': 'Una lista de todas tus suscripciones para imprimir o compartir. No es una copia de seguridad: para restaurar tus datos más adelante, usa «Crear copia de seguridad».',
+    'daten.pdfText': 'Una lista de todas tus suscripciones, solo para leer, imprimir o compartir. No es una copia de seguridad: con el PDF no se puede restaurar nada. Para poder restaurar tus datos, usa «Crear copia de seguridad».',
     'daten.erstellt': 'Copia de seguridad creada: {pfad}',
     'daten.erstellenFehler': 'No se pudo crear la copia de seguridad. Inténtalo de nuevo.',
     'daten.zuGross': 'Este archivo es demasiado grande para ser una copia de seguridad de Abo-Warner. Tus suscripciones actuales no se han modificado.',
@@ -169,6 +169,7 @@ export default {
     'sicherung.nichtsGeaendert': 'Tus suscripciones actuales no se han modificado.',
     'sicherung.leer': 'El archivo está vacío.',
     'sicherung.zuGross': 'Este archivo es demasiado grande para ser una copia de seguridad de Abo-Warner.',
+    'sicherung.istPdf': 'Esto es un PDF. Con él no se puede restaurar nada. Elige el archivo de «Crear copia de seguridad» (termina en .json).',
     'sicherung.unlesbar': 'Este archivo no es una copia de seguridad de Abo-Warner (no se puede leer el contenido).',
     'sicherung.fremd': 'Este archivo no es una copia de seguridad de Abo-Warner.',
     'sicherung.keineAbos': 'La copia de seguridad no contiene suscripciones.',
@@ -209,7 +210,7 @@ export default {
     'brief.schreiben': 'Tu carta',
     'brief.schreibenHinweis': '(aquí todavía puedes modificarla)',
     'brief.kopieren': 'Copiar al portapapeles',
-    'brief.teilen': 'Compartir como archivo',
+    'brief.teilen': 'Compartir como PDF',
     'brief.markieren': 'Marcar suscripción como cancelada',
     'brief.kopiert': 'Copiado al portapapeles.',
     'brief.kopierenFehler': 'No se pudo copiar. Selecciona el texto y cópialo a mano.',
@@ -374,16 +375,16 @@ export default {
                 <ol>
                     <li>Toca «Cancelar contrato» en la tarjeta.</li>
                     <li>La app te prepara una carta de cancelación lista para enviar. Tu nombre y tu dirección solo tienes que introducirlos una vez.</li>
-                    <li>Copia la carta o compártela como archivo y envíasela al proveedor. La app no envía nada por sí misma. Lo mejor es enviarla de forma que tengas un justificante (p. ej. un correo con acuse de recibo o una carta certificada).</li>
+                    <li>Copia la carta o compártela como PDF y envíasela al proveedor. La app no envía nada por sí misma. Lo mejor es enviarla de forma que tengas un justificante (p. ej. un correo con acuse de recibo o una carta certificada).</li>
                     <li>Toca «Marcar suscripción como cancelada» y elige el fin del contrato. Hasta entonces, la suscripción se queda en la lista, porque sigues pagando. El último día recibirás una notificación: «… termina hoy.»</li>
                 </ol>
 
                 <h3>¿Cómo protejo mis datos?</h3>
                 <p>Tus suscripciones solo están guardadas en este móvil. Si borras la app o pierdes el móvil, desaparecen. Por eso, al final, en «Proteger tus datos», encontrarás:</p>
                 <ul>
-                    <li><strong>Crear copia de seguridad:</strong> guarda todas las suscripciones en un archivo. Guárdalo en un lugar seguro, p. ej. en tu nube o enviándolo a tu propio correo.</li>
-                    <li><strong>Restaurar copia de seguridad:</strong> vuelve a cargar ese archivo, p. ej. en un móvil nuevo. Atención: las suscripciones del móvil se reemplazarán.</li>
-                    <li><strong>Resumen en PDF:</strong> una lista para imprimir o compartir. No es una copia de seguridad.</li>
+                    <li><strong>Crear copia de seguridad:</strong> guarda todas las suscripciones en un archivo (termina en .json). Solo con él puedes restaurarlas. Guárdalo en un lugar seguro, p. ej. en tu nube o enviándolo a tu propio correo.</li>
+                    <li><strong>Restaurar copia de seguridad:</strong> vuelve a cargar exactamente ese archivo, p. ej. en un móvil nuevo. Atención: las suscripciones del móvil se reemplazarán.</li>
+                    <li><strong>Resumen en PDF:</strong> una lista solo para leer, imprimir o compartir. No es una copia de seguridad: con el PDF no se puede restaurar nada.</li>
                 </ul>
 
                 <h3>¿Tienes preguntas?</h3>

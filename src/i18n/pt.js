@@ -147,7 +147,7 @@ export default {
     'daten.erstellen': 'Criar backup',
     'daten.wiederherstellen': 'Restaurar backup',
     'daten.pdf': 'Visão geral em PDF',
-    'daten.pdfText': 'Uma lista de todas as suas assinaturas para imprimir ou compartilhar. Isto não é um backup: para restaurar seus dados mais tarde, use “Criar backup”.',
+    'daten.pdfText': 'Uma lista de todas as suas assinaturas, apenas para ler, imprimir ou compartilhar. Isto não é um backup: não é possível restaurar nada a partir do PDF. Para poder restaurar seus dados, use “Criar backup”.',
     'daten.erstellt': 'Backup criado: {pfad}',
     'daten.erstellenFehler': 'Não foi possível criar o backup. Tente novamente.',
     'daten.zuGross': 'Este arquivo é grande demais para ser um backup do Abo-Warner. Suas assinaturas atuais não foram alteradas.',
@@ -169,6 +169,7 @@ export default {
     'sicherung.nichtsGeaendert': 'Suas assinaturas atuais não foram alteradas.',
     'sicherung.leer': 'O arquivo está vazio.',
     'sicherung.zuGross': 'Este arquivo é grande demais para ser um backup do Abo-Warner.',
+    'sicherung.istPdf': 'Isto é um PDF. Não é possível restaurar nada a partir dele. Escolha o arquivo de “Criar backup” (terminado em .json).',
     'sicherung.unlesbar': 'Este arquivo não é um backup do Abo-Warner (o conteúdo não pode ser lido).',
     'sicherung.fremd': 'Este arquivo não é um backup do Abo-Warner.',
     'sicherung.keineAbos': 'O backup não contém nenhuma assinatura.',
@@ -209,7 +210,7 @@ export default {
     'brief.schreiben': 'Sua carta',
     'brief.schreibenHinweis': '(você ainda pode ajustá-la aqui)',
     'brief.kopieren': 'Copiar para a área de transferência',
-    'brief.teilen': 'Compartilhar como arquivo',
+    'brief.teilen': 'Compartilhar em PDF',
     'brief.markieren': 'Marcar assinatura como cancelada',
     'brief.kopiert': 'Copiado para a área de transferência.',
     'brief.kopierenFehler': 'Não foi possível copiar. Selecione o texto e copie-o manualmente.',
@@ -374,16 +375,16 @@ export default {
                 <ol>
                     <li>Toque em “Cancelar contrato” no cartão.</li>
                     <li>O app escreve para você uma carta de cancelamento pronta. Seu nome e seu endereço você só precisa informar uma vez.</li>
-                    <li>Copie a carta ou compartilhe-a como arquivo e envie-a ao fornecedor. O app não envia nada sozinho. O ideal é enviar de forma que você tenha um comprovante (por exemplo, um e-mail com confirmação de recebimento ou uma carta registrada).</li>
+                    <li>Copie a carta ou compartilhe-a em PDF e envie-a ao fornecedor. O app não envia nada sozinho. O ideal é enviar de forma que você tenha um comprovante (por exemplo, um e-mail com confirmação de recebimento ou uma carta registrada).</li>
                     <li>Toque em “Marcar assinatura como cancelada” e escolha o fim do contrato. Até lá, a assinatura fica na lista, porque você ainda paga. No último dia você recebe uma notificação: “… termina hoje.”</li>
                 </ol>
 
                 <h3>Como protejo meus dados?</h3>
                 <p>Suas assinaturas ficam salvas apenas neste celular. Se você apagar o app ou perder o celular, elas se perdem. Por isso, bem no final, em “Proteger seus dados”, você encontra:</p>
                 <ul>
-                    <li><strong>Criar backup:</strong> salva todas as assinaturas em um arquivo. Guarde-o em um lugar seguro, por exemplo, na sua nuvem ou enviando-o para o seu próprio e-mail.</li>
-                    <li><strong>Restaurar backup:</strong> carrega esse arquivo de novo, por exemplo, em um celular novo. Atenção: as assinaturas do celular serão substituídas.</li>
-                    <li><strong>Visão geral em PDF:</strong> uma lista para imprimir ou compartilhar. Não é um backup.</li>
+                    <li><strong>Criar backup:</strong> salva todas as assinaturas em um arquivo (terminado em .json). Só com ele é possível restaurá-las. Guarde-o em um lugar seguro, por exemplo, na sua nuvem ou enviando-o para o seu próprio e-mail.</li>
+                    <li><strong>Restaurar backup:</strong> carrega exatamente esse arquivo de novo, por exemplo, em um celular novo. Atenção: as assinaturas do celular serão substituídas.</li>
+                    <li><strong>Visão geral em PDF:</strong> uma lista apenas para ler, imprimir ou compartilhar. Não é um backup: não é possível restaurar nada a partir do PDF.</li>
                 </ul>
 
                 <h3>Ainda tem dúvidas?</h3>

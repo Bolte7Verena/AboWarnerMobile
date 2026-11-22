@@ -107,6 +107,7 @@ export class PdfDokument {
         this.hoehe = hoehe;
         this.titel = titel;
         this.seiten = [];
+        this.bilder = []; // JPEG-Bilder ganzer Seiten (siehe bild)
     }
 
     neueSeite() {
@@ -164,6 +165,12 @@ export class PdfDokument {
         this.aktuelleSeite().push(`${farbe(fuellfarbe)} rg ${zahl(x)} ${zahl(this.hoehe - y - h)} ${zahl(w)} ${zahl(h)} re f`);
     }
 
+    // Setzt ein JPEG (Binärtext, ein Zeichen je Byte) auf die aktuelle Seite.
+    bild(jpeg, x, y, w, h, pixelBreite, pixelHoehe) {
+        this.bilder.push({ jpeg, pixelBreite, pixelHoehe });
+        this.aktuelleSeite().push(`q ${zahl(w)} 0 0 ${zahl(h)} ${zahl(x)} ${zahl(this.hoehe - y - h)} cm /B${this.bilder.length} Do Q`);
+    }
+
     // Erzeugt die fertige PDF-Datei als Uint8Array (reines ASCII).
     erzeuge() {
         if (this.seiten.length === 0) this.neueSeite();
@@ -175,11 +182,21 @@ export class PdfDokument {
         const f1 = neu('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
         const f2 = neu('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
 
+        // Hex-kodiert, damit die Datei reines ASCII bleibt.
+        const bildRefs = this.bilder.map(({ jpeg, pixelBreite, pixelHoehe }) => {
+            let hex = '';
+            for (let i = 0; i < jpeg.length; i++) hex += jpeg.charCodeAt(i).toString(16).padStart(2, '0');
+            hex += '>';
+            return neu(`<< /Type /XObject /Subtype /Image /Width ${pixelBreite} /Height ${pixelHoehe} /ColorSpace /DeviceRGB /BitsPerComponent 8 `
+                + `/Filter [/ASCIIHexDecode /DCTDecode] /Length ${hex.length} >>\nstream\n${hex}\nendstream`);
+        });
+        const xobjekte = bildRefs.length > 0 ? ` /XObject << ${bildRefs.map((nr, i) => `/B${i + 1} ${nr} 0 R`).join(' ')} >>` : '';
+
         const seitenRefs = this.seiten.map((befehle) => {
             const stream = befehle.join('\n');
             const inhaltNr = neu(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
             return neu(`<< /Type /Page /Parent ${seitenNr} 0 R /MediaBox [0 0 ${this.breite} ${this.hoehe}] `
-                + `/Resources << /Font << /F1 ${f1} 0 R /F2 ${f2} 0 R >> >> /Contents ${inhaltNr} 0 R >>`);
+                + `/Resources << /Font << /F1 ${f1} 0 R /F2 ${f2} 0 R >>${xobjekte} >> /Contents ${inhaltNr} 0 R >>`);
         });
 
         objekte[katalogNr - 1] = `<< /Type /Catalog /Pages ${seitenNr} 0 R >>`;

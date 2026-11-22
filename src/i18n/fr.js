@@ -148,7 +148,7 @@ export default {
     'daten.erstellen': 'Créer une sauvegarde',
     'daten.wiederherstellen': 'Restaurer une sauvegarde',
     'daten.pdf': 'Vue d’ensemble en PDF',
-    'daten.pdfText': 'Une liste de tous vos abonnements à imprimer ou à partager. Ce n’est pas une sauvegarde : pour restaurer vos données plus tard, utilisez « Créer une sauvegarde ».',
+    'daten.pdfText': 'Une liste de tous vos abonnements, uniquement à lire, imprimer ou partager. Ce n’est pas une sauvegarde : rien ne peut être restauré à partir du PDF. Pour pouvoir restaurer vos données, utilisez « Créer une sauvegarde ».',
     'daten.erstellt': 'Sauvegarde créée : {pfad}',
     'daten.erstellenFehler': 'La sauvegarde a échoué. Veuillez réessayer.',
     'daten.zuGross': 'Ce fichier est trop volumineux pour être une sauvegarde Abo-Warner. Vos abonnements actuels restent inchangés.',
@@ -170,6 +170,7 @@ export default {
     'sicherung.nichtsGeaendert': 'Vos abonnements actuels restent inchangés.',
     'sicherung.leer': 'Le fichier est vide.',
     'sicherung.zuGross': 'Ce fichier est trop volumineux pour être une sauvegarde Abo-Warner.',
+    'sicherung.istPdf': 'Ceci est un PDF. Rien ne peut en être restauré. Choisissez le fichier créé avec « Créer une sauvegarde » (extension .json).',
     'sicherung.unlesbar': 'Ce fichier n’est pas une sauvegarde Abo-Warner (contenu illisible).',
     'sicherung.fremd': 'Ce fichier n’est pas une sauvegarde Abo-Warner.',
     'sicherung.keineAbos': 'La sauvegarde ne contient aucun abonnement.',
@@ -210,7 +211,7 @@ export default {
     'brief.schreiben': 'Votre lettre',
     'brief.schreibenHinweis': '(vous pouvez encore l’adapter ici)',
     'brief.kopieren': 'Copier dans le presse-papiers',
-    'brief.teilen': 'Partager comme fichier',
+    'brief.teilen': 'Partager en PDF',
     'brief.markieren': 'Marquer l’abonnement comme résilié',
     'brief.kopiert': 'Copié dans le presse-papiers.',
     'brief.kopierenFehler': 'La copie a échoué. Sélectionnez le texte et copiez-le manuellement.',
@@ -375,16 +376,16 @@ export default {
                 <ol>
                     <li>Touchez « Résilier » sur la carte.</li>
                     <li>L’application vous rédige une lettre de résiliation prête à l’emploi. Vous ne saisissez votre nom et votre adresse qu’une seule fois.</li>
-                    <li>Copiez la lettre ou partagez-la comme fichier et envoyez-la au prestataire. L’application n’envoie rien elle-même. Idéalement, envoyez-la de façon à avoir une preuve (p. ex. un e-mail avec accusé de réception ou une lettre recommandée).</li>
+                    <li>Copiez la lettre ou partagez-la en PDF et envoyez-la au prestataire. L’application n’envoie rien elle-même. Idéalement, envoyez-la de façon à avoir une preuve (p. ex. un e-mail avec accusé de réception ou une lettre recommandée).</li>
                     <li>Touchez « Marquer l’abonnement comme résilié » et choisissez la fin du contrat. Jusque-là, l’abonnement reste dans la liste, car vous payez encore. Le dernier jour, vous recevez une notification : « … prend fin aujourd’hui. »</li>
                 </ol>
 
                 <h3>Comment sauvegarder mes données ?</h3>
                 <p>Vos abonnements sont enregistrés uniquement sur ce téléphone. Si vous supprimez l’application ou perdez votre téléphone, ils sont perdus. C’est pourquoi vous trouverez tout en bas, sous « Sauvegarder vos données » :</p>
                 <ul>
-                    <li><strong>Créer une sauvegarde :</strong> enregistre tous les abonnements dans un fichier. Conservez-le en lieu sûr, p. ex. dans votre cloud ou en vous l’envoyant par e-mail.</li>
-                    <li><strong>Restaurer une sauvegarde :</strong> recharge un tel fichier, p. ex. sur un nouveau téléphone. Attention : les abonnements du téléphone seront remplacés.</li>
-                    <li><strong>Vue d’ensemble en PDF :</strong> une liste à imprimer ou à partager. Ce n’est pas une sauvegarde.</li>
+                    <li><strong>Créer une sauvegarde :</strong> enregistre tous les abonnements dans un fichier (extension .json). Seul ce fichier permet de les restaurer. Conservez-le en lieu sûr, p. ex. dans votre cloud ou en vous l’envoyant par e-mail.</li>
+                    <li><strong>Restaurer une sauvegarde :</strong> recharge exactement ce fichier, p. ex. sur un nouveau téléphone. Attention : les abonnements du téléphone seront remplacés.</li>
+                    <li><strong>Vue d’ensemble en PDF :</strong> une liste uniquement à lire, imprimer ou partager. Ce n’est pas une sauvegarde : rien ne peut être restauré à partir du PDF.</li>
                 </ul>
 
                 <h3>D’autres questions ?</h3>

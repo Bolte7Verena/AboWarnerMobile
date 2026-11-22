@@ -14,6 +14,7 @@
 
 import { ermittleKuendigungsfrist, istProbezeitLaufend } from './calculator.js';
 import { t, formatiereDatum } from './i18n.js';
+import { erzeugeBriefPdf } from './brief-pdf.js';
 import { aktualisiereBrief, briefBloecke, briefFassung, briefFeld, briefText } from './briefe.js';
 
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
@@ -239,9 +240,12 @@ export function oeffneKuendigungsschreibenModal(abo) {
     });
 
     overlay.querySelector('.export-schreiben-btn').addEventListener('click', async () => {
-        const dateiname = `${t('datei.schreiben')}-${zuDateiSicheremNamen(abo.name)}-${heuteIsoKompakt()}.txt`;
+        const dateiname = `${t('datei.schreiben')}-${zuDateiSicheremNamen(abo.name)}-${heuteIsoKompakt()}.pdf`;
         try {
-            const ergebnis = await window.api.exportSchreiben(textarea.value, dateiname);
+            // Genau der Text aus dem Feld, mit fetter Betreffzeile.
+            const betreff = (bloecke.find((b) => b.art === 'betreff') || { text: '' }).text.split('\n')[0];
+            const pdf = erzeugeBriefPdf(textarea.value, { titel: t('brief.titel', { name: abo.name }), fettZeilen: [betreff] });
+            const ergebnis = await window.api.exportPdf(pdf, dateiname, t('teilen.schreiben'));
             if (ergebnis.abgebrochen) {
                 copyStatus.textContent = '';
                 return;

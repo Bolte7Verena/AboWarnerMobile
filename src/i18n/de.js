@@ -149,7 +149,7 @@ export default {
     'daten.erstellen': 'Sicherung erstellen',
     'daten.wiederherstellen': 'Sicherung wiederherstellen',
     'daten.pdf': 'Übersicht als PDF',
-    'daten.pdfText': 'Eine Liste aller Abos zum Ausdrucken oder Weitergeben. Keine Sicherung — zum Wiederherstellen bitte „Sicherung erstellen“ nutzen.',
+    'daten.pdfText': 'Eine Liste aller Abos, nur zum Lesen, Ausdrucken oder Weitergeben. Keine Sicherung: Aus der PDF lässt sich nichts wiederherstellen, dafür bitte „Sicherung erstellen“ nutzen.',
     'daten.erstellt': 'Sicherung erstellt: {pfad}',
     'daten.erstellenFehler': 'Sicherung fehlgeschlagen — bitte erneut versuchen.',
     'daten.zuGross': 'Die Datei ist zu groß für eine Abo-Warner-Sicherung. Deine vorhandenen Abos bleiben unverändert.',
@@ -171,6 +171,7 @@ export default {
     'sicherung.nichtsGeaendert': 'Deine vorhandenen Abos bleiben unverändert.',
     'sicherung.leer': 'Die Datei ist leer.',
     'sicherung.zuGross': 'Die Datei ist zu groß für eine Abo-Warner-Sicherung.',
+    'sicherung.istPdf': 'Das ist eine PDF. Daraus lässt sich nichts wiederherstellen. Bitte wähle die Datei aus „Sicherung erstellen“ (Endung .json).',
     'sicherung.unlesbar': 'Diese Datei ist keine Abo-Warner-Sicherung (Inhalt nicht lesbar).',
     'sicherung.fremd': 'Diese Datei ist keine Abo-Warner-Sicherung.',
     'sicherung.keineAbos': 'Die Sicherung enthält keine Abos.',
@@ -211,7 +212,7 @@ export default {
     'brief.schreiben': 'Dein Schreiben',
     'brief.schreibenHinweis': '(kannst du hier noch anpassen)',
     'brief.kopieren': 'In Zwischenablage kopieren',
-    'brief.teilen': 'Als Datei teilen',
+    'brief.teilen': 'Als PDF teilen',
     'brief.markieren': 'Abo als gekündigt markieren',
     'brief.kopiert': 'In die Zwischenablage kopiert.',
     'brief.kopierenFehler': 'Kopieren fehlgeschlagen — bitte Text manuell markieren und kopieren.',
@@ -372,16 +373,16 @@ export default {
                 <ol>
                     <li>Tippe auf der Karte auf „Kündigen“.</li>
                     <li>Die App schreibt dir ein fertiges Kündigungsschreiben. Deinen Namen und deine Anschrift trägst du nur einmal ein.</li>
-                    <li>Kopiere das Schreiben oder teile es als Datei und schick es an den Anbieter. Die App verschickt nichts selbst. Am besten so, dass du einen Nachweis hast (z.B. E-Mail mit Eingangsbestätigung oder Einschreiben).</li>
+                    <li>Kopiere das Schreiben oder teile es als PDF und schick es an den Anbieter. Die App verschickt nichts selbst. Am besten so, dass du einen Nachweis hast (z.B. E-Mail mit Eingangsbestätigung oder Einschreiben).</li>
                     <li>Tippe auf „Abo als gekündigt markieren“ und wähle das Vertragsende. Bis dahin bleibt das Abo in der Liste, denn so lange zahlst du noch. Am letzten Tag bekommst du eine Mitteilung: „… endet heute.“</li>
                 </ol>
 
                 <h3>Wie sichere ich meine Daten?</h3>
                 <p>Deine Abos sind nur auf diesem Handy gespeichert. Wenn du die App löschst oder das Handy verlierst, sind sie weg. Deshalb ganz unten unter „Daten sichern“:</p>
                 <ul>
-                    <li><strong>Sicherung erstellen:</strong> speichert alle Abos in einer Datei. Leg sie an einem sicheren Ort ab, z.B. in deiner Cloud oder per E-Mail an dich selbst.</li>
-                    <li><strong>Sicherung wiederherstellen:</strong> liest so eine Datei wieder ein, z.B. auf einem neuen Handy. Achtung: Die Abos auf dem Handy werden dabei ersetzt.</li>
-                    <li><strong>Übersicht als PDF:</strong> eine Liste zum Ausdrucken oder Weitergeben. Das ist keine Sicherung.</li>
+                    <li><strong>Sicherung erstellen:</strong> speichert alle Abos in einer Datei (Endung .json). Nur damit kannst du sie wiederherstellen. Leg sie an einem sicheren Ort ab, z.B. in deiner Cloud oder per E-Mail an dich selbst.</li>
+                    <li><strong>Sicherung wiederherstellen:</strong> liest genau diese Datei wieder ein, z.B. auf einem neuen Handy. Achtung: Die Abos auf dem Handy werden dabei ersetzt.</li>
+                    <li><strong>Übersicht als PDF:</strong> eine Liste nur zum Lesen, Ausdrucken oder Weitergeben. Das ist keine Sicherung: Aus der PDF lässt sich nichts wiederherstellen.</li>
                 </ul>
 
                 <h3>Noch Fragen?</h3>

@@ -89,6 +89,8 @@ export function pruefeSicherung(text) {
         return fehler(t('sicherung.zuGross'));
     }
 
+    if (text.trimStart().startsWith('%PDF')) return fehler(t('sicherung.istPdf'));
+
     let daten;
     try {
         daten = JSON.parse(text.replace(/^﻿/, ''));

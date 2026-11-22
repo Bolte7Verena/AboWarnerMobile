@@ -3,7 +3,7 @@
  * der Windows-Electron-App.
  *
  * Bildet exakt dieselbe window.api-Schnittstelle nach (loadAbos/saveAbo/
- * deleteAbo/updateAbo/exportAbos/exportSchreiben/getLocaleConfig), damit
+ * deleteAbo/updateAbo/exportAbos/exportPdf/getLocaleConfig), damit
  * app.js, kuendigungsschreiben.js und index.js unverändert aus der
  * Desktop-Version übernommen werden können — nur die Implementierung
  * dahinter ist mobil-typisch (Capacitor Filesystem/Share statt Node fs/IPC).
@@ -116,19 +116,14 @@ window.api = {
     // Binärdaten erwartet Capacitor Filesystem als Base64 (ohne encoding).
     loadAbosFuerPdf: () => ladeFuerAusgabe(),
 
-    exportPdf: async (bytes, dateiname) => {
+    exportPdf: async (bytes, dateiname, titel = t('teilen.pdf')) => {
         let binaer = '';
         const BLOCK = 0x8000;
         for (let i = 0; i < bytes.length; i += BLOCK) {
             binaer += String.fromCharCode.apply(null, bytes.subarray(i, i + BLOCK));
         }
         await Filesystem.writeFile({ path: dateiname, directory: Directory.Cache, data: btoa(binaer) });
-        return teileDatei(dateiname, t('teilen.pdf'));
-    },
-
-    exportSchreiben: async (text, dateiname) => {
-        await Filesystem.writeFile({ path: dateiname, directory: Directory.Cache, data: text, encoding: Encoding.UTF8 });
-        return teileDatei(dateiname, t('teilen.schreiben'));
+        return teileDatei(dateiname, titel);
     },
 
     // "Per Foto einlesen": bildBase64 = verkleinertes JPEG (nur im Speicher),

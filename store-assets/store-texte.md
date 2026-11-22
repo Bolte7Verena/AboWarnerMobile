@@ -75,7 +75,7 @@ Abo,Abos,Kündigung,Kündigungsfrist,Vertrag,Verträge,Kosten,Erinnerung,Übersi
 Abos, Verträge und Kündigungsfristen im Blick. Alles bleibt auf deinem Gerät.
 ```
 
-**Beschreibung, beide Stores** (max. 4000, hier 1948)
+**Beschreibung, beide Stores** (max. 4000, hier 2030)
 
 ```text
 Abo-Warner Pro hilft dir, wiederkehrende Ausgaben und Kündigungsfristen im Blick zu behalten.
@@ -91,11 +91,12 @@ Das kann die App:
 • Kündigungsfrist in Tagen, Wochen oder Monaten
 • Probeabos: mit Enddatum und Erinnerung 3 Tage vorher
 • Erinnerung 7 Tage vor Ende einer Kündigungsfrist als lokale Benachrichtigung (nur, wenn du es erlaubst)
-• Kündigungsschreiben: Die App erstellt aus deinen Angaben einen fertigen Brief, den du kopieren oder teilen kannst
+• Kündigungsschreiben: Die App erstellt aus deinen Angaben einen fertigen Brief, den du kopieren oder als PDF teilen kannst
 • Gekündigte Abos bleiben bis zum Vertragsende sichtbar
 • Summen in deiner Hauptwährung. Andere Währungen werden mit festen Richtkursen umgerechnet (ca.).
 • Suchen und nach Kategorie filtern
-• Sicherung erstellen und wiederherstellen, Übersicht als PDF
+• Sicherung erstellen und wiederherstellen
+• Übersicht als PDF, nur zum Lesen und Ausdrucken (zum Wiederherstellen dient die Sicherung)
 • Auf Deutsch, Englisch, Spanisch, Französisch und Portugiesisch
 
 Datenschutz:
@@ -154,7 +155,7 @@ subscription,subscriptions,cancel,cancellation,deadline,contract,costs,reminder,
 Track subscriptions, contracts and cancellation deadlines. All on your device.
 ```
 
-**Beschreibung, beide Stores** (max. 4000, hier 1848)
+**Beschreibung, beide Stores** (max. 4000, hier 1927)
 
 ```text
 Abo-Warner Pro helps you keep track of recurring expenses and cancellation deadlines.
@@ -170,11 +171,12 @@ What the app does:
 • Notice period in days, weeks or months
 • Free trials: with an end date and a reminder 3 days before
 • A reminder 7 days before a cancellation deadline as a local notification (only if you allow it)
-• Cancellation letter: the app creates a ready-made letter from your details that you can copy or share
+• Cancellation letter: the app creates a ready-made letter from your details that you can copy or share as a PDF
 • Canceled subscriptions stay visible until the contract ends
 • Totals in your main currency. Other currencies are converted at fixed reference rates (approx.).
 • Search and filter by category
-• Create and restore backups, overview as PDF
+• Create and restore backups
+• Overview as PDF, for reading and printing only (use the backup to restore your data)
 • In English, German, Spanish, French and Portuguese
 
 Privacy:
@@ -233,7 +235,7 @@ suscripción,cancelar,contrato,gastos,recordatorio,preaviso,prueba,costes,baja,c
 Controla suscripciones, contratos y plazos de cancelación. Todo en tu móvil.
 ```
 
-**Beschreibung, beide Stores** (max. 4000, hier 1909)
+**Beschreibung, beide Stores** (max. 4000, hier 1989)
 
 ```text
 Abo-Warner Pro te ayuda a controlar los gastos periódicos y los plazos de cancelación.
@@ -249,11 +251,12 @@ Qué hace la app:
 • Plazo de preaviso en días, semanas o meses
 • Periodos de prueba: con fecha de fin y recordatorio 3 días antes
 • Recordatorio 7 días antes de que termine un plazo de cancelación, como notificación local (solo si lo permites)
-• Carta de cancelación: la app crea con tus datos una carta lista para copiar o compartir
+• Carta de cancelación: la app crea con tus datos una carta lista para copiar o compartir en PDF
 • Las suscripciones canceladas siguen visibles hasta el fin del contrato
 • Totales en tu moneda principal. Las demás monedas se convierten con tipos de cambio fijos de referencia (aprox.).
 • Buscar y filtrar por categoría
-• Crear y restaurar copias de seguridad, resumen en PDF
+• Crear y restaurar copias de seguridad
+• Resumen en PDF, solo para leer e imprimir (para restaurar sirve la copia de seguridad)
 • En español, alemán, inglés, francés y portugués
 
 Privacidad:
@@ -312,7 +315,7 @@ abonnement,résilier,contrat,dépenses,rappel,préavis,essai,coûts,échéance,f
 Abonnements, contrats et délais de résiliation. Tout reste sur votre appareil.
 ```
 
-**Beschreibung, beide Stores** (max. 4000, hier 2114)
+**Beschreibung, beide Stores** (max. 4000, hier 2188)
 
 ```text
 Abo-Warner Pro vous aide à garder un œil sur vos dépenses récurrentes et vos délais de résiliation.
@@ -328,11 +331,12 @@ Ce que fait l’application :
 • Préavis en jours, semaines ou mois
 • Périodes d’essai : avec date de fin et rappel 3 jours avant
 • Rappel 7 jours avant la fin d’un délai de résiliation, sous forme de notification locale (uniquement si vous l’autorisez)
-• Lettre de résiliation : l’application rédige à partir de vos données une lettre prête à copier ou à partager
+• Lettre de résiliation : l’application rédige à partir de vos données une lettre prête à copier ou à partager en PDF
 • Les abonnements résiliés restent visibles jusqu’à la fin du contrat
 • Totaux dans votre devise principale. Les autres devises sont converties à des taux de référence fixes (env.).
 • Rechercher et filtrer par catégorie
-• Créer et restaurer des sauvegardes, vue d’ensemble en PDF
+• Créer et restaurer des sauvegardes
+• Vue d’ensemble en PDF, uniquement à lire et à imprimer (la sauvegarde sert à restaurer)
 • En français, allemand, anglais, espagnol et portugais
 
 Confidentialité :
@@ -391,7 +395,7 @@ assinatura,cancelar,contrato,gastos,lembrete,aviso,teste,custos,mensalidade,fatu
 Controle assinaturas, contratos e prazos de cancelamento. Tudo no seu celular.
 ```
 
-**Beschreibung, beide Stores** (max. 4000, hier 1839)
+**Beschreibung, beide Stores** (max. 4000, hier 1906)
 
 ```text
 O Abo-Warner Pro ajuda você a acompanhar gastos recorrentes e prazos de cancelamento.
@@ -407,11 +411,12 @@ O que o app faz:
 • Prazo de aviso prévio em dias, semanas ou meses
 • Períodos de teste: com data de término e lembrete 3 dias antes
 • Lembrete 7 dias antes do fim de um prazo de cancelamento, como notificação local (somente se você permitir)
-• Carta de cancelamento: o app cria com os seus dados uma carta pronta para copiar ou compartilhar
+• Carta de cancelamento: o app cria com os seus dados uma carta pronta para copiar ou compartilhar em PDF
 • Assinaturas canceladas continuam visíveis até o fim do contrato
 • Totais na sua moeda principal. Outras moedas são convertidas por taxas fixas de referência (aprox.).
 • Pesquisar e filtrar por categoria
-• Criar e restaurar backup, visão geral em PDF
+• Criar e restaurar backup
+• Visão geral em PDF, apenas para ler e imprimir (para restaurar, use o backup)
 • Em português, alemão, inglês, espanhol e francês
 
 Privacidade:
