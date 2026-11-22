@@ -199,20 +199,20 @@ function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
 
     return `
         <div class="abo-top">
-            <div class="abo-left">
-                <div class="abo-icon">${ICON_WALLET}</div>
-                <div>
+            <div class="abo-icon">${ICON_WALLET}</div>
+            <div class="abo-kopf">
+                <div class="abo-zeile">
                     <div class="abo-name-row">
                         <span class="abo-name">${escapeHtml(abo.name)}</span>
                         <span class="badge ${kategorieKlasse}">${escapeHtml(tWert('kategorie', abo.kategorie))}</span>
                         ${istProbezeitLaufend(abo) ? `<span class="badge badge-probe">${escapeHtml(t('karte.probeBadge'))}</span>` : ''}
                     </div>
-                    <p class="abo-meta">${escapeHtml(tWert('turnus', abo.turnus))} | ${escapeHtml(abo.waehrung)}</p>
+                    <p class="abo-price">${escapeHtml(formatiereBetrag(abo.kosten, abo.waehrung))}</p>
                 </div>
-            </div>
-            <div class="abo-right">
-                <p class="abo-price">${escapeHtml(formatiereBetrag(abo.kosten, abo.waehrung))}</p>
-                <p class="abo-price-sub">${erzeugeZahlungsZeile(abo, effektivesZahlungsdatum)}</p>
+                <div class="abo-unterzeile">
+                    <p class="abo-meta">${escapeHtml(tWert('turnus', abo.turnus))} | ${escapeHtml(abo.waehrung)}</p>
+                    <p class="abo-price-sub">${erzeugeZahlungsZeile(abo, effektivesZahlungsdatum)}</p>
+                </div>
             </div>
         </div>
         <div class="abo-bottom">

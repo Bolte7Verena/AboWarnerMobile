@@ -162,9 +162,9 @@ export function oeffneKuendigungsschreibenModal(abo) {
                 </div>
             </details>
             ${vertragsdatenHinweis ? `<p class="vertragsdaten-hinweis">${escapeHtml(vertragsdatenHinweis)}</p>` : ''}
-            <div class="form-group">
+            <div class="form-group brief-gruppe">
                 <label>${t('brief.schreiben')} <span class="label-hinweis">${t('brief.schreibenHinweis')}</span></label>
-                <textarea class="input-control modal-letter-textarea" rows="14"></textarea>
+                <textarea class="input-control modal-letter-textarea" rows="1"></textarea>
             </div>
             <div class="modal-aktionen">
                 <button type="button" class="btn btn-primary btn-sm copy-btn">${t('brief.kopieren')}</button>
@@ -195,7 +195,18 @@ export function oeffneKuendigungsschreibenModal(abo) {
             ? t('brief.absenderKurz', { name: aktuellerAbsender.name, ort: aktuellerAbsender.plzOrt })
             : t('brief.bitteAusfuellen');
         textarea.value = erzeugeSchreibenText(abo, aktuellerAbsender);
+        passeHoeheAn();
     }
+
+    // Feld so hoch wie der Brief; reicht der Bildschirm nicht, schrumpft es per
+    // CSS (.brief-gruppe) auf den freien Platz und der Brief scrollt darin.
+    function passeHoeheAn() {
+        const scroll = textarea.scrollTop;
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight + 2}px`;
+        textarea.scrollTop = scroll;
+    }
+    textarea.addEventListener('input', passeHoeheAn);
 
     absenderFelder.forEach((feld) => feld.addEventListener('input', aktualisiereSchreiben));
     aktualisiereSchreiben();

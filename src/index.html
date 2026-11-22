@@ -218,31 +218,32 @@
                 </div>
             </div>
         </div>
-    </main>
 
-    <footer class="site-footer">
-        <div class="footer-inner">
-            <div class="footer-brand">
-                <div class="footer-brand-icon">
-                    <img src="app-icon.png" alt="Abo-Warner Pro">
+        <!-- Fußzeile scrollt mit (ab 2.0.2), damit auf dem Handy mehr Platz für die Abos bleibt. -->
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <div class="footer-brand-icon">
+                        <img src="app-icon.png" alt="Abo-Warner Pro">
+                    </div>
+                    <span class="footer-brand-name">Abo-Warner Pro</span>
+                    <span class="footer-copyright">© 2026 AppVektor</span>
                 </div>
-                <span class="footer-brand-name">Abo-Warner Pro</span>
-                <span class="footer-copyright">© 2026 AppVektor</span>
+                <div class="footer-links">
+                    <button type="button" id="btn-footer-datenschutz" class="footer-link-btn" data-i18n="fuss.datenschutz"></button>
+                    <button type="button" id="btn-footer-impressum" class="footer-link-btn" data-i18n="fuss.impressum"></button>
+                    <button type="button" id="btn-footer-kontakt" class="footer-link-btn" data-i18n="fuss.kontakt"></button>
+                </div>
             </div>
-            <div class="footer-links">
-                <button type="button" id="btn-footer-datenschutz" class="footer-link-btn" data-i18n="fuss.datenschutz"></button>
-                <button type="button" id="btn-footer-impressum" class="footer-link-btn" data-i18n="fuss.impressum"></button>
-                <button type="button" id="btn-footer-kontakt" class="footer-link-btn" data-i18n="fuss.kontakt"></button>
+            <!-- Dezenter Hinweis auf den Anbieter. Externe Links öffnet Capacitor
+                 automatisch im normalen Browser des Geräts (nicht in der App);
+                 die App selbst lädt dabei nichts und überträgt keine Daten. -->
+            <div class="footer-von">
+                <span class="footer-von-titel" data-i18n="fuss.von"></span>
+                <a href="https://appvektor.com" target="_blank" rel="noopener noreferrer">appvektor.com</a>
             </div>
-        </div>
-        <!-- Dezenter Hinweis auf den Anbieter. Externe Links öffnet Capacitor
-             automatisch im normalen Browser des Geräts (nicht in der App);
-             die App selbst lädt dabei nichts und überträgt keine Daten. -->
-        <div class="footer-von">
-            <span class="footer-von-titel" data-i18n="fuss.von"></span>
-            <a href="https://appvektor.com" target="_blank" rel="noopener noreferrer">appvektor.com</a>
-        </div>
-    </footer>
+        </footer>
+    </main>
 
     <div id="rechtliches-modal-overlay" class="modal-overlay" hidden>
         <div class="glass-strong modal-dialog rechtliches-dialog">
