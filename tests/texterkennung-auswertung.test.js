@@ -261,3 +261,30 @@ test('Heutiges oder künftiges Datum bleibt unverändert', () => {
 test('Vergangene "nächste Zahlung" (z. B. "Payment date") wird ebenfalls vorgerückt', () => {
     assert.equal(vorschlagNaechsteZahlung({ naechsteZahlung: '2026-11-03' }, 'Monatlich', HEUTE).datum, '2026-12-03');
 });
+
+test('Anschrift: Straßen und Orte mit "ust", "vat", "fax", "bic" werden erkannt', () => {
+    for (const [strasse, ort] of [
+        ['Industriestraße 5', '12345 Berlin'], ['Auguststraße 12', '12345 Musterstadt'], ['Augustinerplatz 1', '79098 Freiburg'],
+        ['Privatweg 3', '10115 Berlin'], ['Halifaxstraße 2', '52078 Aachen'], ['Bickenbacher Weg 4', '64404 Bickenbach'],
+        ['Steuerwaldstraße 9', '31137 Hildesheim'], ['Hotel am Markt 2', '10115 Berlin'], ['Rue Auguste Comte 7', '69002 Lyon']
+    ]) {
+        const e = werteTextAus(['Testfirma GmbH', strasse, ort, 'Kundennummer: K-45678']);
+        assert.equal(e.vertragspartner, `Testfirma GmbH\n${strasse}\n${ort}`, strasse);
+    }
+});
+
+test('Firmenname mit "bic"/"iban" im Wort bleibt ein Firmenname', () => {
+    assert.equal(werteTextAus(['Arabica Kaffee GmbH', 'Hauptstraße 1', '10115 Berlin']).name, 'Arabica Kaffee');
+});
+
+test('Echte Kontakt-, Bank- und Steuerzeilen beenden die Anschrift weiterhin', () => {
+    for (const zeile of [
+        'Tel. 030 123456', 'Tel 030 123456', 'Telefon: 030 1', 'Telefax 030 1', 'Teléfono: 91', 'Téléphone : 01', 'Tél. 01', 'Télécopie 01', 'Telefone: 11', 'Phone 020', 'Telephone 020', 'Mobile phone 07',
+        'Fax: 030 2', 'IBAN DE00 0000', 'BIC ABCDEF', 'USt-IdNr. DE1', 'UStIdNr: DE1', 'USt-ID DE1', 'Steuernummer 12/3', 'Steuer-Nr. 12/3', 'Umsatzsteuer-ID DE1', 'VAT No. GB1',
+        'info@example.com', 'www.example.com'
+    ]) {
+        const e = werteTextAus(['Testfirma GmbH', zeile, '10115 Berlin', 'Kundennummer: K-45678']);
+        assert.equal(e.vertragspartner, undefined, zeile);
+        assert.equal(e.name, 'Testfirma', zeile);
+    }
+});

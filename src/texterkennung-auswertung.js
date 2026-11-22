@@ -277,9 +277,11 @@ function findeMarke(text) {
 const RECHTSFORM_LANG = regex(`(?:\\s|,)(?:gmbh(?:\\s*&\\s*co\\.?\\s*kg)?|ltd\\.?|limited|llc|inc\\.?|plc|corp(?:oration)?\\.?|sarl|s\\.\\s?a\\.\\s?r\\.\\s?l\\.?|s\\.\\s?à\\s?r\\.\\s?l\\.?|ltda\\.?|eireli|b\\.\\s?v\\.|n\\.\\s?v\\.|s\\.\\s?a\\.?|s\\.\\s?l\\.?(?:u\\.?)?|s\\.\\s?a\\.\\s?s\\.?|e\\.\\s?v\\.|sociedad\\s+an(?:ó|o)nima|s\\/a)\\s*$`);
 const RECHTSFORM_KURZ = /(?:\s|,)(?:AG|SE|KG|OHG|UG(?:\s\(haftungsbeschränkt\))?|KGaA|SA|SAS|SL|SLU|BV|NV|LLC|PLC|LTD|INC|LTDA)\.?\s*$/u;
 
+const LABEL_BANK = regex(wort('iban|bic'));
+
 function istFirmenzeile(zeile) {
     if (zeile.length > 70 || zeile.length < 4) return false;
-    if (/@|www\.|https?:|iban|bic/iu.test(zeile)) return false;
+    if (/@|www\.|https?:/iu.test(zeile) || LABEL_BANK.test(zeile)) return false;
     if ((zeile.match(/\d/gu) || []).length > 3) return false;
     return RECHTSFORM_LANG.test(zeile) || RECHTSFORM_KURZ.test(zeile);
 }
@@ -293,7 +295,14 @@ const PLZ_ORT = [
     /\p{L}[\p{L}\s.-]*\s\d{4,5}$/u                  // Ort vor PLZ (z.B. Dublin 2 nicht, Sample City 12345)
 ];
 const istPlzOrt = (zeile) => PLZ_ORT.some((m) => m.test(zeile));
-const istKontaktzeile = (zeile) => /@|www\.|https?:|tel(?:efon|\.|éfono|efone)?[\s.:]|phone|fax|iban|bic|ust|vat|steuer/iu.test(zeile);
+// Kontakt-, Bank- und Steuerzeilen beenden die Anschrift. Die Kürzel gelten nur
+// als ganze Wörter: sonst gälten auch "Industriestraße" (ust), "Privatweg" (vat)
+// oder "Halifax" (fax) als Kontaktzeile und die Anschrift bliebe leer.
+const LABEL_KONTAKT = regex(wort([
+    't[eé]l(?:[eé](?:fon(?:nummer)?|fone|fono|fax|phone|copie))?', '(?:mobile|cell)?phone', 'fax',
+    'ust(?:\\s?-?\\s?id(?:\\s?-?\\s?nr)?)?', '(?:umsatz|mehrwert)?steuer(?:\\s?-?\\s?(?:nummer|nr|id(?:entifikationsnummer|entnummer|nr)?))?', 'vat'
+].join('|')));
+const istKontaktzeile = (zeile) => /@|www\.|https?:/iu.test(zeile) || LABEL_BANK.test(zeile) || LABEL_KONTAKT.test(zeile);
 
 function findeAnbieter(zeilen) {
     for (let i = 0; i < zeilen.length; i++) {
