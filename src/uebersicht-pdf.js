@@ -66,6 +66,7 @@ export function erzeugeZeile(abo, heute = new Date()) {
     if (!abo.gekuendigt) {
         const handlung = ermittleHandlungsDatum(abo, heute);
         if (handlung) kuendigungBis = formatiereDatum(handlung.datum);
+        else if (abo.jederzeitKuendbar === true) kuendigungBis = t('pdf.jederzeit');
     }
 
     let status = istProbezeitLaufend(abo, heute) ? t('pdf.probe', { datum: formatiereDatum(abo.probeEndeAm) }) : t('pdf.laeuft');

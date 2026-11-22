@@ -25,7 +25,7 @@ export function pruefeEingabe(eingabe) {
     if (!parseDatumISO(text(eingabe.naechsteZahlung))) melde('naechsteZahlung', t('fehlt.naechsteZahlung'));
 
     const frist = text(eingabe.frist) === '' ? NaN : Number(text(eingabe.frist));
-    if (text(eingabe.frist) === '') melde('frist', t('fehlt.frist'));
+    if (eingabe.fristEinheit === 'jederzeit') { /* keine Frist nötig */ } else if (text(eingabe.frist) === '') melde('frist', t('fehlt.frist'));
     else if (!Number.isInteger(frist) || frist < 0) melde('frist', t('feld.fehlerFristZahl'));
     else if (istFristZuLang(frist, eingabe.fristEinheit)) melde('frist', t('feld.fehlerFrist', { max: tAnzahl(`frist.${eingabe.fristEinheit}`, MAX_FRIST[eingabe.fristEinheit]) }));
 
@@ -49,6 +49,15 @@ export function loescheFeldFehler(formular) {
         el.removeAttribute('aria-describedby');
     });
     formular.querySelectorAll('.feld-hinweis').forEach((el) => el.remove());
+}
+
+// "Jederzeit kündbar" gewählt: Zahlenfeld ausblenden. Liefert die Funktion, die
+// nach einem Formular-Reset den Zustand angleicht.
+export function initFristAuswahl(einheitEl, anzahlEl) {
+    const gleicheAn = () => { anzahlEl.hidden = einheitEl.value === 'jederzeit'; };
+    einheitEl.addEventListener('change', gleicheAn);
+    gleicheAn();
+    return gleicheAn;
 }
 
 let laufendeNummer = 0;

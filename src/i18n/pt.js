@@ -37,6 +37,9 @@ export default {
     'karte.tageBisZahlung': '{tage} dias até o pagamento · prazo {frist}',
     'karte.tageBisZahlung.eins': '{tage} dia até o pagamento · prazo {frist}',
     'karte.laeuftHeuteAus': 'Termina hoje',
+    'karte.jederzeit': 'Cancele quando quiser',
+    'karte.vorZahlung': 'antes do próximo pagamento em {datum}',
+    'karte.heuteZahlung': 'pagamento hoje, o próximo em {datum}',
     'karte.fristPruefen': 'Verificar o prazo',
     'karte.laeuftNoch': 'Termina em {anzahl} dias',
     'karte.laeuftNoch.eins': 'Termina em {anzahl} dia',
@@ -80,6 +83,7 @@ export default {
     'einheit.tage': 'Dias',
     'einheit.wochen': 'Semanas',
     'einheit.monate': 'Meses',
+    'einheit.jederzeit': 'Cancele quando quiser',
     'frist.tage': '{anzahl} dias',
     'frist.tage.eins': '{anzahl} dia',
     'frist.wochen': '{anzahl} semanas',
@@ -195,6 +199,7 @@ export default {
     // --- Carta de cancelamento: janela ---
     'brief.titel': 'Carta de cancelamento — {name}',
     'brief.probeHinweis': 'Seu período de teste termina em <strong>{datum}</strong>. Cancele antes, senão a assinatura passa a ser cobrada.',
+    'brief.jederzeitHinweis': 'Esta assinatura pode ser cancelada a qualquer momento. Cancele antes do próximo pagamento em <strong>{datum}</strong> para que nada mais seja cobrado.',
     'brief.fristHinweis': 'Para que o cancelamento chegue a tempo, o fornecedor deve recebê-lo até <strong>{datum}</strong>.',
     'brief.absender': 'Seus dados de remetente:',
     'brief.absenderKurz': '{name}, {ort} (alterar)',
@@ -253,6 +258,7 @@ export default {
     'pdf.spalteZahlung': 'Próximo pagamento',
     'pdf.spalteKuendigung': 'Cancelar até',
     'pdf.spalteStatus': 'Status',
+    'pdf.jederzeit': 'sempre',
     'pdf.laeuft': 'ativa',
     'pdf.probe': 'Teste até {datum}',
     'pdf.gekuendigtZum': 'cancelada, termina em {datum}',
@@ -370,12 +376,13 @@ export default {
                 <h3>O que significa o prazo de aviso prévio?</h3>
                 <p>O prazo de aviso prévio indica com quanta antecedência ao próximo pagamento o seu cancelamento precisa chegar ao fornecedor. Você o encontra no seu contrato. Informe-o como está escrito lá: digite o número e escolha ao lado dias, semanas ou meses. Se estiver escrito, por exemplo, “3 meses”, escolha 3 e “Meses”. O app então calcula com meses reais do calendário.</p>
                 <p>O app calcula a data e a mostra em cada cartão: “Cancelar até …”. Quando essa data passa, ele mostra a próxima possibilidade.</p>
+                <p>Se a assinatura pode ser cancelada a qualquer momento (por exemplo, muitos serviços de streaming), escolha “Cancele quando quiser” em vez de um número. O cartão fica verde e o app não lembra você de nenhum prazo. Durante um período de teste, ele continua avisando. Se você não sabe o prazo, consulte seu contrato em vez de escolher esta opção.</p>
 
                 <h3>O que significam vermelho, amarelo e verde?</h3>
                 <ul class="hilfe-farben">
                     <li><span class="hilfe-punkt rot" aria-hidden="true"></span><strong>Vermelho:</strong> faltam 7 dias ou menos para a data-limite de cancelamento. Aja agora se não quiser mais a assinatura. No início desses 7 dias você recebe uma notificação.</li>
                     <li><span class="hilfe-punkt gelb" aria-hidden="true"></span><strong>Amarelo:</strong> faltam 30 dias ou menos.</li>
-                    <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Verde:</strong> faltam mais de 30 dias.</li>
+                    <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Verde:</strong> faltam mais de 30 dias, ou a assinatura pode ser cancelada a qualquer momento.</li>
                     <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Etiqueta cinza “Cancelada, termina em …”:</strong> a assinatura foi cancelada. Até essa data, o cartão fica no lugar de sempre, porque até lá você ainda paga. Depois, ele fica mais claro e vai para o final da lista.</li>
                 </ul>
 

@@ -12,7 +12,7 @@
  *   [Platzhalter] stehen zu bleiben.
  */
 
-import { ermittleKuendigungsfrist, istProbezeitLaufend } from './calculator.js';
+import { ermittleKuendigungsfrist, ersteZahlungNach, istProbezeitLaufend } from './calculator.js';
 import { t, tAnzahl, aufzaehlung, formatiereDatum } from './i18n.js';
 import { istEigeneAnschrift, ladeAbsenderDaten, speichereAbsenderDaten } from './absender.js';
 import { erzeugeBriefPdf } from './brief-pdf.js';
@@ -81,6 +81,10 @@ function erzeugeBloecke(abo, absender, heute, fassung, einschreiben) {
 
 function erzeugeFristHinweis(abo) {
     if (istProbezeitLaufend(abo)) return t('brief.probeHinweis', { datum: formatiereDatum(abo.probeEndeAm) });
+    if (abo.jederzeitKuendbar === true) {
+        const zahlung = ersteZahlungNach(abo);
+        return zahlung ? t('brief.jederzeitHinweis', { datum: formatiereDatum(zahlung) }) : '';
+    }
     const frist = ermittleKuendigungsfrist(abo);
     if (!frist) return '';
     return t('brief.fristHinweis', { datum: formatiereDatum(frist.fristDatum) });

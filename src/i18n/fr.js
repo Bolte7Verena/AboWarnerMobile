@@ -38,6 +38,9 @@ export default {
     'karte.tageBisZahlung': '{tage} jours avant le paiement · préavis {frist}',
     'karte.tageBisZahlung.eins': '{tage} jour avant le paiement · préavis {frist}',
     'karte.laeuftHeuteAus': 'Prend fin aujourd’hui',
+    'karte.jederzeit': 'Résiliable à tout moment',
+    'karte.vorZahlung': 'avant le prochain paiement du {datum}',
+    'karte.heuteZahlung': 'paiement aujourd’hui, le prochain le {datum}',
     'karte.fristPruefen': 'Vérifier le préavis',
     'karte.laeuftNoch': 'Prend fin dans {anzahl} jours',
     'karte.laeuftNoch.eins': 'Prend fin dans {anzahl} jour',
@@ -81,6 +84,7 @@ export default {
     'einheit.tage': 'Jours',
     'einheit.wochen': 'Semaines',
     'einheit.monate': 'Mois',
+    'einheit.jederzeit': 'Résiliable à tout moment',
     'frist.tage': '{anzahl} jours',
     'frist.tage.eins': '{anzahl} jour',
     'frist.wochen': '{anzahl} semaines',
@@ -196,6 +200,7 @@ export default {
     // --- Lettre de résiliation : fenêtre ---
     'brief.titel': 'Lettre de résiliation — {name}',
     'brief.probeHinweis': 'Votre période d’essai se termine le <strong>{datum}</strong>. Résiliez avant, sinon l’abonnement devient payant.',
+    'brief.jederzeitHinweis': 'Cet abonnement est résiliable à tout moment. Résiliez avant le prochain paiement du <strong>{datum}</strong> pour ne plus être débité.',
     'brief.fristHinweis': 'Pour que la résiliation prenne effet à temps, le prestataire doit la recevoir au plus tard le <strong>{datum}</strong>.',
     'brief.absender': 'Vos coordonnées d’expéditeur :',
     'brief.absenderKurz': '{name}, {ort} (modifier)',
@@ -254,6 +259,7 @@ export default {
     'pdf.spalteZahlung': 'Prochain paiement',
     'pdf.spalteKuendigung': 'Résilier jusqu’au',
     'pdf.spalteStatus': 'Statut',
+    'pdf.jederzeit': 'à tout moment',
     'pdf.laeuft': 'actif',
     'pdf.probe': 'Essai jusqu’au {datum}',
     'pdf.gekuendigtZum': 'résilié, fin le {datum}',
@@ -371,12 +377,13 @@ export default {
                 <h3>Que signifie le délai de préavis ?</h3>
                 <p>Le délai de préavis indique combien de temps avant le prochain paiement votre résiliation doit parvenir au prestataire. Vous le trouverez dans votre contrat. Saisissez-le tel qu’il y figure : tapez le nombre et choisissez à côté jours, semaines ou mois. S’il est indiqué p. ex. « 3 mois », choisissez 3 et « Mois ». L’application calcule alors avec de vrais mois calendaires.</p>
                 <p>L’application calcule la date et l’affiche sur chaque carte : « Résilier jusqu’au … ». Une fois cette date passée, elle vous indique la possibilité suivante.</p>
+                <p>Si l’abonnement est résiliable à tout moment (p. ex. de nombreux services de streaming), choisissez « Résiliable à tout moment » au lieu d’un nombre. La carte reste alors verte et l’application ne vous rappelle aucun délai. Elle vous avertit toutefois pendant une période d’essai. Si vous ne connaissez pas le délai, consultez votre contrat au lieu de choisir cette option.</p>
 
                 <h3>Que signifient le rouge, le jaune et le vert ?</h3>
                 <ul class="hilfe-farben">
                     <li><span class="hilfe-punkt rot" aria-hidden="true"></span><strong>Rouge :</strong> 7 jours ou moins avant la date limite de résiliation. Agissez maintenant si vous ne voulez plus de l’abonnement. Au début de ces 7 jours, vous recevez une notification.</li>
                     <li><span class="hilfe-punkt gelb" aria-hidden="true"></span><strong>Jaune :</strong> 30 jours ou moins restants.</li>
-                    <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Vert :</strong> Plus de 30 jours restants.</li>
+                    <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Vert :</strong> Plus de 30 jours restants, ou résiliable à tout moment.</li>
                     <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Étiquette grise « Résilié, prend fin le … » :</strong> L’abonnement est résilié. Jusqu’à cette date, la carte reste à sa place habituelle, car vous payez encore jusque-là. Ensuite, elle s’estompe et passe en fin de liste.</li>
                 </ul>
 

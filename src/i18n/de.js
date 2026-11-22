@@ -39,6 +39,9 @@ export default {
     'karte.tageBisZahlung': '{tage} Tage bis Zahlung · Frist {frist}',
     'karte.tageBisZahlung.eins': '{tage} Tag bis Zahlung · Frist {frist}',
     'karte.laeuftHeuteAus': 'Läuft heute aus',
+    'karte.jederzeit': 'Jederzeit kündbar',
+    'karte.vorZahlung': 'vor der nächsten Zahlung am {datum}',
+    'karte.heuteZahlung': 'heute Zahlung, die nächste am {datum}',
     'karte.fristPruefen': 'Frist prüfen',
     'karte.laeuftNoch': 'Läuft noch {anzahl} Tage',
     'karte.laeuftNoch.eins': 'Läuft noch {anzahl} Tag',
@@ -82,6 +85,7 @@ export default {
     'einheit.tage': 'Tage',
     'einheit.wochen': 'Wochen',
     'einheit.monate': 'Monate',
+    'einheit.jederzeit': 'Jederzeit kündbar',
     'frist.tage': '{anzahl} Tage',
     'frist.tage.eins': '{anzahl} Tag',
     'frist.wochen': '{anzahl} Wochen',
@@ -197,6 +201,7 @@ export default {
     // --- Kündigungsschreiben: Fenster ---
     'brief.titel': 'Kündigungsschreiben — {name}',
     'brief.probeHinweis': 'Deine Probezeit endet am <strong>{datum}</strong>. Kündige vorher, sonst wird das Abo kostenpflichtig.',
+    'brief.jederzeitHinweis': 'Dieses Abo ist jederzeit kündbar. Kündige vor der nächsten Zahlung am <strong>{datum}</strong>, damit nichts mehr abgebucht wird.',
     'brief.fristHinweis': 'Damit die Kündigung rechtzeitig wirkt, muss sie bis zum <strong>{datum}</strong> beim Anbieter sein.',
     'brief.absender': 'Dein Absender:',
     'brief.absenderKurz': '{name}, {ort} (ändern)',
@@ -255,6 +260,7 @@ export default {
     'pdf.spalteZahlung': 'Nächste Zahlung',
     'pdf.spalteKuendigung': 'Kündigung möglich bis',
     'pdf.spalteStatus': 'Status',
+    'pdf.jederzeit': 'jederzeit',
     'pdf.laeuft': 'läuft',
     'pdf.probe': 'Probezeit bis {datum}',
     'pdf.gekuendigtZum': 'gekündigt zum {datum}',
@@ -368,12 +374,13 @@ export default {
                 <h3>Was bedeutet die Frist?</h3>
                 <p>Die Kündigungsfrist sagt, wie lange vor der nächsten Zahlung deine Kündigung beim Anbieter sein muss. Du findest sie in deinem Vertrag. Trag sie so ein, wie sie dort steht: Zahl eintippen und daneben Tage, Wochen oder Monate wählen. Steht dort z.B. „3 Monate“, wähl 3 und „Monate“. Die App rechnet dann mit echten Kalendermonaten.</p>
                 <p>Die App rechnet daraus das Datum aus und zeigt es auf jeder Karte: „Kündigung möglich bis …“. Ist das Datum vorbei, zeigt sie dir die nächste Möglichkeit.</p>
+                <p>Ist das Abo jederzeit kündbar (z.B. viele Streaming-Dienste), wähl statt einer Zahl „Jederzeit kündbar“. Die Karte bleibt dann grün, und die App erinnert dich nicht an eine Frist. Nur während einer Probezeit erinnert sie dich weiter. Kennst du die Frist nicht, schau bitte in den Vertrag, statt „Jederzeit kündbar“ zu wählen.</p>
 
                 <h3>Was bedeuten Rot, Gelb und Grün?</h3>
                 <ul class="hilfe-farben">
                     <li><span class="hilfe-punkt rot" aria-hidden="true"></span><strong>Rot:</strong> Nur noch 7 Tage oder weniger bis zum Kündigungsdatum. Jetzt handeln, wenn du das Abo nicht mehr willst. Zu Beginn dieser 7 Tage bekommst du eine Mitteilung.</li>
                     <li><span class="hilfe-punkt gelb" aria-hidden="true"></span><strong>Gelb:</strong> Noch höchstens 30 Tage Zeit.</li>
-                    <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Grün:</strong> Noch mehr als 30 Tage Zeit.</li>
+                    <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Grün:</strong> Noch mehr als 30 Tage Zeit, oder das Abo ist jederzeit kündbar.</li>
                     <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Graues Etikett „Gekündigt zum …“:</strong> Das Abo ist gekündigt. Bis zu diesem Datum bleibt die Karte ganz normal an ihrem Platz, denn so lange zahlst du noch. Danach wird sie blasser und rutscht ans Ende der Liste.</li>
                 </ul>
 

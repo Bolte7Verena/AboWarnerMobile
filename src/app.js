@@ -4,10 +4,10 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, FRIST_EINHEITEN, istFristZuLang, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, parseFristAnzahl, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
+import { Calculator, FRIST_EINHEITEN, istFristZuLang, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ersteZahlungNach, ermittleEffektivesZahlungsdatum, parseBetrag, parseFristAnzahl, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { initBetragsfeld } from './betragsfeld.js';
-import { pruefeEingabe, zeigeFeldFehler, loescheFeldFehler } from './pflichtfelder.js';
+import { pruefeEingabe, zeigeFeldFehler, loescheFeldFehler, initFristAuswahl } from './pflichtfelder.js';
 import { t, tAnzahl, tWert, formatiereDatum, formatiereZahlEingabe, formatiereBetrag } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung, frageDatum, zeigeMeldung } from './bestaetigung.js';
@@ -194,6 +194,7 @@ function erzeugeStatusText(abo, status) {
         return abo.gekuendigtZum ? t('karte.gekuendigtZum', { datum: formatiereDatum(abo.gekuendigtZum) }) : t('status.gekuendigt');
     }
     if (istProbezeitLaufend(abo)) return t('karte.probeEndet', { datum: formatiereDatum(abo.probeEndeAm) });
+    if (abo.jederzeitKuendbar === true) return t('karte.jederzeit');
     const frist = ermittleKuendigungsfrist(abo);
     if (frist) return t('karte.moeglichBis', { datum: formatiereDatum(frist.fristDatum) });
     const { anzahl, einheit } = ermittleFristAngabe(abo);
@@ -216,6 +217,13 @@ function fristText(abo) {
 
 // Grauer Hinweis neben dem Etikett.
 function erzeugeStatusPill(abo, tageBisZahlung) {
+    if (!abo.gekuendigt && abo.jederzeitKuendbar === true) {
+        const zahlung = ersteZahlungNach(abo);
+        const text = istProbezeitLaufend(abo) || !zahlung
+            ? t('karte.jederzeit')
+            : t(tageBisZahlung === 0 ? 'karte.heuteZahlung' : 'karte.vorZahlung', { datum: formatiereDatum(zahlung) });
+        return `<span class="abo-status-pill">${escapeHtml(text)}</span>`;
+    }
     if (!abo.gekuendigt) {
         return `<span class="abo-status-pill">${tAnzahl('karte.tageBisZahlung', tageBisZahlung, { tage: tageBisZahlung, frist: fristText(abo) })}</span>`;
     }
@@ -317,7 +325,7 @@ function erzeugeAboBearbeitenFormular(abo) {
                 <div class="form-group">
                     <label>${t('feld.frist')}</label>
                     <div class="frist-eingabe">
-                        <input type="number" class="input-control frist-anzahl" min="0" step="1" inputmode="numeric" data-feld="fristAnzahl" value="${escapeAttr(fristAngabe.anzahl)}">
+                        <input type="number" class="input-control frist-anzahl" min="0" step="1" inputmode="numeric" data-feld="fristAnzahl" value="${fristAngabe.einheit === 'jederzeit' ? '' : escapeAttr(fristAngabe.anzahl)}">
                         <select class="input-control select-control frist-einheit" data-feld="fristEinheit" aria-label="${escapeAttr(t('feld.fristEinheit'))}">
                             ${FRIST_EINHEITEN.map((e) => `<option value="${e}" ${e === fristAngabe.einheit ? 'selected' : ''}>${escapeHtml(t(`einheit.${e}`))}</option>`).join('')}
                         </select>
@@ -537,6 +545,7 @@ function verdrahteDatumsfeld(form, feldName) {
 function zeigeBearbeitenModus(kachel, abo) {
     kachel.innerHTML = erzeugeAboBearbeitenFormular(abo);
     initBetragsfeld(kachel.querySelector('[data-feld="kosten"]'));
+    initFristAuswahl(kachel.querySelector('[data-feld="fristEinheit"]'), kachel.querySelector('[data-feld="fristAnzahl"]'));
     verdrahteDatumsfeld(kachel.querySelector('.abo-edit-form'), 'naechsteZahlung');
     verdrahteDatumsfeld(kachel.querySelector('.abo-edit-form'), 'probeEndeAm');
     const probeSchalter = kachel.querySelector('[data-feld="probeabo"]');

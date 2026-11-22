@@ -11,7 +11,7 @@ import { initSprache, wendeAufDokumentAn } from './i18n.js';
 import { zeigeAbos, neuesAboSpeichern, initDatenSichern, aktualisiereBeiNeuemTag } from './app.js';
 import { initDatePicker } from './datepicker.js';
 import { initBetragsfeld } from './betragsfeld.js';
-import { loescheFeldFehler } from './pflichtfelder.js';
+import { loescheFeldFehler, initFristAuswahl } from './pflichtfelder.js';
 import { zeigeFaelligkeitshinweisFallsNoetig, planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { initRechtliches } from './rechtliches.js';
 import { initHilfe } from './hilfe.js';
@@ -74,11 +74,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             aboForm.reset();
         }
 
+        const gleicheFristAn = initFristAuswahl(document.getElementById('input-frist-einheit'), document.getElementById('input-frist'));
+
         // "Weitere Angaben (optional)" beim nächsten Öffnen wieder zugeklappt,
         // damit das Formular einfach bleibt (Felder leert reset() selbst).
         aboForm.addEventListener('reset', () => {
             document.getElementById('form-fehler').textContent = '';
             loescheFeldFehler(aboForm);
+            // reset() setzt die Auswahl erst nach diesem Ereignis zurück.
+            setTimeout(gleicheFristAn, 0);
             document.getElementById('weitere-angaben').open = false;
             document.getElementById('probe-datum-gruppe').hidden = true;
         });

@@ -54,6 +54,13 @@ export function normalisiereAbo(roh) {
         abo.kuendigungsfristEinheit = roh.kuendigungsfristEinheit;
         abo.kuendigungsfristAnzahl = anzahl;
     }
+    // Jederzeit kündbar (ab 2.0.2): dann gilt keine Frist.
+    if (roh.jederzeitKuendbar === true) {
+        abo.jederzeitKuendbar = true;
+        abo.kuendigungsfristTage = 0;
+        delete abo.kuendigungsfristEinheit;
+        delete abo.kuendigungsfristAnzahl;
+    }
     if (!Calculator.istGueltig(abo) || !TURNUS_MONATE[abo.turnus]) return null;
 
     const vertragsnummer = optionalerText(roh.vertragsnummer);

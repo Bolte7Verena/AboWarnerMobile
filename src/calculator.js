@@ -85,7 +85,10 @@ export function formatiereDatumDE(datum) {
 // eine Sicherung lässt sich auch in einer älteren App-Version einlesen.
 // Neu und optional: abo.kuendigungsfristEinheit ('wochen' | 'monate') und
 // abo.kuendigungsfristAnzahl. Fehlen sie, gilt die Frist in Tagen.
-export const FRIST_EINHEITEN = ['tage', 'wochen', 'monate'];
+// 'jederzeit' (Auswahl "Jederzeit kündbar", z. B. Streaming): abo.jederzeitKuendbar = true,
+// kuendigungsfristTage ist dann 0. Bewusst eine eigene Auswahl: Ein leeres Feld hieße
+// auch "weiß ich gerade nicht", und dann würde die App nie warnen.
+export const FRIST_EINHEITEN = ['tage', 'wochen', 'monate', 'jederzeit'];
 
 // Höchstwert bei der Eingabe: 10 Jahre. Längere Fristen gibt es bei Abos und
 // Verträgen nicht; ein Tippfehler (999999999 Tage) wird so sofort bemerkt.
@@ -97,6 +100,7 @@ export function istFristZuLang(anzahl, einheit) {
 
 // Liefert die Frist so, wie der Nutzer sie eingetragen hat: { anzahl, einheit }.
 export function ermittleFristAngabe(abo) {
+    if (abo.jederzeitKuendbar === true) return { anzahl: 0, einheit: 'jederzeit' };
     const einheit = abo.kuendigungsfristEinheit;
     const anzahl = Number(abo.kuendigungsfristAnzahl);
     if ((einheit === 'wochen' || einheit === 'monate') && Number.isInteger(anzahl) && anzahl >= 0) {
@@ -107,10 +111,12 @@ export function ermittleFristAngabe(abo) {
 
 // Felder zum Speichern aus einer Eingabe (Zahl + Einheit).
 export function erzeugeFristFelder(anzahl, einheit) {
+    if (einheit === 'jederzeit') return { kuendigungsfristTage: 0, kuendigungsfristEinheit: undefined, kuendigungsfristAnzahl: undefined, jederzeitKuendbar: true };
     const n = Number(anzahl);
-    if (einheit === 'wochen') return { kuendigungsfristTage: n * 7, kuendigungsfristEinheit: 'wochen', kuendigungsfristAnzahl: n };
-    if (einheit === 'monate') return { kuendigungsfristTage: n * 30, kuendigungsfristEinheit: 'monate', kuendigungsfristAnzahl: n };
-    return { kuendigungsfristTage: n, kuendigungsfristEinheit: undefined, kuendigungsfristAnzahl: undefined };
+    const jederzeitKuendbar = undefined;
+    if (einheit === 'wochen') return { kuendigungsfristTage: n * 7, kuendigungsfristEinheit: 'wochen', kuendigungsfristAnzahl: n, jederzeitKuendbar };
+    if (einheit === 'monate') return { kuendigungsfristTage: n * 30, kuendigungsfristEinheit: 'monate', kuendigungsfristAnzahl: n, jederzeitKuendbar };
+    return { kuendigungsfristTage: n, kuendigungsfristEinheit: undefined, kuendigungsfristAnzahl: undefined, jederzeitKuendbar };
 }
 
 // Datum minus ganze Kalendermonate. Gibt es den Tag im Zielmonat nicht,
@@ -156,8 +162,10 @@ function fristVorZahlung(zahlung, angabe) {
 // folgenden Zahlung (turnusgerecht weitergerückt). So wird nie ein bereits
 // verstrichenes Datum als "möglich bis" angezeigt.
 // Rückgabe: { fristDatum, zahlungsDatum } (beide Date, lokale Mitternacht)
-// oder null bei ungültigen Daten. `heute` nur für Tests überschreibbar.
+// oder null bei ungültigen Daten und bei jederzeit kündbaren Abos (keine Frist).
+// `heute` nur für Tests überschreibbar.
 export function ermittleKuendigungsfrist(abo, heute = new Date()) {
+    if (abo.jederzeitKuendbar === true) return null;
     const stichtag = parseDatumISO(heute);
     const angabe = ermittleFristAngabe(abo);
     const start = leseZahlungsdatum(abo.naechsteZahlung);
@@ -169,6 +177,19 @@ export function ermittleKuendigungsfrist(abo, heute = new Date()) {
         if (zahlung < naechste) continue;
         const frist = fristVorZahlung(zahlung, angabe);
         if (frist >= stichtag) return { fristDatum: frist, zahlungsDatum: zahlung };
+    }
+    return null;
+}
+
+// Erste Zahlung NACH heute (am Zahlungstag selbst also die folgende, denn die
+// heutige ist meist schon abgebucht). null bei ungültigen Daten.
+export function ersteZahlungNach(abo, heute = new Date()) {
+    const stichtag = parseDatumISO(heute);
+    const start = leseZahlungsdatum(abo.naechsteZahlung);
+    if (!stichtag || !start) return null;
+    for (let schritt = 0; schritt < 24000; schritt++) {
+        const datum = zahlungNach(start, abo.turnus, schritt);
+        if (datum > stichtag) return datum;
     }
     return null;
 }
@@ -208,6 +229,8 @@ export const WARNSCHWELLE_TAGE = 30;
 //   'sicher'   (grün) = sonst
 // Bei ungültigen Daten 'sicher' (kein Fehlalarm, kein Absturz).
 export function ermittleFristStatus(abo, heute = new Date()) {
+    // Jederzeit kündbar: nie rot oder gelb (außer eine Probezeit läuft).
+    if (abo.jederzeitKuendbar === true && !istProbezeitLaufend(abo, heute)) return 'sicher';
     const handlung = ermittleHandlungsDatum(abo, heute);
     if (!handlung) {
         // Alte Daten mit unsinnig langer Frist: nicht als "sicher" (grün) anzeigen.
@@ -249,8 +272,13 @@ export function schlageVertragsendeVor(abo, heute = new Date()) {
     // Während der Probezeit: Ende der Probezeit.
     if (istProbezeitLaufend(abo, heute)) return parseDatumISO(abo.probeEndeAm);
     const frist = ermittleKuendigungsfrist(abo, heute);
-    if (!frist) return null;
-    const ende = new Date(frist.zahlungsDatum);
+    const stichtag = parseDatumISO(heute);
+    // Jederzeit kündbar oder heute Zahlungstag (Frist 0): läuft bis zum Tag vor der
+    // ersten Zahlung nach heute. So liegt der Vorschlag nie in der Vergangenheit.
+    const heuteZahlung = !!frist && !!stichtag && frist.zahlungsDatum <= stichtag;
+    const zahlung = abo.jederzeitKuendbar === true || heuteZahlung ? ersteZahlungNach(abo, heute) : frist && frist.zahlungsDatum;
+    if (!zahlung) return null;
+    const ende = new Date(zahlung);
     ende.setDate(ende.getDate() - 1);
     return ende;
 }

@@ -41,6 +41,9 @@ export default {
     'karte.tageBisZahlung': '{tage} days until payment · notice period {frist}',
     'karte.tageBisZahlung.eins': '{tage} day until payment · notice period {frist}',
     'karte.laeuftHeuteAus': 'Ends today',
+    'karte.jederzeit': 'Cancel anytime',
+    'karte.vorZahlung': 'before the next payment on {datum}',
+    'karte.heuteZahlung': 'payment today, the next one on {datum}',
     'karte.fristPruefen': 'Check notice period',
     'karte.laeuftNoch': 'Ends in {anzahl} days',
     'karte.laeuftNoch.eins': 'Ends in {anzahl} day',
@@ -84,6 +87,7 @@ export default {
     'einheit.tage': 'Days',
     'einheit.wochen': 'Weeks',
     'einheit.monate': 'Months',
+    'einheit.jederzeit': 'Cancel anytime',
     'frist.tage': '{anzahl} days',
     'frist.tage.eins': '{anzahl} day',
     'frist.wochen': '{anzahl} weeks',
@@ -199,6 +203,7 @@ export default {
     // --- Cancellation letter: dialog ---
     'brief.titel': 'Cancellation letter — {name}',
     'brief.probeHinweis': 'Your trial ends on <strong>{datum}</strong>. Cancel before then, otherwise you will be charged.',
+    'brief.jederzeitHinweis': 'This subscription can be canceled at any time. Cancel before the next payment on <strong>{datum}</strong> so that nothing more is charged.',
     'brief.fristHinweis': 'For the cancellation to take effect in time, the provider must receive it by <strong>{datum}</strong>.',
     'brief.absender': 'Your sender details:',
     'brief.absenderKurz': '{name}, {ort} (edit)',
@@ -257,6 +262,7 @@ export default {
     'pdf.spalteZahlung': 'Next payment',
     'pdf.spalteKuendigung': 'Cancel by',
     'pdf.spalteStatus': 'Status',
+    'pdf.jederzeit': 'anytime',
     'pdf.laeuft': 'active',
     'pdf.probe': 'Trial until {datum}',
     'pdf.gekuendigtZum': 'canceled, ends {datum}',
@@ -374,12 +380,13 @@ export default {
                 <h3>What does the notice period mean?</h3>
                 <p>The notice period tells you how long before the next payment your cancellation must reach the provider. You will find it in your contract. Enter it exactly as it is written there: type the number and choose days, weeks or months next to it. If it says “3 months,” for example, choose 3 and “Months”. The app then calculates with real calendar months.</p>
                 <p>The app works out the date and shows it on every card: “Cancel by …”. Once that date has passed, it shows you the next possible date.</p>
+                <p>If you can cancel at any time (e.g., many streaming services), choose “Cancel anytime” instead of a number. The card then stays green and the app does not remind you of a deadline. It still reminds you during a trial. If you do not know the notice period, please check your contract instead of choosing “Cancel anytime”.</p>
 
                 <h3>What do red, yellow and green mean?</h3>
                 <ul class="hilfe-farben">
                     <li><span class="hilfe-punkt rot" aria-hidden="true"></span><strong>Red:</strong> 7 days or less until the cancellation deadline. Act now if you no longer want the subscription. At the start of these 7 days you will get a notification.</li>
                     <li><span class="hilfe-punkt gelb" aria-hidden="true"></span><strong>Yellow:</strong> 30 days or less left.</li>
-                    <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Green:</strong> More than 30 days left.</li>
+                    <li><span class="hilfe-punkt gruen" aria-hidden="true"></span><strong>Green:</strong> More than 30 days left, or you can cancel anytime.</li>
                     <li><span class="hilfe-punkt grau" aria-hidden="true"></span><strong>Gray label “Canceled, ends …”:</strong> The subscription has been canceled. Until that date, the card stays in its usual place, because you are still paying until then. After that, it fades and moves to the end of the list.</li>
                 </ul>
 
