@@ -60,7 +60,7 @@ const FRANZOESISCH = (versandart, locale) => ({
     versandart,
     betreff: (a) => zeilen(`Objet : résiliation du contrat – ${a.abo}`, a.vertrag && `Numéro de contrat : ${a.vertrag}`, a.kunde && `Numéro de client : ${a.kunde}`),
     anrede: 'Madame, Monsieur,',
-    kern: 'Par la présente, je vous informe de ma décision de résilier le contrat mentionné en objet. Je vous prie de bien vouloir prendre en compte cette résiliation à la prochaine échéance possible.',
+    kern: 'Par la présente, je vous informe de ma décision de résilier le contrat mentionné en objet à la prochaine échéance possible.',
     bestaetigung: (email) => `Je vous remercie de me confirmer par écrit${email ? `, à l’adresse ${email},` : ''} la bonne réception de ce courrier ainsi que la date de fin du contrat.`,
     gruss: 'Je vous prie d’agréer, Madame, Monsieur, l’expression de mes salutations distinguées.',
     linie: UNTERSCHRIFTSLINIE

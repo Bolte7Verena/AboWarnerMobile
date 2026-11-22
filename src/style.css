@@ -536,7 +536,7 @@ p { margin: 0; }
 /* Das Brieffeld darf schrumpfen, damit die Knöpfe darunter sichtbar bleiben. */
 .modal-dialog > .brief-gruppe { display: flex; flex-direction: column; flex: 0 1 auto; min-height: 17.5rem; }
 .modal-dialog > :not(.brief-gruppe) { flex-shrink: 0; }
-.modal-letter-textarea { flex: 0 1 auto; min-height: 16rem; height: auto; resize: none; font-family: var(--font-sans); line-height: 1.5; white-space: pre-wrap; padding: 0.75rem; }
+.modal-letter-textarea { flex: 0 1 auto; min-height: 16rem; height: auto; resize: none; font-family: var(--font-sans); line-height: 1.4; white-space: pre-wrap; padding: 0.75rem; }
 .modal-aktionen { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .modal-copy-status { font-size: 0.75rem; color: var(--accent-lime); }
 .modal-copy-status:empty { margin-top: -0.875rem; }
