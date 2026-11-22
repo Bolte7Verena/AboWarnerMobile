@@ -174,7 +174,23 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Karten: Preis immer rechts neben dem Namen, Trennlinie mit Abstand, drei Knöpfe in einer Zeile (geprüft ab 320 px)
 - [x] Kündigungsschreiben: Textfeld nutzt die freie Höhe, Knöpfe bleiben sichtbar
 - [x] Fristen-Hinweis beim Start deckend, auf dem Handy in voller Breite
-- [ ] Neue Test-APK bauen und auf Jens' Handy ansehen (neues Layout)
+- [ ] Neue Test-APK bauen und auf Jens' Handy ansehen (neues Layout, Paket 7 und 8)
+
+**Paket 8 – Andere Länder (22.11.2026)**
+- [x] Terminfehler Amerika behoben: Zahlungs- und Kündigungstermine nicht mehr einen Tag zu früh (nur update-2.0.2, nicht in 2.0.1; gespeicherte Daten waren immer richtig)
+- [x] Datum im Format der App-Sprache und des Landes, nie in dem einer fremden Gerätesprache
+- [x] Kalender beginnt je Land mit Sonntag, Montag oder Samstag
+- [x] PDF in US-Letter in den USA und anderen Letter-Ländern, sonst A4
+- [x] Währungssymbole landesüblich (29,90 € / €29.90 / R$ 29,90 / $29.90)
+- [x] Hauptwährung wählbar (Weltkugel), automatisch nach den Abos und dem Land
+- [x] Währung als Auswahlliste (62 Währungen) statt Freitext; alte und unbekannte Eingaben bleiben erhalten
+- [x] Umgerechnete Summen mit „ca.“, Kurse der EU-Kommission November 2026; nicht umrechenbare Währungen werden nicht mitgezählt und genannt
+- [x] Foto: „$“ nach Land, mehr Währungen erkannt
+- [x] Jahressumme nicht mehr aus dem gerundeten Monat gerechnet
+- [x] Kündigungsschreiben je Land: Deutsch, Englisch (GB, USA), Spanisch (Spanien, Lateinamerika), Französisch (Frankreich, Belgien, Schweiz, Kanada), Portugiesisch (Brasilien, Portugal)
+- [x] Französisch „jusqu’au“ statt „avant le“
+- [ ] Kündigungsschreiben von Muttersprachlern gegenlesen lassen (alle außer Deutsch; am dringendsten pt-PT, fr-FR, es-LA)
+- [ ] Kurse vor jedem Update auffrischen (src/waehrungen.js)
 
 **Geprüft**
 - [x] Keine Daten verlassen das Handy, kein Analytics-, Tracking- oder Werbe-SDK (14.11.2026)
@@ -191,9 +207,8 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] Versionsnummer auf 2.0.2 setzen (erst kurz vor Einreichung)
 - [x] Store-Screenshots erzeugt: 135 Bilder, 5 Sprachen, iPhone 6,9 und 6,3 Zoll, iPad 13 Zoll, Google Play (22.11.2026 neu nach den Korrekturen, Ordner store-screenshots, nur lokal, nicht auf GitHub und nicht hochgeladen)
 - [ ] Screenshots ansehen und freigeben (Jens, Kira)
-- [ ] WICHTIG: In Amerika (Zeitzonen westlich von London) zeigt die App Zahlungs- und Kündigungstermine einen Tag zu früh, auch in 2.0.1. Vor dem Start in USA/Brasilien beheben
-- [ ] Entscheidung: Währung wählbar machen (Summen sind immer Euro; Brasilien bekommt EUR vorgeschlagen; unbekannte oder klein geschriebene Währungen werden 1:1 als Euro gerechnet)
-- [ ] Entscheidung: Datum je Land (App-Sprache und Gerätesprache verschieden), Wochenbeginn im Kalender, landesübliche Kündigungsschreiben
+- [ ] Store-Texte: Währung anpassen (Hauptwährung, Richtkurse „ca.“; Hinweis „keine Umrechnung“ in store-texte.md streichen)
+- [ ] Fehler Monatsende: Zahlung am 31. rutscht in kurzen Monaten auf den 1. bis 3. des Folgemonats (auch in 2.0.1)
 - [ ] Store-Texte Englisch, Spanisch, Französisch, Portugiesisch (schreibt Kira)
 - [ ] Datenschutzseite auf abo-warner-pro.com anpassen (neue Felder, Foto-Funktion, Link zu appvektor.com) – anderes Projekt
 - [ ] Hinweis an Apple in den Prüfnotizen (Link zu appvektor.com, in der App wird nichts verkauft)
