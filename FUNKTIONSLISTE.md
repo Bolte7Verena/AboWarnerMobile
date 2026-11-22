@@ -175,7 +175,9 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Kündigungsschreiben: Textfeld nutzt die freie Höhe, Knöpfe bleiben sichtbar
 - [x] Fristen-Hinweis beim Start deckend, auf dem Handy in voller Breite
 - [x] Neue Test-APK gebaut: G:\AboWarnerMobile\builds\AWP-Test-2026-11-22.apk (Paket 7 bis 10, installiert sich über die alte AWP Test)
-- [ ] Test-APK auf Jens' Handy prüfen (Layout, Speichern, Foto, Erinnerungen, Teilen)
+- [x] Erster Test auf dem Samsung S20 FE (22.11.2026): mehrere Befunde (feste Fußzeile, „Seu monitoramento“, Datum nicht vorgerückt) gehören zum Stand vom 14.11.; auf dem Handy lief offenbar noch die alte Test-App
+- [x] Neue Test-APK mit sichtbarem Stand in der Fußzeile: G:\AboWarnerMobile\builds\AWP-Test-2026-11-22-1853.apk
+- [ ] Neue Test-APK auf Jens' Handy prüfen (zuerst Stand in der Fußzeile vergleichen)
 
 **Paket 8 – Andere Länder (22.11.2026)**
 - [x] Terminfehler Amerika behoben: Zahlungs- und Kündigungstermine nicht mehr einen Tag zu früh (nur update-2.0.2, nicht in 2.0.1; gespeicherte Daten waren immer richtig)
@@ -209,7 +211,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Sehr große Summen und PDF-Beträge werden kleiner geschrieben statt abgeschnitten; PDF kennt œ, ™, š, ž
 - [x] Fehlermeldung im Formular verschwindet nach dem Schließen
 - [x] Fremde Angaben in einer Sicherungsdatei (Turnus „constructor“) können die App nicht mehr aufhängen
-- [ ] Offen: drei Nachkommastellen (KWD, TND): „1.250“ wird als 1250 gelesen; Beträge mit Währungszeichen davor („€12“) werden mit Meldung abgelehnt
+- [ ] Offen: drei Nachkommastellen (KWD, TND): „1.250“ wird als 1250 gelesen
 - [ ] Englischer Text in der App: von Muttersprachler (USA) gegenlesen lassen
 
 **Paket 10 – Sicher speichern, Briefe, Frist (22.11.2026)**
@@ -224,6 +226,20 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Schreiben: es-ES-Kernsatz, englischer Betreff „Cancellation – …“, deutsche Unterschriftslinie
 - [x] Schreiben: Von Hand geänderter Text bleibt erhalten, wenn danach Absender oder Einschreiben geändert wird
 - [x] Datenschutzseite auf abo-warner-pro.com um die zweite Sicherheitskopie und die aufgehobene beschädigte Datei ergänzt, 5 Sprachen (veröffentlicht 22.11.2026, Commit 260c296)
+
+**Paket 11 – Rückmeldungen vom Handy (22.11.2026)**
+
+- [x] Beträge: Punkt und Komma, Leerzeichen der Tastatur („6. 99“), fremde Ziffern und Währungszeichen davor werden verstanden; Unklares wird mit Hinweis abgelehnt, nie still gekürzt
+- [x] Kostenfeld zeigt beim Tippen das Zeichen des Landes und nach dem Verlassen genau den Betrag, der gespeichert wird
+- [x] Kündigungsschreiben wird als PDF geteilt (A4 oder US-Letter, fetter Betreff, Platz für die Unterschrift); Namen wie Łukasz oder Иван werden richtig gedruckt; Kopieren in die Zwischenablage bleibt
+- [x] Foto: Anbieter und Anschrift aus Absenderzeile und mehrspaltiger Fußzeile; Bank, Zahlungsdienst und Empfänger zählen nicht; „Max Mustermann“ wird nicht mehr zur Marke „Max“
+- [x] Foto: verliert die Texterkennung das Komma (29,99 → 299), wird der Betrag aus Netto und Steuer berechnet oder weggelassen
+- [x] Foto: Turnus aus dem Abrechnungszeitraum, Datum auch aus „Datum: …“ auf Rechnungen
+- [x] Kategorie: im Formular alle neun, neutral „Bitte wählen“; Foto schlägt sie aus dem Inhalt vor
+- [x] Hilfe, App und Store-Texte: PDF-Übersicht nur zum Lesen und Drucken, Wiederherstellen nur mit der Sicherung; wer eine PDF als Sicherung wählt, bekommt eine klare Meldung
+- [x] Alle Sprachen auf alte Textreste geprüft (Vergleich mit dem Stand vom 14.11.): keine
+- [ ] Foto-Funktion mit echten Rechnungen auf dem Handy prüfen (hier nur mit selbst gebauten Beispielrechnungen und Tesseract am PC)
+- [ ] Offen: PDF-Übersicht zeigt fremde Schriftzeichen (Ł, Kyrillisch, Emoji) weiter als „?“
 
 **Geprüft**
 - [x] Keine Daten verlassen das Handy, kein Analytics-, Tracking- oder Werbe-SDK (14.11.2026)
