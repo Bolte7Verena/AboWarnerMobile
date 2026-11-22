@@ -175,9 +175,11 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Kündigungsschreiben: Textfeld nutzt die freie Höhe, Knöpfe bleiben sichtbar
 - [x] Fristen-Hinweis beim Start deckend, auf dem Handy in voller Breite
 - [x] Neue Test-APK gebaut: G:\AboWarnerMobile\builds\AWP-Test-2026-11-22.apk (Paket 7 bis 10, installiert sich über die alte AWP Test)
-- [x] Erster Test auf dem Samsung S20 FE (22.11.2026): mehrere Befunde (feste Fußzeile, „Seu monitoramento“, Datum nicht vorgerückt) gehören zum Stand vom 14.11.; auf dem Handy lief offenbar noch die alte Test-App
+- [x] Erster Test auf dem Samsung S20 FE (22.11.2026): neun Befunde, bearbeitet in Paket 11. Warum „Seu monitoramento“ und 6,00 € angezeigt wurden, ist ungeklärt: Die APK von 17:42 enthält diesen Text nachweislich nicht und rechnet 6.99 und „6. 99“ richtig (ausgeführt und gemessen)
+- [x] Zweiter Test auf dem S20 FE mit Stand 22.11.2026 18:53 0106b2a: fast alles in Ordnung, vier Punkte in Paket 12
 - [x] Neue Test-APK mit sichtbarem Stand in der Fußzeile: G:\AboWarnerMobile\builds\AWP-Test-2026-11-22-1853.apk
-- [ ] Neue Test-APK auf Jens' Handy prüfen (zuerst Stand in der Fußzeile vergleichen)
+- [x] Test-APK Paket 12: G:\AboWarnerMobile\builds\AWP-Test-2026-11-22-2048.apk
+- [ ] Test-APK Paket 12 auf Jens' Handy prüfen (easybell-Rechnung, Schreiben, Euro auf Portugiesisch, PDF-Übersicht mit Ł)
 
 **Paket 8 – Andere Länder (22.11.2026)**
 - [x] Terminfehler Amerika behoben: Zahlungs- und Kündigungstermine nicht mehr einen Tag zu früh (nur update-2.0.2, nicht in 2.0.1; gespeicherte Daten waren immer richtig)
@@ -239,7 +241,14 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Hilfe, App und Store-Texte: PDF-Übersicht nur zum Lesen und Drucken, Wiederherstellen nur mit der Sicherung; wer eine PDF als Sicherung wählt, bekommt eine klare Meldung
 - [x] Alle Sprachen auf alte Textreste geprüft (Vergleich mit dem Stand vom 14.11.): keine
 - [ ] Foto-Funktion mit echten Rechnungen auf dem Handy prüfen (hier nur mit selbst gebauten Beispielrechnungen und Tesseract am PC)
-- [ ] Offen: PDF-Übersicht zeigt fremde Schriftzeichen (Ł, Kyrillisch, Emoji) weiter als „?“
+
+**Paket 12 – Vertragspartner, Währungszeichen, PDF-Übersicht (22.11.2026)**
+
+- [x] Foto: Vertragspartner nur mit Beleg (Anschrift in der Absenderzeile, Registerangaben, Kontaktzeile darunter oder erkennbarer Empfänger weiter unten), sonst bleibt das Feld leer; nie die Anschrift des Empfängers, keine Wortreste wie „Ihre“ oder „Kundenreferenz“
+- [x] Gemerkte eigene Anschrift wird nie Vertragspartner; ist sie schon gespeichert, lässt das Schreiben sie weg und warnt (5 Sprachen)
+- [x] Tipp im Schreiben: Einzahl und Mehrzahl, Aufzählung mit „und“ (5 Sprachen)
+- [x] Portugiesisch: Euro hinten („6,99 €“), Real vorn („R$ 6,99“); auf brasilianischen Geräten Euro landesüblich „€ 6,99“
+- [x] PDF-Übersicht: Ł, Ş, Kyrillisch, Japanisch, Hebräisch und Emoji werden gezeichnet statt „?“ (dann Text in der PDF nicht markierbar); Emoji werden beim Kürzen nicht zerschnitten
 
 **Geprüft**
 - [x] Keine Daten verlassen das Handy, kein Analytics-, Tracking- oder Werbe-SDK (14.11.2026)
