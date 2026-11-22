@@ -6,7 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PdfDokument } from '../src/pdf.js';
-import { erzeugeUebersichtPdf, erzeugeZeile, dateinameUebersicht } from '../src/uebersicht-pdf.js';
+import { erzeugeUebersichtPdf, erzeugeZeile, dateinameUebersicht, brauchtGeraeteschrift } from '../src/uebersicht-pdf.js';
 import { setzeSprache } from '../src/i18n.js';
 
 function heutePlusTage(tage) {
@@ -122,10 +122,34 @@ test('Dateiname mit Datum', () => {
 
 test('Übersicht: Beträge landesüblich — Englisch mit Punkt, kein "?" bei Französisch', () => {
     const abo = { ...BASIS, id: 'g', name: 'Miete', kosten: 2436, naechsteZahlung: heutePlusTage(40) };
-    for (const [code, betrag] of [['de', '2.436,00\u00a0€'], ['en', '€2,436.00'], ['es', '2.436,00\u00a0€'], ['pt', '€\u00a02.436,00'], ['fr', '2\u00a0436,00\u00a0€']]) {
+    for (const [code, betrag] of [['de', '2.436,00\u00a0€'], ['en', '€2,436.00'], ['es', '2.436,00\u00a0€'], ['pt', '2.436,00\u00a0€'], ['fr', '2\u00a0436,00\u00a0€']]) {
         setzeSprache(code);
         const region = String(navigator.language || '').slice(0, 2);
         if (region !== code) assert.equal(erzeugeZeile(abo)[1], betrag, code);
     }
     setzeSprache('de');
+});
+
+// --- Zeichen außerhalb der PDF-Schrift: mit den Schriften des Geräts (pdf-bild.js) ---
+const ABO = { id: 'a', name: 'X', kosten: 5, waehrung: 'EUR', turnus: 'Monatlich', kategorie: 'Sport', naechsteZahlung: '2027-01-31', kuendigungsfristTage: 30 };
+
+test('Geräteschrift nur, wenn nötig', () => {
+    for (const name of ['Netflix', 'Müller & Söhne', 'Œuvre ™', 'Café “Zoë”', 'Was?', '日'.slice(1)]) assert.equal(brauchtGeraeteschrift([{ ...ABO, name }]), false, name);
+    for (const name of ['Łódź', 'Şahin', 'Кино', '日本語', 'עברית', '😀', 'Žluťoučký ř', 'Ελλάδα']) assert.equal(brauchtGeraeteschrift([ABO, { ...ABO, name }]), true, name);
+    assert.equal(brauchtGeraeteschrift([]), false);
+});
+
+test('Geräteschrift: Namen werden unverändert gezeichnet, Emoji nie zerschnitten, Seitenzahl stimmt', () => {
+    const gezeichnet = [];
+    const leinwand = () => ({ width: 0, height: 0, toDataURL: () => 'data:image/jpeg;base64,' + btoa('\xff\xd8JPEG\xff\xd9'), getContext: () => ({ measureText: (x) => ({ width: [...x].length * 12 }), fillText: (x) => gezeichnet.push(x), fillRect() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {} }) });
+    setzeSprache('de');
+    const abos = Array.from({ length: 60 }, (_, i) => ({ ...ABO, id: String(i), name: ['Łukasz', '😀'.repeat(200), 'Кино'][i % 3] }));
+    const pdf = alsText(erzeugeUebersichtPdf(abos, new Date(2026, 10, 22), { breite: 842, hoehe: 595 }, { leinwand }));
+    const seiten = (pdf.match(/\/Type \/Page /g) || []).length;
+    assert.ok(seiten >= 3);
+    assert.equal((pdf.match(/\/Subtype \/Image/g) || []).length, seiten);
+    assert.ok(gezeichnet.includes('Łukasz') && gezeichnet.includes('Кино'));
+    assert.ok(gezeichnet.some((x) => /^(?:😀)+…$/u.test(x)));
+    assert.ok(gezeichnet.includes(`Seite ${seiten} von ${seiten}`));
+    assert.ok(!gezeichnet.some((x) => /\ufffd/.test(x)));
 });

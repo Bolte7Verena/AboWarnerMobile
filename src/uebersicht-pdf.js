@@ -12,7 +12,8 @@
  */
 
 import { PdfDokument, istDarstellbar } from './pdf.js';
-import { ermittleHauptwaehrung } from './waehrungen.js';
+import { BildDokument } from './pdf-bild.js';
+import { ermittleHauptwaehrung, normalisiereWaehrung } from './waehrungen.js';
 import {
     Calculator, ermittleEffektivesZahlungsdatum, ermittleHandlungsDatum, istProbezeitLaufend,
     formatiereDatumISO, istGekuendigtLaufend, istVertragBeendet,
@@ -81,10 +82,18 @@ export function dateinameUebersicht(heute = new Date()) {
     return `${t('datei.pdf')}-${formatiereDatumISO(heute)}.pdf`;
 }
 
-export function erzeugeUebersichtPdf(alleAbos, heute = new Date(), papier = papierformat()) {
+// Enthält ein Name Zeichen, die die PDF-Schrift nicht kennt (Ł, Кино, Emoji), wird
+// mit den Schriften des Geräts gezeichnet (pdf-bild.js), sonst stünde dort "?".
+export function brauchtGeraeteschrift(alleAbos) {
+    return alleAbos.some((abo) => !istDarstellbar(`${abo.name} ${normalisiereWaehrung(abo.waehrung)}`));
+}
+
+export function erzeugeUebersichtPdf(alleAbos, heute = new Date(), papier = papierformat(), { leinwand } = {}) {
     const { breite: BREITE, hoehe: HOEHE } = papier;
     const SPALTEN = spaltenFuer(BREITE);
-    const pdf = new PdfDokument({ breite: BREITE, hoehe: HOEHE, titel: t('pdf.titel') });
+    const optionen = { breite: BREITE, hoehe: HOEHE, titel: t('pdf.titel'), ...(leinwand ? { leinwand } : {}) };
+    const mitLeinwand = leinwand || typeof document !== 'undefined';
+    const pdf = mitLeinwand && brauchtGeraeteschrift(alleAbos) ? new BildDokument(optionen) : new PdfDokument(optionen);
     const abos = sortiereAbos(alleAbos, heute);
     const laufende = alleAbos.filter((abo) => !istVertragBeendet(abo, heute));
 

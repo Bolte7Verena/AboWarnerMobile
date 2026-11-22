@@ -125,12 +125,13 @@ export class PdfDokument {
         return zuCodes(text).reduce((summe, c) => summe + tabelle[c], 0) * groesse / 1000;
     }
 
-    // Kürzt einen Text mit "…", bis er in maxBreite passt.
+    // Kürzt einen Text mit "…", bis er in maxBreite passt (nie mitten in einem Emoji).
     kuerze(text, maxBreite, groesse, fett = false) {
         let t = String(text);
         if (this.textBreite(t, groesse, fett) <= maxBreite) return t;
-        while (t.length > 0 && this.textBreite(t + '…', groesse, fett) > maxBreite) t = t.slice(0, -1);
-        return t.trimEnd() + '…';
+        const zeichen = [...t];
+        while (zeichen.length > 0 && this.textBreite(zeichen.join('') + '…', groesse, fett) > maxBreite) zeichen.pop();
+        return zeichen.join('').trimEnd() + '…';
     }
 
     // Schriftgröße, mit der ein Text ungekürzt in maxBreite passt (höchstens `groesse`).
