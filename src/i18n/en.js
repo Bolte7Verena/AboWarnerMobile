@@ -292,21 +292,23 @@ export default {
                 </p>
 
                 <h3>2. Purpose of processing and data processed</h3>
-                <p>Abo-Warner Pro only processes the data you enter yourself (subscription name, cost, category, payment dates and notice periods and, if you enter them, contract number, customer number, the provider's address and your sender details for the cancellation letter). This data is stored only locally in a file on your device (in the user-specific application data directory of your operating system). It is not transmitted to the provider or to any third party.</p>
+                <p>Abo-Warner Pro only processes the data you enter yourself (subscription name, cost, category, payment dates and notice periods and, if you enter them, contract number, customer number, the provider's address and your sender details for the cancellation letter). This data is stored only locally in a file on your device (in the user-specific application data directory of your operating system). There the app also automatically keeps a safety copy of this file so that your subscriptions can be restored if the file is damaged. The app does not transmit this data to the provider or to any third party.</p>
                 <p><strong>Scan from photo (optional):</strong> Only when you tap “Scan from photo” and then “Take photo” or “Choose image” does the app open your device’s camera or image picker; only then may your device ask for permission. The image is analyzed exclusively on your device (iPhone: Apple’s “Vision” text recognition, which is part of the operating system; Android: the Tesseract text recognition included in the app). It is not saved and not transmitted; temporary files are deleted after reading. The recognized details are only entered into the form as suggestions and are saved only when you tap “Save subscription” yourself. Nothing is transmitted to the provider or to any third party.</p>
 
                 <h3>3. Server logs, hosting and external services</h3>
                 <p>AppVektor does not operate any server that receives data from the app; accordingly, AppVektor does not hold any server logs about your use of the app. The fonts used by the app are stored locally in the app; the app does not load any content from external servers. No analytics, tracking or advertising services are integrated. If you obtain the app from an app store (e.g., Apple App Store or Google Play), its operator processes the resulting data under its own responsibility.</p>
                 <p>At the very bottom of the app you will find a link to appvektor.com. If you tap it, the website opens in your device’s browser; the website’s privacy policy applies there. The app itself does not transmit any data in this process.</p>
 
+                <p><strong>Device backup:</strong> If you have switched on device backup by Apple (iCloud Backup) or Google (Android backup), your device may also back up data of the app. This is done by the operating system in your own account; AppVektor has no access to it. You can switch this backup off in your device’s settings.</p>
+
                 <h3>4. No analytics and no tracking</h3>
                 <p>Abo-Warner Pro does not use cookies, analytics software or user tracking.</p>
 
                 <h3>5. Storage period</h3>
-                <p>Your data remains stored locally until you delete, edit or export it via the app, or until you uninstall the app.</p>
+                <p>Your data remains stored locally until you delete or edit it in the app, or until you uninstall the app. The automatic safety copy is updated with every change. If you restore a backup, the app keeps the previous list of subscriptions on the device until the next restore. If the subscription file was damaged, the damaged file is kept on the device until you uninstall the app. Data in a device backup is subject to the rules of Apple or Google.</p>
 
                 <h3>6. Your rights</h3>
-                <p>As all data is stored exclusively on your device, you can exercise your rights of access, rectification and erasure (Art. 15, 16, 17 GDPR) at any time directly via the “Edit”, “Delete” and “Create backup” (under “Back up your data”) functions in the app. For further requests, please use the contact address given in the legal notice. You also have the right to lodge a complaint with a data protection supervisory authority (Art. 77 GDPR).</p>
+                <p>As the app stores all data exclusively on your device, you can exercise your rights of access, rectification and erasure (Art. 15, 16, 17 GDPR) at any time directly via the “Edit”, “Delete” and “Create backup” (under “Back up your data”) functions in the app. For further requests, please use the contact address given in the legal notice. You also have the right to lodge a complaint with a data protection supervisory authority (Art. 77 GDPR).</p>
 
                 <h3>7. Contact for privacy requests</h3>
                 <p>For privacy requests or to exercise your rights, you can reach us at kontakt@appvektor.com or by phone at +49 421 9899 1701.</p>
