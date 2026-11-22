@@ -242,6 +242,18 @@ test('Viele Änderungen gleichzeitig: keine geht verloren', async () => {
     assert.equal(fs.d[HAUPTDATEI], fs.d[KOPIE]);
 });
 
+test('Gerät ergänzt BOM oder Zeilenumbruch: Speichern und Lesen klappen trotzdem', async () => {
+    for (const [vorn, hinten] of [['\uFEFF', ''], ['', '\n'], ['\uFEFF', '\r\n']]) {
+        const fs = dateisystem();
+        const lies = fs.lies;
+        fs.lies = async (n) => { const x = await lies(n); return x === null ? null : vorn + x + hinten; };
+        const s = erzeugeSpeicher(fs);
+        await s.aendere((x) => [...x, { id: 'ü', name: 'Zoë 😀 日本語 \uD800' }]);
+        assert.equal((await s.lade()).length, 1);
+        assert.equal(s.holeMeldung(), null);
+    }
+});
+
 test('Nach einem Fehler laufen weitere Änderungen normal', async () => {
     const fs = dateisystem();
     const s = erzeugeSpeicher(fs);

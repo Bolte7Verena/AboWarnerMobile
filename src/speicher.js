@@ -23,13 +23,16 @@
 export const HAUPTDATEI = 'abos.json';
 export const KOPIE = 'abos-kopie.json';
 
+// Ein Gerät darf am Anfang/Ende ein BOM oder einen Zeilenumbruch ergänzen.
+const gleich = (a, b) => typeof a === 'string' && typeof b === 'string' && a.trim() === b.trim();
+
 const istAbo = (wert) => !!wert && typeof wert === 'object' && !Array.isArray(wert);
 
 // Text -> { abos, vollstaendig } oder null, wenn unbrauchbar.
 function deute(text) {
     let daten;
     try {
-        daten = JSON.parse(text);
+        daten = JSON.parse(text.trim());
     } catch (error) {
         return null;
     }
@@ -72,7 +75,7 @@ export function erzeugeSpeicher(dateien, jetzt = () => new Date(), warte = (ms) 
 
     async function schreibeGeprueft(name, text) {
         await dateien.schreibe(name, text);
-        if (await dateien.lies(name) !== text) throw new Error(`${name} wurde nicht vollständig geschrieben`);
+        if (!gleich(await dateien.lies(name), text)) throw new Error(`${name} wurde nicht vollständig geschrieben`);
     }
 
     // Beschädigte Datei unter eigenem Namen aufheben.
@@ -146,7 +149,7 @@ export function erzeugeSpeicher(dateien, jetzt = () => new Date(), warte = (ms) 
             // Hauptdatei noch die alte? Dann gilt die Änderung als nicht gespeichert.
             const haupt = await pruefe(HAUPTDATEI);
             if (haupt.art === 'ok') {
-                if (haupt.text === text) return;
+                if (gleich(haupt.text, text)) return;
                 await frischeKopieAuf(haupt.text);
                 throw error;
             }
