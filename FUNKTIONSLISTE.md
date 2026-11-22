@@ -223,7 +223,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Schreiben: Schalter „Per Einschreiben“ (Standard aus), Vermerk nur dann, in allen 11 Fassungen
 - [x] Schreiben: es-ES-Kernsatz, englischer Betreff „Cancellation – …“, deutsche Unterschriftslinie
 - [x] Schreiben: Von Hand geänderter Text bleibt erhalten, wenn danach Absender oder Einschreiben geändert wird
-- [ ] Datenschutzseite auf abo-warner-pro.com um die zweite Sicherheitskopie und die aufgehobene beschädigte Datei ergänzen (vor dem Start von 2.0.2)
+- [x] Datenschutzseite auf abo-warner-pro.com um die zweite Sicherheitskopie und die aufgehobene beschädigte Datei ergänzt, 5 Sprachen (veröffentlicht 22.11.2026, Commit 260c296)
 
 **Geprüft**
 - [x] Keine Daten verlassen das Handy, kein Analytics-, Tracking- oder Werbe-SDK (14.11.2026)
