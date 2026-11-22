@@ -126,6 +126,19 @@ export default {
     'kalender.monate': 'Janvier,Février,Mars,Avril,Mai,Juin,Juillet,Août,Septembre,Octobre,Novembre,Décembre',
 
     // --- Sauvegarde, restauration, PDF ---
+    // --- Speichern fehlgeschlagen, beschädigte Abo-Datei ---
+    'speichern.titel': 'Non enregistré',
+    'speichern.fehler': 'La modification n’a pas pu être enregistrée. Vos données existantes sont inchangées. Vérifiez qu’il reste de l’espace libre sur votre appareil, puis réessayez.',
+    'speichern.fehlerFormular': 'Non enregistré. Vos saisies sont toujours là : veuillez réessayer.',
+    'speicher.wiederhergestelltTitel': 'Abonnements restaurés',
+    'speicher.wiederhergestelltText': 'Le fichier des abonnements était endommagé. Restauré à partir de la copie automatique : {anzahl}. Veuillez vérifier que tout est correct.',
+    'speicher.teilweiseTitel': 'Fichier des abonnements endommagé',
+    'speicher.teilweiseText': 'Une partie du fichier des abonnements était endommagée. Encore lisible : {anzahl}. Veuillez vérifier votre liste. Le fichier endommagé a été conservé. Si vous avez une sauvegarde, utilisez « Restaurer une sauvegarde ». Aide : kontakt@appvektor.com',
+    'speicher.verlorenTitel': 'Fichier des abonnements endommagé',
+    'speicher.verlorenText': 'Le fichier des abonnements est endommagé et aucune copie automatique n’est utilisable. Le fichier endommagé a été conservé. Si vous avez une sauvegarde, utilisez « Restaurer une sauvegarde ». Aide : kontakt@appvektor.com',
+    'speicher.gesperrtTitel': 'Abonnements illisibles pour le moment',
+    'speicher.gesperrtText': 'Votre fichier des abonnements ne peut pas être lu ou réparé de façon sûre pour le moment. Rien n’a été supprimé. Pour ne rien perdre, l’enregistrement est bloqué. Vérifiez qu’il reste de l’espace libre, fermez complètement l’application et rouvrez-la. Aide : kontakt@appvektor.com',
+
     'daten.titel': 'Sauvegarder vos données',
     'daten.text': 'Vos abonnements sont enregistrés uniquement sur cet appareil. Créez de temps en temps une sauvegarde et conservez-la en lieu sûr, p. ex. dans votre cloud ou en vous l’envoyant par e-mail.',
     'daten.erstellen': 'Créer une sauvegarde',
@@ -183,6 +196,7 @@ export default {
     'brief.feldEmailHinweis': '(facultatif, pour la confirmation)',
     'brief.optional': 'facultatif',
     'brief.merkHinweis': 'Enregistré sur cet appareil et rempli automatiquement la prochaine fois.',
+    'brief.merkFehler': 'N’a pas pu être enregistré sur cet appareil. Il faudra le saisir à nouveau la prochaine fois.',
     'brief.tipp': 'Astuce : sous « Modifier », vous pouvez ajouter à l’abonnement {liste}. Ils apparaîtront alors automatiquement dans la lettre.',
     'brief.tippAnschrift': 'l’adresse du prestataire',
     'brief.tippVertragsnummer': 'le numéro de contrat',

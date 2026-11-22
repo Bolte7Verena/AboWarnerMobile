@@ -125,6 +125,19 @@ export default {
     'kalender.monate': 'Janeiro,Fevereiro,Março,Abril,Maio,Junho,Julho,Agosto,Setembro,Outubro,Novembro,Dezembro',
 
     // --- Backup, restaurar, PDF ---
+    // --- Speichern fehlgeschlagen, beschädigte Abo-Datei ---
+    'speichern.titel': 'Não foi salvo',
+    'speichern.fehler': 'Não foi possível salvar a alteração. Seus dados anteriores não foram alterados. Verifique se há espaço livre no seu aparelho e tente novamente.',
+    'speichern.fehlerFormular': 'Não foi salvo. Seus dados continuam aqui: tente novamente.',
+    'speicher.wiederhergestelltTitel': 'Assinaturas restauradas',
+    'speicher.wiederhergestelltText': 'O arquivo de assinaturas estava danificado. Restaurado da cópia automática: {anzahl}. Verifique se está tudo certo.',
+    'speicher.teilweiseTitel': 'Arquivo de assinaturas danificado',
+    'speicher.teilweiseText': 'Uma parte do arquivo de assinaturas estava danificada. Ainda legível: {anzahl}. Confira sua lista. O arquivo danificado foi guardado. Se você tiver um backup, use “Restaurar backup”. Ajuda: kontakt@appvektor.com',
+    'speicher.verlorenTitel': 'Arquivo de assinaturas danificado',
+    'speicher.verlorenText': 'O arquivo de assinaturas está danificado e não há uma cópia automática utilizável. O arquivo danificado foi guardado. Se você tiver um backup, use “Restaurar backup”. Ajuda: kontakt@appvektor.com',
+    'speicher.gesperrtTitel': 'Assinaturas ilegíveis no momento',
+    'speicher.gesperrtText': 'No momento, seu arquivo de assinaturas não pode ser lido ou reparado com segurança. Nada foi excluído. Para não perder nada, não é possível salvar. Verifique se há espaço livre, feche o app por completo e abra-o de novo. Ajuda: kontakt@appvektor.com',
+
     'daten.titel': 'Proteger seus dados',
     'daten.text': 'Suas assinaturas ficam salvas apenas neste aparelho. Crie um backup de vez em quando e guarde-o em um lugar seguro, por exemplo, na sua nuvem ou enviando-o para o seu próprio e-mail.',
     'daten.erstellen': 'Criar backup',
@@ -182,6 +195,7 @@ export default {
     'brief.feldEmailHinweis': '(opcional, para a confirmação)',
     'brief.optional': 'opcional',
     'brief.merkHinweis': 'Fica salvo neste aparelho e é preenchido automaticamente da próxima vez.',
+    'brief.merkFehler': 'Não foi possível salvar neste aparelho. Da próxima vez, preencha novamente.',
     'brief.tipp': 'Dica: em “Editar” você pode adicionar à assinatura {liste}. Assim eles aparecem automaticamente na carta.',
     'brief.tippAnschrift': 'o endereço do fornecedor',
     'brief.tippVertragsnummer': 'o número do contrato',

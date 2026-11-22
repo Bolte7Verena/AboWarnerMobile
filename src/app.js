@@ -8,7 +8,7 @@ import { Calculator, FRIST_EINHEITEN, istProbezeitLaufend, ermittleFristAngabe, 
 import { initDatePicker } from './datepicker.js';
 import { t, tAnzahl, tWert, formatiereDatum, formatiereZahlEingabe, formatiereBetrag } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
-import { frageBestaetigung, frageDatum } from './bestaetigung.js';
+import { frageBestaetigung, frageDatum, zeigeMeldung } from './bestaetigung.js';
 import { planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { pruefeSicherung, MAX_DATEIGROESSE_BYTES } from './sicherung.js';
 import { ermittleHauptwaehrung, normalisiereWaehrung } from './waehrungen.js';
@@ -23,9 +23,25 @@ import { erzeugeUebersichtPdf, dateinameUebersicht } from './uebersicht-pdf.js';
 async function nachDatenaenderung() {
     const alleAbos = await zeigeAbos();
     // Bewusst nicht abgewartet: Fehler werden in der Funktion selbst
-    // abgefangen und dürfen die Oberfläche nicht blockieren.
-    planeFaelligkeitsBenachrichtigungen(alleAbos);
+    // abgefangen und dürfen die Oberfläche nicht blockieren. Sind die Abos gerade
+    // nicht lesbar, bleiben die schon geplanten Erinnerungen stehen.
+    if (!window.api.speicherGesperrt()) planeFaelligkeitsBenachrichtigungen(alleAbos);
     return alleAbos;
+}
+
+// Speichern fehlgeschlagen: deutlich sagen, dass sich nichts geändert hat.
+function meldeSpeicherfehler() {
+    return zeigeMeldung({ titel: t('speichern.titel'), text: t('speichern.fehler') });
+}
+
+// Abo-Datei war beschädigt oder ist nicht lesbar (siehe speicher.js).
+function zeigeSpeicherMeldung() {
+    const meldung = window.api.speicherMeldung();
+    if (!meldung) return;
+    zeigeMeldung({
+        titel: t(`speicher.${meldung.art}Titel`),
+        text: t(`speicher.${meldung.art}Text`, { anzahl: anzahlText(meldung.anzahl) })
+    });
 }
 
 const ICON_WALLET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>';
@@ -465,7 +481,7 @@ async function stelleSicherungWiederHer(datei) {
 // danach Teilen-Menü. Keine Sicherung, nur zum Lesen/Ausdrucken.
 async function erstelleUebersichtPdf() {
     try {
-        const abos = await window.api.loadAbos();
+        const abos = await window.api.loadAbosFuerPdf();
         const bytes = erzeugeUebersichtPdf(abos);
         const ergebnis = await window.api.exportPdf(bytes, dateinameUebersicht());
         if (ergebnis.abgebrochen) {
@@ -558,7 +574,14 @@ function zeigeBearbeitenModus(kachel, abo) {
             return;
         }
 
-        await window.api.updateAbo(aktualisiertesAbo);
+        try {
+            await window.api.updateAbo(aktualisiertesAbo);
+        } catch (error) {
+            // Formular bleibt offen, die Eingaben sind noch da.
+            if (fehlerEl) fehlerEl.textContent = t('speichern.fehlerFormular');
+            meldeSpeicherfehler();
+            return;
+        }
         await nachDatenaenderung();
     });
 }
@@ -612,6 +635,8 @@ export async function zeigeAbos() {
         sichtbareAbos.forEach((abo) => listeDiv.appendChild(erzeugeAboKachel(abo)));
     }
 
+    zeigeSpeicherMeldung();
+
     // 2. Statistik-Kacheln aus den ungefilterten Daten berechnen (unabhängig von
     // Suche/Kategorie-Filter — die vier Kacheln bilden immer den Gesamtbestand ab).
     const statistiken = berechneStatistiken(alleAbos);
@@ -639,7 +664,11 @@ export async function aktualisiereBeiNeuemTag() {
 
 // Globale Schnittstellen für das DOM
 window.aboLoeschen = async (id) => {
-    await window.api.deleteAbo(id);
+    try {
+        await window.api.deleteAbo(id);
+    } catch (error) {
+        await meldeSpeicherfehler();
+    }
     await nachDatenaenderung();
 };
 
@@ -657,7 +686,11 @@ window.aboKuendigen = async (id) => {
         bestaetigenText: t('gekuendigt.speichern')
     });
     if (!gekuendigtZum) return;
-    await window.api.updateAbo({ ...abo, gekuendigt: true, gekuendigtZum });
+    try {
+        await window.api.updateAbo({ ...abo, gekuendigt: true, gekuendigtZum });
+    } catch (error) {
+        await meldeSpeicherfehler();
+    }
     await nachDatenaenderung();
 };
 
@@ -704,7 +737,14 @@ async function speichereNeuesAbo() {
     }
 
     if (fehlerEl) fehlerEl.textContent = '';
-    await window.api.saveAbo(neuesAbo);
+    try {
+        await window.api.saveAbo(neuesAbo);
+    } catch (error) {
+        // Formular bleibt offen, die Eingaben sind noch da.
+        if (fehlerEl) fehlerEl.textContent = t('speichern.fehlerFormular');
+        meldeSpeicherfehler();
+        return false;
+    }
     document.getElementById('abo-form').reset();
     await nachDatenaenderung();
     return true;

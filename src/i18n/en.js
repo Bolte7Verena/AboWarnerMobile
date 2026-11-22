@@ -129,6 +129,19 @@ export default {
     'kalender.monate': 'January,February,March,April,May,June,July,August,September,October,November,December',
 
     // --- Backup, restore, PDF ---
+    // --- Speichern fehlgeschlagen, beschädigte Abo-Datei ---
+    'speichern.titel': 'Not saved',
+    'speichern.fehler': 'The change could not be saved. Your existing data is unchanged. Please check whether your device has free storage space and try again.',
+    'speichern.fehlerFormular': 'Not saved. Your entries are still here – please try again.',
+    'speicher.wiederhergestelltTitel': 'Subscriptions restored',
+    'speicher.wiederhergestelltText': 'The subscription file was damaged. Restored from the automatic safety copy: {anzahl}. Please check that everything is correct.',
+    'speicher.teilweiseTitel': 'Subscription file damaged',
+    'speicher.teilweiseText': 'Part of the subscription file was damaged. Still readable: {anzahl}. Please check your list. The damaged file has been kept. If you have a backup, use “Restore backup”. Help: kontakt@appvektor.com',
+    'speicher.verlorenTitel': 'Subscription file damaged',
+    'speicher.verlorenText': 'The subscription file is damaged and there is no usable safety copy. The damaged file has been kept. If you have a backup, use “Restore backup”. Help: kontakt@appvektor.com',
+    'speicher.gesperrtTitel': 'Subscriptions cannot be read right now',
+    'speicher.gesperrtText': 'Your subscription file cannot be read or repaired safely right now. Nothing has been deleted. To keep your data safe, saving is locked. Please check whether your device has free storage space, close the app completely and open it again. Help: kontakt@appvektor.com',
+
     'daten.titel': 'Back up your data',
     'daten.text': 'Your subscriptions are stored only on this device. Create a backup from time to time and keep it somewhere safe, e.g., in your cloud or by emailing it to yourself.',
     'daten.erstellen': 'Create backup',
@@ -186,6 +199,7 @@ export default {
     'brief.feldEmailHinweis': '(optional, for the confirmation)',
     'brief.optional': 'optional',
     'brief.merkHinweis': 'Saved on this device and filled in automatically next time.',
+    'brief.merkFehler': 'Could not be saved on this device. Please enter it again next time.',
     'brief.tipp': 'Tip: you can add the {liste} to the subscription under “Edit”. They will then appear in the letter automatically.',
     'brief.tippAnschrift': 'provider’s address',
     'brief.tippVertragsnummer': 'contract number',

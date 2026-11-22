@@ -59,6 +59,31 @@ export function frageBestaetigung({ titel, text, bestaetigenText = t('knopf.ok')
     });
 }
 
+// Wichtige Nachricht mit nur einem Knopf (z.B. "Nicht gespeichert"). Bleibt
+// stehen, bis sie bestätigt wird — ein Tippen daneben schließt sie nicht.
+export function zeigeMeldung({ titel, text }) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay bestaetigung-overlay meldung-overlay';
+        overlay.innerHTML = `
+            <div class="glass-strong modal-dialog bestaetigung-dialog" role="alertdialog" aria-modal="true" aria-labelledby="meldung-titel" aria-describedby="meldung-text">
+                <h2 class="modal-title" id="meldung-titel">${escapeHtml(titel)}</h2>
+                <p class="bestaetigung-text" id="meldung-text">${escapeHtml(text)}</p>
+                <div class="modal-aktionen bestaetigung-aktionen">
+                    <button type="button" class="btn btn-primary btn-sm meldung-ok-btn">${escapeHtml(t('knopf.ok'))}</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        const knopf = overlay.querySelector('.meldung-ok-btn');
+        knopf.addEventListener('click', () => {
+            overlay.remove();
+            resolve();
+        });
+        knopf.focus();
+    });
+}
+
 // Dialog mit einem Datumsfeld (deutscher Kalender), z.B. "Gekündigt zum".
 // Liefert das gewählte Datum als ISO-String ("2026-12-31") oder null bei Abbruch.
 export function frageDatum({ titel, text, label, vorschlagISO = '', bestaetigenText = t('knopf.speichern'), abbrechenText = t('knopf.abbrechen') }) {

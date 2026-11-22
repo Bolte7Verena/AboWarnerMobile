@@ -125,6 +125,19 @@ export default {
     'kalender.monate': 'Enero,Febrero,Marzo,Abril,Mayo,Junio,Julio,Agosto,Septiembre,Octubre,Noviembre,Diciembre',
 
     // --- Copia de seguridad, restaurar, PDF ---
+    // --- Speichern fehlgeschlagen, beschädigte Abo-Datei ---
+    'speichern.titel': 'No se ha guardado',
+    'speichern.fehler': 'No se pudo guardar el cambio. Tus datos anteriores no se han modificado. Comprueba si queda espacio libre en tu dispositivo e inténtalo de nuevo.',
+    'speichern.fehlerFormular': 'No se ha guardado. Tus datos siguen aquí: inténtalo de nuevo.',
+    'speicher.wiederhergestelltTitel': 'Suscripciones restauradas',
+    'speicher.wiederhergestelltText': 'El archivo de suscripciones estaba dañado. Restaurado desde la copia automática: {anzahl}. Comprueba que todo esté correcto.',
+    'speicher.teilweiseTitel': 'Archivo de suscripciones dañado',
+    'speicher.teilweiseText': 'Una parte del archivo de suscripciones estaba dañada. Aún legible: {anzahl}. Revisa tu lista. El archivo dañado se ha conservado. Si tienes una copia de seguridad, usa «Restaurar copia de seguridad». Ayuda: kontakt@appvektor.com',
+    'speicher.verlorenTitel': 'Archivo de suscripciones dañado',
+    'speicher.verlorenText': 'El archivo de suscripciones está dañado y no hay ninguna copia automática utilizable. El archivo dañado se ha conservado. Si tienes una copia de seguridad, usa «Restaurar copia de seguridad». Ayuda: kontakt@appvektor.com',
+    'speicher.gesperrtTitel': 'Ahora no se pueden leer las suscripciones',
+    'speicher.gesperrtText': 'En este momento no se puede leer o reparar de forma segura tu archivo de suscripciones. No se ha borrado nada. Para no perder datos, no se puede guardar. Comprueba si queda espacio libre, cierra la app por completo y vuelve a abrirla. Ayuda: kontakt@appvektor.com',
+
     'daten.titel': 'Proteger tus datos',
     'daten.text': 'Tus suscripciones solo están guardadas en este dispositivo. Crea de vez en cuando una copia de seguridad y guárdala en un lugar seguro, p. ej. en tu nube o enviándola a tu propio correo.',
     'daten.erstellen': 'Crear copia de seguridad',
@@ -182,6 +195,7 @@ export default {
     'brief.feldEmailHinweis': '(opcional, para la confirmación)',
     'brief.optional': 'opcional',
     'brief.merkHinweis': 'Se guarda en este dispositivo y se rellena automáticamente la próxima vez.',
+    'brief.merkFehler': 'No se pudo guardar en este dispositivo. La próxima vez tendrás que escribirlo de nuevo.',
     'brief.tipp': 'Consejo: en «Editar» puedes añadir a la suscripción {liste}. Así aparecerán automáticamente en la carta.',
     'brief.tippAnschrift': 'la dirección del proveedor',
     'brief.tippVertragsnummer': 'el número de contrato',

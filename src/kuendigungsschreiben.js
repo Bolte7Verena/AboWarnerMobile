@@ -42,8 +42,9 @@ function ladeAbsenderDaten() {
 function speichereAbsenderDaten(absender) {
     try {
         localStorage.setItem(ABSENDER_STORAGE_KEY, JSON.stringify(absender));
+        return true;
     } catch (error) {
-        // Speichern ist Komfort — ohne localStorage funktioniert das Schreiben trotzdem.
+        return false; // Das Schreiben funktioniert trotzdem, es wird nur nichts gemerkt.
     }
 }
 
@@ -167,6 +168,7 @@ export function oeffneKuendigungsschreibenModal(abo) {
 
     const textarea = overlay.querySelector('.modal-letter-textarea');
     const copyStatus = overlay.querySelector('.modal-copy-status');
+    const merkHinweis = overlay.querySelector('.absender-merk-hinweis');
     const summaryText = overlay.querySelector('.absender-summary-text');
 
     function aktualisiereSchreiben() {
@@ -174,7 +176,8 @@ export function oeffneKuendigungsschreibenModal(abo) {
         absenderFelder.forEach((feld) => {
             aktuellerAbsender[feld.dataset.absenderFeld] = feld.value.trim();
         });
-        speichereAbsenderDaten(aktuellerAbsender);
+        const gemerkt = speichereAbsenderDaten(aktuellerAbsender);
+        merkHinweis.textContent = t(gemerkt ? 'brief.merkHinweis' : 'brief.merkFehler');
         summaryText.textContent = absenderVollstaendig(aktuellerAbsender)
             ? t('brief.absenderKurz', { name: aktuellerAbsender.name, ort: aktuellerAbsender.plzOrt })
             : t('brief.bitteAusfuellen');

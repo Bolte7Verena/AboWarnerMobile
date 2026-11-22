@@ -9,7 +9,8 @@
  * An den gespeicherten Abos ändert das nichts.
  */
 
-import { ladeSpracheinstellung, speichereSpracheinstellung } from './i18n.js';
+import { ladeSpracheinstellung, speichereSpracheinstellung, t } from './i18n.js';
+import { zeigeMeldung } from './bestaetigung.js';
 import { ladeWaehrungseinstellung, speichereWaehrungseinstellung, ermittleHauptwaehrung } from './waehrungen.js';
 import { hauptwaehrungsOptionen } from './waehrungsauswahl.js';
 
@@ -44,8 +45,11 @@ export function initSprachwahl({ neuLaden = () => window.location.reload() } = {
             schliesse();
             return;
         }
-        speichereSpracheinstellung(gewaehlt);
-        speichereWaehrungseinstellung(waehrung);
+        const gespeichert = speichereSpracheinstellung(gewaehlt) && speichereWaehrungseinstellung(waehrung);
+        if (!gespeichert) {
+            zeigeMeldung({ titel: t('speichern.titel'), text: t('speichern.fehler') });
+            return;
+        }
         neuLaden();
     }
 

@@ -127,6 +127,19 @@ export default {
     'kalender.monate': 'Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember',
 
     // --- Daten sichern, Wiederherstellen, PDF ---
+    // --- Speichern fehlgeschlagen, beschädigte Abo-Datei ---
+    'speichern.titel': 'Nicht gespeichert',
+    'speichern.fehler': 'Die Änderung konnte nicht gespeichert werden. Deine bisherigen Daten sind unverändert. Prüfe bitte, ob auf deinem Gerät noch Speicher frei ist, und versuche es noch einmal.',
+    'speichern.fehlerFormular': 'Nicht gespeichert. Deine Eingaben stehen noch hier – bitte versuche es noch einmal.',
+    'speicher.wiederhergestelltTitel': 'Abos wiederhergestellt',
+    'speicher.wiederhergestelltText': 'Die Abo-Datei war beschädigt. Aus der automatischen Sicherheitskopie wiederhergestellt: {anzahl}. Bitte prüfe kurz, ob alles stimmt.',
+    'speicher.teilweiseTitel': 'Abo-Datei beschädigt',
+    'speicher.teilweiseText': 'Ein Teil der Abo-Datei war beschädigt. Noch lesbar: {anzahl}. Bitte prüfe deine Liste. Die beschädigte Datei wurde aufgehoben. Wenn du eine Sicherung hast, nutze „Sicherung wiederherstellen“. Hilfe: kontakt@appvektor.com',
+    'speicher.verlorenTitel': 'Abo-Datei beschädigt',
+    'speicher.verlorenText': 'Die Abo-Datei ist beschädigt, und es gibt keine brauchbare Sicherheitskopie. Die beschädigte Datei wurde aufgehoben. Wenn du eine Sicherung hast, nutze „Sicherung wiederherstellen“. Hilfe: kontakt@appvektor.com',
+    'speicher.gesperrtTitel': 'Abos gerade nicht lesbar',
+    'speicher.gesperrtText': 'Deine Abo-Datei kann gerade nicht sicher gelesen oder repariert werden. Es wurde nichts gelöscht. Damit nichts verloren geht, ist das Speichern gesperrt. Prüfe bitte, ob noch Speicher frei ist, schließe die App ganz und öffne sie neu. Hilfe: kontakt@appvektor.com',
+
     'daten.titel': 'Daten sichern',
     'daten.text': 'Deine Abos liegen nur auf diesem Gerät. Erstelle ab und zu eine Sicherung und bewahre sie gut auf, z.B. in deiner Cloud oder per E-Mail an dich selbst.',
     'daten.erstellen': 'Sicherung erstellen',
@@ -184,6 +197,7 @@ export default {
     'brief.feldEmailHinweis': '(optional, für die Bestätigung)',
     'brief.optional': 'optional',
     'brief.merkHinweis': 'Wird auf diesem Gerät gemerkt und beim nächsten Mal automatisch eingesetzt.',
+    'brief.merkFehler': 'Konnte auf diesem Gerät nicht gemerkt werden. Beim nächsten Mal bitte neu eintragen.',
     'brief.tipp': 'Tipp: {liste} kannst du beim Abo unter „Bearbeiten“ hinterlegen. Dann stehen sie automatisch im Schreiben.',
     'brief.tippAnschrift': 'Anschrift des Anbieters',
     'brief.tippVertragsnummer': 'Vertragsnummer',

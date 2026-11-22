@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 7. Native Benachrichtigungen (nur mobil) — läuft unabhängig vom
         // Toast oben und darf dessen Anzeige nicht beeinflussen können.
-        planeFaelligkeitsBenachrichtigungen(alleAbos);
+        if (!window.api.speicherGesperrt()) planeFaelligkeitsBenachrichtigungen(alleAbos);
     } catch (error) {
         console.error('Fataler Startfehler:', error);
     }

@@ -58,8 +58,9 @@ export function ladeSpracheinstellung() {
 export function speichereSpracheinstellung(wert) {
     try {
         localStorage.setItem(SPRACH_EINSTELLUNG_KEY, EINSTELLUNGEN.includes(wert) ? wert : 'auto');
+        return true;
     } catch (error) {
-        // Ohne localStorage gilt weiterhin "automatisch".
+        return false; // es gilt weiterhin die bisherige Einstellung
     }
 }
 

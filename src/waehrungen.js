@@ -157,8 +157,9 @@ export function ladeWaehrungseinstellung() {
 export function speichereWaehrungseinstellung(wert) {
     try {
         localStorage.setItem(HAUPTWAEHRUNG_KEY, KURSE_JE_EURO[wert] ? wert : 'auto');
+        return true;
     } catch (error) {
-        // Ohne localStorage gilt weiterhin "automatisch".
+        return false; // es gilt weiterhin die bisherige Einstellung
     }
 }
 

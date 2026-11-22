@@ -14,9 +14,8 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { waehrungFuerLand } from './waehrungen.js';
 import { geraeteRegion } from './region.js';
+import { erzeugeSpeicher } from './speicher.js';
 import { t } from './i18n.js';
-
-const DATEI_NAME = 'abos.json';
 
 // Eigenes, in der App enthaltenes Plugin (kein Fremdpaket): Texterkennung auf
 // dem Gerät. iOS: ios/App/App/TextErkennungPlugin.swift (Apple Vision),
@@ -28,26 +27,32 @@ function pad(zahl) {
     return String(zahl).padStart(2, '0');
 }
 
-// Persistenz im app-eigenen, dauerhaften Datenverzeichnis — das mobile
-// Gegenstück zu app.getPath('userData') auf dem Desktop.
-async function ladeAbosVonDisk() {
-    try {
-        const ergebnis = await Filesystem.readFile({ path: DATEI_NAME, directory: Directory.Data, encoding: Encoding.UTF8 });
-        return JSON.parse(ergebnis.data);
-    } catch (error) {
-        // Datei existiert beim allerersten Start noch nicht — wie beim
-        // Desktop-Pendant (main.js, ENOENT) startet die App dann einfach leer.
-        return [];
-    }
-}
+// Dateizugriff für speicher.js: app-eigenes, dauerhaftes Datenverzeichnis.
+const dateien = {
+    // null nur, wenn es die Datei wirklich nicht gibt (erster Start). Jeder
+    // andere Lesefehler wird weitergereicht, damit nichts überschrieben wird.
+    async lies(name) {
+        try {
+            return String((await Filesystem.readFile({ path: name, directory: Directory.Data, encoding: Encoding.UTF8 })).data);
+        } catch (error) {
+            if (error?.code === 'OS-PLUG-FILE-0008' || /does not exist/i.test(error?.message || '')) return null;
+            const { files } = await Filesystem.readdir({ path: '', directory: Directory.Data });
+            if (!files.some((datei) => datei.name === name)) return null;
+            throw error;
+        }
+    },
+    schreibe: (name, text) => Filesystem.writeFile({ path: name, directory: Directory.Data, data: text, encoding: Encoding.UTF8 }),
+    benenneUm: (von, nach) => Filesystem.rename({ from: von, to: nach, directory: Directory.Data, toDirectory: Directory.Data })
+};
 
-async function schreibeAbosAufDisk(abos) {
-    await Filesystem.writeFile({
-        path: DATEI_NAME,
-        directory: Directory.Data,
-        data: JSON.stringify(abos, null, 2),
-        encoding: Encoding.UTF8
-    });
+const speicher = erzeugeSpeicher(dateien);
+
+// Für Sicherung und PDF: nie eine leere Datei erzeugen, nur weil die Abos
+// gerade nicht lesbar sind.
+async function ladeFuerAusgabe() {
+    const abos = await speicher.lade();
+    if (speicher.istGesperrt() && abos.length === 0) throw new Error('Abo-Datei nicht lesbar');
+    return abos;
 }
 
 // Mobile Geräte kennen keinen "Speichern unter"-Dialog mit Zielpfad — das
@@ -60,42 +65,34 @@ async function teileDatei(dateiname, titel) {
         await Share.share({ title: titel, url: uri });
         return { erfolgreich: true, pfad: dateiname };
     } catch (error) {
-        // Share-Sheet vom Nutzer geschlossen/abgebrochen oder auf diesem Gerät
-        // nicht verfügbar — bewusst wie ein normaler Abbruch behandelt (kein
-        // Fehlertext), da ein geschlossenes Share-Sheet der Normalfall ist,
-        // kein tatsächlicher Fehler.
-        return { erfolgreich: false, abgebrochen: true };
+        // Vom Nutzer geschlossen: Normalfall, kein Fehlertext. Alles andere wird
+        // gemeldet — sonst glaubt man, die Sicherung sei erstellt.
+        if (/cancel/i.test(error?.message || '')) return { erfolgreich: false, abgebrochen: true };
+        throw error;
     }
 }
 
 window.api = {
-    loadAbos: () => ladeAbosVonDisk(),
+    loadAbos: () => speicher.lade(),
 
-    saveAbo: async (neuesAbo) => {
-        const abos = await ladeAbosVonDisk();
-        abos.push(neuesAbo);
-        await schreibeAbosAufDisk(abos);
-        return abos;
-    },
+    // Zustand des Speichers (siehe speicher.js): einmalige Meldung für den
+    // Nutzer bzw. true, solange die Abos nicht sicher gelesen werden können.
+    speicherMeldung: () => speicher.holeMeldung(),
+    speicherGesperrt: () => speicher.istGesperrt(),
 
-    deleteAbo: async (id) => {
-        const abos = await ladeAbosVonDisk();
-        const gefiltert = abos.filter((abo) => abo.id !== id);
-        await schreibeAbosAufDisk(gefiltert);
-        return gefiltert;
-    },
+    // saveAbo/deleteAbo/updateAbo werfen einen Fehler, wenn nicht gespeichert
+    // werden konnte. Die Oberfläche muss ihn anzeigen.
+    saveAbo: (neuesAbo) => speicher.aendere((abos) => [...abos, neuesAbo]),
 
-    updateAbo: async (aktualisiertesAbo) => {
-        const abos = await ladeAbosVonDisk();
-        const index = abos.findIndex((abo) => abo.id === aktualisiertesAbo.id);
-        if (index === -1) return abos;
-        abos[index] = aktualisiertesAbo;
-        await schreibeAbosAufDisk(abos);
-        return abos;
-    },
+    deleteAbo: (id) => speicher.aendere((abos) => abos.filter((abo) => abo.id !== id)),
+
+    updateAbo: (aktualisiertesAbo) => speicher.aendere((abos) => {
+        if (!abos.some((abo) => abo.id === aktualisiertesAbo.id)) throw new Error('Abo nicht gefunden');
+        return abos.map((abo) => (abo.id === aktualisiertesAbo.id ? aktualisiertesAbo : abo));
+    }),
 
     exportAbos: async () => {
-        const abos = await ladeAbosVonDisk();
+        const abos = await ladeFuerAusgabe();
         const heute = new Date();
         const dateiname = `abo-warner-export-${heute.getFullYear()}-${pad(heute.getMonth() + 1)}-${pad(heute.getDate())}.json`;
         await Filesystem.writeFile({
@@ -112,20 +109,13 @@ window.api = {
     // zusätzliches Sicherheitsnetz wird der bisherige Bestand vorher in
     // einer eigenen Datei im App-Datenverzeichnis abgelegt (überschreibt nur
     // die vorherige dieser Art, wird nirgendwohin übertragen).
-    ersetzeAlleAbos: async (neueAbos) => {
-        const bisherige = await ladeAbosVonDisk();
-        await Filesystem.writeFile({
-            path: 'abos-vor-wiederherstellung.json',
-            directory: Directory.Data,
-            data: JSON.stringify(bisherige, null, 2),
-            encoding: Encoding.UTF8
-        });
-        await schreibeAbosAufDisk(neueAbos);
-        return neueAbos;
-    },
+    ersetzeAlleAbos: (neueAbos) => speicher.ersetze(neueAbos, (bisherige) =>
+        dateien.schreibe('abos-vor-wiederherstellung.json', JSON.stringify(bisherige, null, 2))),
 
     // "Übersicht als PDF": bytes ist die lokal erzeugte PDF-Datei (Uint8Array).
     // Binärdaten erwartet Capacitor Filesystem als Base64 (ohne encoding).
+    loadAbosFuerPdf: () => ladeFuerAusgabe(),
+
     exportPdf: async (bytes, dateiname) => {
         let binaer = '';
         const BLOCK = 0x8000;
