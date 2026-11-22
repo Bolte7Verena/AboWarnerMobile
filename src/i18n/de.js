@@ -37,6 +37,7 @@ export default {
     'karte.keineZahlung': 'Keine weitere Zahlung',
     'karte.naechsteZahlung': 'Nächste Zahlung: {datum}',
     'karte.tageBisZahlung': '{tage} Tage bis Zahlung · Frist {frist}',
+    'karte.tageBisZahlung.eins': '{tage} Tag bis Zahlung · Frist {frist}',
     'karte.laeuftHeuteAus': 'Läuft heute aus',
     'karte.laeuftNoch': 'Läuft noch {anzahl} Tage',
     'karte.laeuftNoch.eins': 'Läuft noch {anzahl} Tag',

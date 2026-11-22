@@ -39,6 +39,7 @@ export default {
     'karte.keineZahlung': 'No further payment',
     'karte.naechsteZahlung': 'Next payment: {datum}',
     'karte.tageBisZahlung': '{tage} days until payment · notice period {frist}',
+    'karte.tageBisZahlung.eins': '{tage} day until payment · notice period {frist}',
     'karte.laeuftHeuteAus': 'Ends today',
     'karte.laeuftNoch': 'Ends in {anzahl} days',
     'karte.laeuftNoch.eins': 'Ends in {anzahl} day',

@@ -194,7 +194,7 @@ function fristText(abo) {
 // Grauer Hinweis neben dem Etikett.
 function erzeugeStatusPill(abo, tageBisZahlung) {
     if (!abo.gekuendigt) {
-        return `<span class="abo-status-pill">${t('karte.tageBisZahlung', { tage: tageBisZahlung, frist: fristText(abo) })}</span>`;
+        return `<span class="abo-status-pill">${tAnzahl('karte.tageBisZahlung', tageBisZahlung, { tage: tageBisZahlung, frist: fristText(abo) })}</span>`;
     }
     if (istGekuendigtLaufend(abo)) {
         const tage = berechneTageBisZahlung(parseDatumISO(abo.gekuendigtZum));

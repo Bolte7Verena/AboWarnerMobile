@@ -35,6 +35,7 @@ export default {
     'karte.keineZahlung': 'Sin más pagos',
     'karte.naechsteZahlung': 'Próximo pago: {datum}',
     'karte.tageBisZahlung': '{tage} días hasta el pago · plazo {frist}',
+    'karte.tageBisZahlung.eins': '{tage} día hasta el pago · plazo {frist}',
     'karte.laeuftHeuteAus': 'Termina hoy',
     'karte.laeuftNoch': 'Termina en {anzahl} días',
     'karte.laeuftNoch.eins': 'Termina en {anzahl} día',

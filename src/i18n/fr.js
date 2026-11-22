@@ -36,6 +36,7 @@ export default {
     'karte.keineZahlung': 'Plus aucun paiement',
     'karte.naechsteZahlung': 'Prochain paiement : {datum}',
     'karte.tageBisZahlung': '{tage} jours avant le paiement · préavis {frist}',
+    'karte.tageBisZahlung.eins': '{tage} jour avant le paiement · préavis {frist}',
     'karte.laeuftHeuteAus': 'Prend fin aujourd’hui',
     'karte.laeuftNoch': 'Prend fin dans {anzahl} jours',
     'karte.laeuftNoch.eins': 'Prend fin dans {anzahl} jour',
