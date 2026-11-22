@@ -683,7 +683,7 @@ p { margin: 0; }
 }
 /* Handy: Turnus und Kategorie untereinander, sonst werden lange Wörter abgeschnitten (Telekommunikation). */
 @media (max-width: 480px) {
-    .form-row-auswahl { flex-direction: column; align-items: stretch; }
+    .form-row-auswahl { flex-direction: column; align-items: stretch; gap: 1rem; }
 }
 @media (max-width: 385px) {
     .abo-aktionen .btn svg { display: none; }
