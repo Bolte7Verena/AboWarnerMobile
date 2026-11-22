@@ -95,6 +95,7 @@ export default {
     'feld.gekuendigtZum': 'Gekündigt zum (Vertragsende)',
     'feld.fehler': 'Bitte alle Felder korrekt ausfüllen (inkl. Datum).',
     'feld.bitteWaehlen': 'Bitte wählen',
+    'feld.fehlerBetrag': 'Bitte prüfe den Betrag, z.B. {betrag}.',
     'feld.fehlerKategorie': 'Bitte wähle eine Kategorie.',
     'feld.fehlerFrist': 'Die Kündigungsfrist ist zu lang: höchstens {max} (10 Jahre).',
     'neu.titel': 'Neues Abo hinzufügen',

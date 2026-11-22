@@ -4,7 +4,7 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, FRIST_EINHEITEN, MAX_FRIST, istFristZuLang, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, parseFristAnzahl, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
+import { Calculator, FRIST_EINHEITEN, MAX_BETRAG, MAX_FRIST, istFristZuLang, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, parseFristAnzahl, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { initBetragsfeld } from './betragsfeld.js';
 import { t, tAnzahl, tWert, formatiereDatum, formatiereZahlEingabe, formatiereBetrag } from './i18n.js';
@@ -287,7 +287,7 @@ function erzeugeAboBearbeitenFormular(abo) {
                     <select class="input-control select-control" data-feld="waehrung">${waehrungsOptionen(abo.waehrung)}</select>
                 </div>
             </div>
-            <div class="form-row">
+            <div class="form-row form-row-auswahl">
                 <div class="form-group">
                     <label>${t('feld.turnus')}</label>
                     <select class="input-control select-control" data-feld="turnus">
@@ -378,6 +378,7 @@ function erzeugeAboBearbeitenFormular(abo) {
 // Fehlertext zu einer Eingabe oder '' wenn alles stimmt.
 function eingabeFehler(abo, fristAnzahl, fristEinheit) {
     if (istFristZuLang(fristAnzahl, fristEinheit)) return t('feld.fehlerFrist', { max: tAnzahl(`frist.${fristEinheit}`, MAX_FRIST[fristEinheit]) });
+    if (!(abo.kosten >= 0 && abo.kosten <= MAX_BETRAG)) return t('feld.fehlerBetrag', { betrag: formatiereZahlEingabe(29.99) });
     return Calculator.istGueltig(abo) ? '' : t('feld.fehler');
 }
 

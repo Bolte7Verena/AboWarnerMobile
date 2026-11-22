@@ -94,6 +94,7 @@ export default {
     'feld.gekuendigtZum': 'Résilié, le contrat prend fin le',
     'feld.fehler': 'Veuillez remplir correctement tous les champs (date comprise).',
     'feld.bitteWaehlen': 'Choisir',
+    'feld.fehlerBetrag': 'Veuillez vérifier le montant, p. ex. {betrag}.',
     'feld.fehlerKategorie': 'Veuillez choisir une catégorie.',
     'feld.fehlerFrist': 'Le délai de préavis est trop long : {max} (10 ans) au maximum.',
     'neu.titel': 'Ajouter un abonnement',

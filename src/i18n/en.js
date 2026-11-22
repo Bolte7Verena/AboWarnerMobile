@@ -97,6 +97,7 @@ export default {
     'feld.gekuendigtZum': 'Canceled, contract ends on',
     'feld.fehler': 'Please fill in all fields correctly (including the date).',
     'feld.bitteWaehlen': 'Please select',
+    'feld.fehlerBetrag': 'Please check the amount, e.g., {betrag}.',
     'feld.fehlerKategorie': 'Please select a category.',
     'feld.fehlerFrist': 'The notice period is too long: {max} (10 years) at most.',
     'neu.titel': 'Add new subscription',

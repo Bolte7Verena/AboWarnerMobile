@@ -93,6 +93,7 @@ export default {
     'feld.gekuendigtZum': 'Cancelada, el contrato termina el',
     'feld.fehler': 'Rellena todos los campos correctamente (incluida la fecha).',
     'feld.bitteWaehlen': 'Elige una',
+    'feld.fehlerBetrag': 'Revisa el importe, p. ej. {betrag}.',
     'feld.fehlerKategorie': 'Elige una categoría.',
     'feld.fehlerFrist': 'El plazo de preaviso es demasiado largo: como máximo {max} (10 años).',
     'neu.titel': 'Añadir nueva suscripción',

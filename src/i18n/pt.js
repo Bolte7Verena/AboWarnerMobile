@@ -93,6 +93,7 @@ export default {
     'feld.gekuendigtZum': 'Cancelada, o contrato termina em',
     'feld.fehler': 'Preencha todos os campos corretamente (incluindo a data).',
     'feld.bitteWaehlen': 'Escolha',
+    'feld.fehlerBetrag': 'Confira o valor, por exemplo {betrag}.',
     'feld.fehlerKategorie': 'Escolha uma categoria.',
     'feld.fehlerFrist': 'O prazo de aviso prévio é longo demais: no máximo {max} (10 anos).',
     'neu.titel': 'Adicionar nova assinatura',
