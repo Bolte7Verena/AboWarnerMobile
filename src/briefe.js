@@ -51,11 +51,13 @@ export function langesDatum(datum, locale) {
     }
 }
 
-// Bausteine je Fassung. a = { name, email, ort, vertrag, kunde, abo } (Text, ggf. leer).
+// Bausteine je Fassung. versandart = Vermerk bei Einschreiben. a = { name, email, ort, vertrag, kunde, abo } (Text, ggf. leer).
 const zeilen = (...teile) => teile.filter(Boolean).join('\n');
 
 const FRANZOESISCH = (versandart, locale) => ({
     locale,
+    // Französisch: Versandvermerk unter dem Empfänger.
+    reihenfolge: ['absender', 'empfaenger', 'versandart', 'datum', 'betreff', 'anrede', 'kern', 'bestaetigung', 'gruss'],
     datum: (d, ort) => (ort ? `${ort}, le ${d}` : `Le ${d}`),
     versandart,
     betreff: (a) => zeilen(`Objet : résiliation du contrat – ${a.abo}`, a.vertrag && `Numéro de contrat : ${a.vertrag}`, a.kunde && `Numéro de client : ${a.kunde}`),
@@ -69,20 +71,22 @@ const FRANZOESISCH = (versandart, locale) => ({
 const FASSUNGEN = {
     de: {
         locale: 'de-DE',
+        versandart: 'Einschreiben',
         datum: (d) => d,
         betreff: (a) => zeilen(`Kündigung: ${a.abo}`, a.vertrag && `Vertragsnummer: ${a.vertrag}`, a.kunde && `Kundennummer: ${a.kunde}`),
         anrede: 'Sehr geehrte Damen und Herren,',
         kern: 'hiermit kündige ich den oben genannten Vertrag fristgerecht zum nächstmöglichen Zeitpunkt.',
         bestaetigung: (email) => `Bitte bestätigen Sie mir die Kündigung und das Vertragsende ${email ? `per E-Mail an ${email}` : 'schriftlich'}.`,
         gruss: 'Mit freundlichen Grüßen',
-        linie: ''
+        linie: UNTERSCHRIFTSLINIE
     },
     'en-GB': {
         locale: 'en-GB',
+        versandart: 'By recorded delivery',
         datum: (d) => d,
         // Britisch: Betreff steht nach der Anrede.
-        reihenfolge: ['absender', 'empfaenger', 'datum', 'anrede', 'betreff', 'kern', 'bestaetigung', 'gruss'],
-        betreff: (a) => zeilen(`Cancellation of my contract: ${a.abo}`, a.vertrag && `Contract number: ${a.vertrag}`, a.kunde && `Customer number: ${a.kunde}`),
+        reihenfolge: ['absender', 'versandart', 'empfaenger', 'datum', 'anrede', 'betreff', 'kern', 'bestaetigung', 'gruss'],
+        betreff: (a) => zeilen(`Cancellation – ${a.abo}`, a.vertrag && `Contract number: ${a.vertrag}`, a.kunde && `Customer number: ${a.kunde}`),
         anrede: 'Dear Sir or Madam,',
         kern: 'I am writing to give notice that I wish to cancel the above contract with effect from the earliest possible date.',
         bestaetigung: (email) => `Please confirm the cancellation and the end date of the contract in writing${email ? ` by email to ${email}` : ''}.`,
@@ -91,10 +95,11 @@ const FASSUNGEN = {
     },
     'en-US': {
         locale: 'en-US',
+        versandart: 'Via certified mail',
         datum: (d) => d,
         // Amerikanisch: Datum vor dem Empfänger.
-        reihenfolge: ['absender', 'datum', 'empfaenger', 'betreff', 'anrede', 'kern', 'bestaetigung', 'gruss'],
-        betreff: (a) => zeilen(`Re: Cancellation of ${a.abo}`, a.vertrag && `Contract number: ${a.vertrag}`, a.kunde && `Customer number: ${a.kunde}`),
+        reihenfolge: ['absender', 'datum', 'versandart', 'empfaenger', 'betreff', 'anrede', 'kern', 'bestaetigung', 'gruss'],
+        betreff: (a) => zeilen(`Re: Cancellation – ${a.abo}`, a.vertrag && `Contract number: ${a.vertrag}`, a.kunde && `Customer number: ${a.kunde}`),
         anrede: 'To Whom It May Concern:',
         kern: 'I am writing to cancel the contract listed above, effective on the earliest possible date.',
         bestaetigung: (email) => `Please send me written confirmation of the cancellation and the end date of the contract${email ? ` by email at ${email}` : ''}.`,
@@ -103,16 +108,18 @@ const FASSUNGEN = {
     },
     'es-ES': {
         locale: 'es-ES',
+        versandart: 'Por correo certificado con acuse de recibo',
         datum: (d, ort) => (ort ? `En ${ort}, a ${d}` : d),
         betreff: (a) => zeilen(`Asunto: solicitud de baja – ${a.abo}`, a.vertrag && `Número de contrato: ${a.vertrag}`, a.kunde && `Número de cliente: ${a.kunde}`),
         anrede: 'Estimados señores:',
-        kern: 'Por la presente les comunico mi decisión de dar de baja el contrato arriba indicado y solicito la baja en la fecha más próxima posible.',
+        kern: 'Por la presente les comunico mi decisión de dar de baja el contrato arriba indicado, con efecto en la fecha más próxima posible.',
         bestaetigung: (email) => `Les ruego que me confirmen por escrito${email ? `, en la dirección de correo electrónico ${email},` : ''} la baja y la fecha de finalización del contrato.`,
         gruss: 'Atentamente,',
         linie: UNTERSCHRIFTSLINIE
     },
     'es-LA': {
         locale: 'es-MX',
+        versandart: 'Por correo certificado con acuse de recibo',
         datum: (d, ort) => (ort ? `${ort}, ${d}` : d),
         betreff: (a) => zeilen(`Asunto: cancelación de contrato – ${a.abo}`, a.vertrag && `Número de contrato: ${a.vertrag}`, a.kunde && `Número de cliente: ${a.kunde}`),
         anrede: 'A quien corresponda:',
@@ -127,6 +134,7 @@ const FASSUNGEN = {
     'fr-CA': FRANZOESISCH('Par courrier recommandé', 'fr-CA'),
     'pt-BR': {
         locale: 'pt-BR',
+        versandart: 'Carta registrada com aviso de recebimento (AR)',
         datum: (d, ort) => (ort ? `${ort}, ${d}` : d),
         betreff: (a) => zeilen(`Assunto: solicitação de cancelamento – ${a.abo}`, a.vertrag && `Número do contrato: ${a.vertrag}`, a.kunde && `Número de cliente: ${a.kunde}`),
         anrede: 'Prezados(as) senhores(as),',
@@ -137,6 +145,7 @@ const FASSUNGEN = {
     },
     'pt-PT': {
         locale: 'pt-PT',
+        versandart: 'Carta registada com aviso de receção',
         datum: (d, ort) => (ort ? `${ort}, ${d}` : d),
         betreff: (a) => zeilen(`Assunto: denúncia do contrato – ${a.abo}`, a.vertrag && `Número do contrato: ${a.vertrag}`, a.kunde && `Número de cliente: ${a.kunde}`),
         anrede: 'Exmos. Senhores,',
@@ -149,18 +158,19 @@ const FASSUNGEN = {
 
 export const BRIEF_FASSUNGEN = Object.keys(FASSUNGEN);
 
-const STANDARD_REIHENFOLGE = ['absender', 'empfaenger', 'versandart', 'datum', 'betreff', 'anrede', 'kern', 'bestaetigung', 'gruss'];
+const STANDARD_REIHENFOLGE = ['absender', 'versandart', 'empfaenger', 'datum', 'betreff', 'anrede', 'kern', 'bestaetigung', 'gruss'];
 
-// Setzt den Brief zusammen. Leere Angaben entfallen (keine leeren Blöcke).
+// Bausteine des Briefs in Reihenfolge: [{ art, text }]. Leere Angaben entfallen.
 //   angaben: { absender: [Zeilen], empfaenger, name, email, plzOrt, vertrag, kunde, abo }
-export function baueBrief(fassung, angaben, heute) {
+//   einschreiben: nur dann steht der Versandvermerk im Brief.
+export function briefBloecke(fassung, angaben, heute, einschreiben = false) {
     const f = FASSUNGEN[fassung] || FASSUNGEN['en-GB'];
     // Deutsch: Datum wie bisher TT.MM.JJJJ, sonst ausgeschrieben.
     const datum = fassung === 'de' ? formatiereDatum(heute) : langesDatum(heute, f.locale);
     const bloecke = {
         absender: angaben.absender.filter(Boolean).join('\n'),
         empfaenger: angaben.empfaenger,
-        versandart: f.versandart || '',
+        versandart: einschreiben ? f.versandart : '',
         datum: f.datum(datum, ortAus(angaben.plzOrt)),
         betreff: f.betreff(angaben),
         anrede: f.anrede,
@@ -168,15 +178,48 @@ export function baueBrief(fassung, angaben, heute) {
         bestaetigung: f.bestaetigung(angaben.email),
         gruss: f.gruss
     };
-    const teile = (f.reihenfolge || STANDARD_REIHENFOLGE).map((b) => bloecke[b]).filter(Boolean);
-    return [...teile, f.linie ? `${f.linie}\n${angaben.name}` : angaben.name].join('\n\n');
+    return [
+        ...(f.reihenfolge || STANDARD_REIHENFOLGE).map((art) => ({ art, text: bloecke[art] })),
+        { art: 'unterschrift', text: `${f.linie}\n${angaben.name}` }
+    ].filter((b) => b.text);
+}
+
+export const briefText = (bloecke) => bloecke.map((b) => b.text).join('\n\n');
+
+// Der Nutzer hat den Brief von Hand geändert und danach z.B. den Absender oder
+// "Einschreiben" umgestellt: nur die betroffenen Bausteine tauschen, eigene
+// Änderungen bleiben stehen. alt/neu = Bausteine vorher/nachher.
+export function aktualisiereBrief(text, alt, neu) {
+    if (text === briefText(alt)) return briefText(neu);
+    const finde = (liste, art) => (liste.find((b) => b.art === art) || { text: '' }).text;
+    let ergebnis = text;
+    for (const { art, text: vorher } of alt) {
+        const nachher = finde(neu, art);
+        if (vorher === nachher) continue;
+        const absaetze = ergebnis.split('\n\n');
+        const stelle = absaetze.indexOf(vorher);
+        if (stelle >= 0) {
+            absaetze.splice(stelle, 1, ...(nachher ? [nachher] : []));
+            ergebnis = absaetze.join('\n\n');
+        } else if (nachher && vorher.length > 12 && ergebnis.includes(vorher)) {
+            ergebnis = ergebnis.replace(vorher, () => nachher);
+        }
+    }
+    neu.forEach(({ art, text: nachher }, i) => {
+        if (finde(alt, art)) return;
+        // Neuer Baustein: vor den nächsten Baustein, der noch im Brief steht.
+        const danach = neu.slice(i + 1).map((b) => ergebnis.indexOf(b.text)).find((p) => p >= 0);
+        const p = danach === undefined ? 0 : danach;
+        ergebnis = `${ergebnis.slice(0, p)}${nachher}\n\n${ergebnis.slice(p)}`;
+    });
+    return ergebnis;
 }
 
 // Beschriftung der Adressfelder, wo sie vom Grundtext der Sprache abweicht.
 const FELDER = {
     // Grundtext Englisch ist amerikanisch (src/i18n/en.js)
-    'en-GB': { feldPlzOrt: 'Town and postcode', feldPlzOrtPlatzhalter: 'Sample Town AB1 2CD', platzhalterPlzOrt: '[Town and postcode]' },
-    'pt-PT': { feldPlzOrt: 'Código postal e localidade', feldPlzOrtPlatzhalter: '1234-567 Localidade', platzhalterPlzOrt: '[Código postal e localidade]' }
+    'en-GB': { einschreiben: 'Send by recorded delivery', feldPlzOrt: 'Town and postcode', feldPlzOrtPlatzhalter: 'Sample Town AB1 2CD', platzhalterPlzOrt: '[Town and postcode]' },
+    'pt-PT': { einschreiben: 'Por carta registada', feldPlzOrt: 'Código postal e localidade', feldPlzOrtPlatzhalter: '1234-567 Localidade', platzhalterPlzOrt: '[Código postal e localidade]' }
 };
 
 export function briefFeld(schluessel, standard, fassung = briefFassung()) {

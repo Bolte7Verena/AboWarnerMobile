@@ -202,6 +202,8 @@ export default {
     'brief.tippAnschrift': 'la dirección del proveedor',
     'brief.tippVertragsnummer': 'el número de contrato',
     'brief.tippKundennummer': 'el número de cliente',
+    'brief.einschreiben': 'Por correo certificado',
+    'brief.einschreibenHinweis': '(añade una nota a la carta)',
     'brief.schreiben': 'Tu carta',
     'brief.schreibenHinweis': '(aquí todavía puedes modificarla)',
     'brief.kopieren': 'Copiar al portapapeles',

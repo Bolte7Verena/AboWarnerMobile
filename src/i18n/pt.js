@@ -202,6 +202,8 @@ export default {
     'brief.tippAnschrift': 'o endereço do fornecedor',
     'brief.tippVertragsnummer': 'o número do contrato',
     'brief.tippKundennummer': 'o número de cliente',
+    'brief.einschreiben': 'Por carta registrada',
+    'brief.einschreibenHinweis': '(indica isso na carta)',
     'brief.schreiben': 'Sua carta',
     'brief.schreibenHinweis': '(você ainda pode ajustá-la aqui)',
     'brief.kopieren': 'Copiar para a área de transferência',

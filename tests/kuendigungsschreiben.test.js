@@ -7,7 +7,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { erzeugeSchreibenText } from '../src/kuendigungsschreiben.js';
 import { setzeSprache, t } from '../src/i18n.js';
-import { briefFassung, ortAus, BRIEF_FASSUNGEN } from '../src/briefe.js';
+import { aktualisiereBrief, briefBloecke, briefFassung, briefText, ortAus, BRIEF_FASSUNGEN } from '../src/briefe.js';
 
 const HEUTE = new Date(2026, 10, 13); // 13.11.2026, nur für die Datumszeile
 
@@ -72,21 +72,21 @@ test('Fassung folgt App-Sprache und Land', () => {
     }
 });
 
-test('Deutsch: Brief unverändert wie bisher', () => {
+test('Deutsch: vollständiger Brief mit Unterschriftslinie', () => {
     setzeSprache('de');
     assert.equal(erzeugeSchreibenText({ ...ABO, vertragspartner: 'FitLife GmbH' }, ABSENDER, HEUTE, 'de'), [
         'Max Mustermann\nMusterstraße 1\n12345 Musterstadt\nmax@example.org', 'FitLife GmbH', '13.11.2026',
         'Kündigung: FitLife\nVertragsnummer: V-123\nKundennummer: K-987', 'Sehr geehrte Damen und Herren,',
         'hiermit kündige ich den oben genannten Vertrag fristgerecht zum nächstmöglichen Zeitpunkt.',
         'Bitte bestätigen Sie mir die Kündigung und das Vertragsende per E-Mail an max@example.org.',
-        'Mit freundlichen Grüßen', 'Max Mustermann'
+        'Mit freundlichen Grüßen', '_______________________\nMax Mustermann'
     ].join('\n\n'));
 });
 
 test('Englisch (GB): Datum ausgeschrieben, Betreff nach der Anrede, "Yours faithfully"', () => {
     assert.equal(brief('en-GB'), [
         'Ana Silva\nRua 1\n12345 Sample City\nana@example.org', ABO.vertragspartner, '13 November 2026', 'Dear Sir or Madam,',
-        'Cancellation of my contract: FitLife\nContract number: V-123\nCustomer number: K-987',
+        'Cancellation – FitLife\nContract number: V-123\nCustomer number: K-987',
         'I am writing to give notice that I wish to cancel the above contract with effect from the earliest possible date.',
         'Please confirm the cancellation and the end date of the contract in writing by email to ana@example.org.',
         'Yours faithfully,', '_______________________\nAna Silva'
@@ -97,26 +97,23 @@ test('Englisch (US): Datum vor Empfänger, "To Whom It May Concern", "Sincerely"
     const teile = brief('en-US').split('\n\n');
     assert.equal(teile[1], 'November 13, 2026');
     assert.equal(teile[2], ABO.vertragspartner);
-    assert.ok(teile[3].startsWith('Re: Cancellation of FitLife'));
+    assert.ok(teile[3].startsWith('Re: Cancellation – FitLife'));
     assert.equal(teile[4], 'To Whom It May Concern:');
     assert.equal(teile[7], 'Sincerely,');
 });
 
-test('Französisch: Einschreiben-Hinweis, Ort und Datum, Objet, Schlussformel', () => {
+test('Französisch: ohne Einschreiben kein Vermerk, Ort und Datum, Objet, Schlussformel', () => {
     const teile = brief('fr-FR').split('\n\n');
-    assert.equal(teile[2], 'Lettre recommandée avec accusé de réception');
-    assert.equal(teile[3], 'Sample City, le 13 novembre 2026');
-    assert.ok(teile[4].startsWith('Objet\u00a0: résiliation du contrat – FitLife'));
-    assert.equal(teile[5], 'Madame, Monsieur,');
-    assert.ok(teile[8].startsWith('Je vous prie d’agréer'));
+    assert.equal(teile[2], 'Sample City, le 13 novembre 2026');
+    assert.ok(teile[3].startsWith('Objet\u00a0: résiliation du contrat – FitLife'));
+    assert.equal(teile[4], 'Madame, Monsieur,');
+    assert.ok(teile[7].startsWith('Je vous prie d’agréer'));
     assert.ok(brief('fr-FR', ABO, PERSON, new Date(2026, 11, 1)).includes('le 1er décembre 2026'));
-    assert.ok(brief('fr-CH').includes('Lettre recommandée\n'));
-    assert.ok(brief('fr-CA').includes('Par courrier recommandé'));
 });
 
 test('Spanisch: Spanien und Lateinamerika', () => {
     const es = brief('es-ES');
-    assert.ok(es.includes('En Sample City, a 13 de noviembre de 2026') && es.includes('Asunto: solicitud de baja – FitLife') && es.includes('dar de baja el contrato'));
+    assert.ok(es.includes('En Sample City, a 13 de noviembre de 2026') && es.includes('Asunto: solicitud de baja – FitLife') && es.includes('Por la presente les comunico mi decisión de dar de baja el contrato arriba indicado, con efecto en la fecha más próxima posible.') && !es.includes('solicito la baja'));
     const la = brief('es-LA');
     assert.ok(la.includes('Sample City, 13 de noviembre de 2026') && la.includes('A quien corresponda:') && la.includes('solicito la cancelación'));
 });
@@ -126,6 +123,56 @@ test('Portugiesisch: Brasilien und Portugal', () => {
     assert.ok(br.includes('Sample City, 13 de novembro de 2026') && br.includes('Assunto: solicitação de cancelamento – FitLife') && br.includes('Solicito, por meio desta, o cancelamento') && br.includes('Atenciosamente,'));
     const pt = brief('pt-PT');
     assert.ok(pt.includes('Exmos. Senhores,') && pt.includes('denúncia do contrato') && pt.includes('Com os melhores cumprimentos,'));
+});
+
+const VERMERK = { de: 'Einschreiben', 'en-GB': 'By recorded delivery', 'en-US': 'Via certified mail', 'es-ES': 'Por correo certificado con acuse de recibo', 'es-LA': 'Por correo certificado con acuse de recibo', 'fr-FR': 'Lettre recommandée avec accusé de réception', 'fr-BE': 'Lettre recommandée avec accusé de réception', 'fr-CH': 'Lettre recommandée', 'fr-CA': 'Par courrier recommandé', 'pt-BR': 'Carta registrada com aviso de recebimento (AR)', 'pt-PT': 'Carta registada com aviso de receção' };
+
+test('Versandvermerk: in allen Fassungen nur mit Einschreiben, sonst nirgends', () => {
+    assert.deepEqual(Object.keys(VERMERK), BRIEF_FASSUNGEN);
+    for (const f of BRIEF_FASSUNGEN) {
+        setzeSprache(f.slice(0, 2));
+        const ohne = erzeugeSchreibenText(ABO, PERSON, HEUTE, f);
+        const mit = erzeugeSchreibenText(ABO, PERSON, HEUTE, f, true);
+        assert.ok(!/einschreiben|recommand|certific|certified|recorded|registr|registad/i.test(ohne), f);
+        assert.equal(mit.split('\n\n').filter((x) => x === VERMERK[f]).length, 1, f);
+        assert.equal(mit.replace(`${VERMERK[f]}\n\n`, ''), ohne, f);
+        // direkt vor oder (französisch) direkt nach dem Empfänger
+        const teile = mit.split('\n\n');
+        assert.equal(Math.abs(teile.indexOf(VERMERK[f]) - teile.indexOf(ABO.vertragspartner)), 1, f);
+    }
+    setzeSprache('de');
+});
+
+test('Alle Fassungen: Unterschriftslinie über dem Namen, Name nie mitten im Betreff-Satz', () => {
+    for (const f of BRIEF_FASSUNGEN) {
+        assert.ok(brief(f).endsWith('\n\n_______________________\nAna Silva'), f);
+        const zeile = brief(f, { name: 'Gym membership' }).split('\n').find((z) => z.includes('Gym membership') && z !== 'Gym membership');
+        assert.ok(/[–:] Gym membership$/.test(zeile), `${f}: ${zeile}`);
+    }
+});
+
+test('Von Hand geänderter Brief: Umstellen tauscht nur die betroffenen Teile', () => {
+    const angaben = (x = {}) => ({ absender: ['Max', 'Weg 1', '12345 Ort', ''], empfaenger: 'Firma GmbH\nStraße 2', name: 'Max', email: '', plzOrt: '12345 Ort', vertrag: 'V1', kunde: '', abo: 'Studio', ...x });
+    for (const f of BRIEF_FASSUNGEN) {
+        const alt = briefBloecke(f, angaben(), HEUTE);
+        const mit = briefBloecke(f, angaben(), HEUTE, true);
+        // unverändert: einfach neu
+        assert.equal(aktualisiereBrief(briefText(alt), alt, mit), briefText(mit), f);
+        // eigener Satz bleibt, Vermerk kommt und geht
+        const kern = alt.find((b) => b.art === 'kern').text;
+        const eigen = briefText(alt).replace(kern, `${kern} Mein eigener Satz.`);
+        const an = aktualisiereBrief(eigen, alt, mit);
+        assert.ok(an.includes('Mein eigener Satz.') && an.split('\n\n').includes(VERMERK[f]), f);
+        assert.equal(aktualisiereBrief(an, mit, alt), eigen, f);
+        // Absender ändern
+        const neu = briefBloecke(f, angaben({ absender: ['Anna', 'Weg 9', '54321 Dorf', 'a@b.de'], name: 'Anna', email: 'a@b.de', plzOrt: '54321 Dorf' }), HEUTE);
+        const anna = aktualisiereBrief(eigen, alt, neu);
+        assert.ok(anna.startsWith('Anna\nWeg 9\n54321 Dorf\na@b.de') && anna.endsWith('\nAnna') && anna.includes('Mein eigener Satz.') && !anna.includes('Max'), f);
+        assert.ok(!/undefined|\n\n\n/.test(anna), f);
+        // alles gelöscht und frei geschrieben: nichts geht verloren
+        assert.equal(aktualisiereBrief('Ganz eigener Text', alt, neu), 'Ganz eigener Text');
+        assert.equal(aktualisiereBrief('Ganz eigener Text', alt, mit), `${VERMERK[f]}\n\nGanz eigener Text`);
+    }
 });
 
 test('Alle Fassungen: vollständig, ohne deutsches Recht, ohne leere Teile', () => {

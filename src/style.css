@@ -305,6 +305,12 @@ p { margin: 0; }
 .schalter-input:focus-visible + .schalter-regler { outline: 2px solid var(--ring, var(--primary)); outline-offset: 2px; }
 .probe-bereich .form-group[hidden] { display: none; }
 
+/* Schreiben: Schalter "Per Einschreiben" (kompakt, damit der Brief Platz hat) */
+.einschreiben-schalter { position: relative; gap: 0.625rem; font-size: 0.8125rem; }
+.einschreiben-schalter .schalter-regler { width: 2.1rem; height: 1.2rem; }
+.einschreiben-schalter .schalter-regler::after { top: 0.2rem; width: 0.8rem; height: 0.8rem; }
+.einschreiben-schalter .schalter-input:checked + .schalter-regler::after { transform: translateX(0.9rem); }
+
 /* Kündigungsfrist: Zahl + Einheit (Tage/Wochen/Monate) nebeneinander */
 .frist-eingabe { display: flex; gap: 0.375rem; }
 .frist-eingabe .frist-anzahl { flex: 0 0 5.5rem; }

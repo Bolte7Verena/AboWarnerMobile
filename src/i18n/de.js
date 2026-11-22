@@ -204,6 +204,8 @@ export default {
     'brief.tippAnschrift': 'Anschrift des Anbieters',
     'brief.tippVertragsnummer': 'Vertragsnummer',
     'brief.tippKundennummer': 'Kundennummer',
+    'brief.einschreiben': 'Per Einschreiben',
+    'brief.einschreibenHinweis': '(Vermerk im Schreiben)',
     'brief.schreiben': 'Dein Schreiben',
     'brief.schreibenHinweis': '(kannst du hier noch anpassen)',
     'brief.kopieren': 'In Zwischenablage kopieren',

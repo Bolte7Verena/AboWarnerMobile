@@ -14,7 +14,7 @@
 
 import { ermittleKuendigungsfrist, istProbezeitLaufend } from './calculator.js';
 import { t, formatiereDatum } from './i18n.js';
-import { baueBrief, briefFassung, briefFeld } from './briefe.js';
+import { aktualisiereBrief, briefBloecke, briefFassung, briefFeld, briefText } from './briefe.js';
 
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>';
@@ -70,14 +70,18 @@ export function zuDateiSicheremNamen(text) {
 
 // Reiner Text ohne DOM-Zugriff — exportiert, damit er per Unit-Test
 // prüfbar ist. Aufbau und Formulierungen je Land: briefe.js.
-export function erzeugeSchreibenText(abo, absender, heute = new Date(), fassung = briefFassung()) {
+export function erzeugeSchreibenText(abo, absender, heute = new Date(), fassung = briefFassung(), einschreiben = false) {
+    return briefText(erzeugeBloecke(abo, absender, heute, fassung, einschreiben));
+}
+
+function erzeugeBloecke(abo, absender, heute, fassung, einschreiben) {
     const text = (wert) => String(wert || '').trim();
     const name = text(absender.name) || t('brief.platzhalterName');
     const strasse = text(absender.strasse) || t('brief.platzhalterStrasse');
     const plzOrt = text(absender.plzOrt) || briefFeld('platzhalterPlzOrt', t('brief.platzhalterPlzOrt'), fassung);
     const email = text(absender.email);
 
-    return baueBrief(fassung, {
+    return briefBloecke(fassung, {
         absender: [name, strasse, plzOrt, email],
         empfaenger: text(abo.vertragspartner) || abo.name,
         name,
@@ -86,7 +90,7 @@ export function erzeugeSchreibenText(abo, absender, heute = new Date(), fassung 
         vertrag: text(abo.vertragsnummer),
         kunde: text(abo.kundennummer),
         abo: abo.name
-    }, heute);
+    }, heute, einschreiben);
 }
 
 function erzeugeFristHinweis(abo) {
@@ -147,6 +151,11 @@ export function oeffneKuendigungsschreibenModal(abo) {
                 </div>
             </details>
             ${vertragsdatenHinweis ? `<p class="vertragsdaten-hinweis">${escapeHtml(vertragsdatenHinweis)}</p>` : ''}
+            <label class="schalter einschreiben-schalter">
+                <input type="checkbox" class="schalter-input einschreiben-input">
+                <span class="schalter-regler" aria-hidden="true"></span>
+                <span class="schalter-text">${escapeHtml(briefFeld('einschreiben', t('brief.einschreiben')))} <span class="label-hinweis">${escapeHtml(t('brief.einschreibenHinweis'))}</span></span>
+            </label>
             <div class="form-group brief-gruppe">
                 <label>${t('brief.schreiben')} <span class="label-hinweis">${t('brief.schreibenHinweis')}</span></label>
                 <textarea class="input-control modal-letter-textarea" rows="1"></textarea>
@@ -171,6 +180,9 @@ export function oeffneKuendigungsschreibenModal(abo) {
     const merkHinweis = overlay.querySelector('.absender-merk-hinweis');
     const summaryText = overlay.querySelector('.absender-summary-text');
 
+    const einschreiben = overlay.querySelector('.einschreiben-input');
+    let bloecke = [];
+
     function aktualisiereSchreiben() {
         const aktuellerAbsender = {};
         absenderFelder.forEach((feld) => {
@@ -181,7 +193,10 @@ export function oeffneKuendigungsschreibenModal(abo) {
         summaryText.textContent = absenderVollstaendig(aktuellerAbsender)
             ? t('brief.absenderKurz', { name: aktuellerAbsender.name, ort: aktuellerAbsender.plzOrt })
             : t('brief.bitteAusfuellen');
-        textarea.value = erzeugeSchreibenText(abo, aktuellerAbsender);
+        // Von Hand Geändertes im Brief bleibt erhalten (siehe aktualisiereBrief).
+        const neu = erzeugeBloecke(abo, aktuellerAbsender, new Date(), briefFassung(), einschreiben.checked);
+        textarea.value = bloecke.length > 0 ? aktualisiereBrief(textarea.value, bloecke, neu) : briefText(neu);
+        bloecke = neu;
         passeHoeheAn();
     }
 
@@ -196,6 +211,7 @@ export function oeffneKuendigungsschreibenModal(abo) {
     textarea.addEventListener('input', passeHoeheAn);
 
     absenderFelder.forEach((feld) => feld.addEventListener('input', aktualisiereSchreiben));
+    einschreiben.addEventListener('change', aktualisiereSchreiben);
     aktualisiereSchreiben();
 
     function schliessen() {

@@ -206,6 +206,8 @@ export default {
     'brief.tippAnschrift': 'provider’s address',
     'brief.tippVertragsnummer': 'contract number',
     'brief.tippKundennummer': 'customer number',
+    'brief.einschreiben': 'Send by certified mail',
+    'brief.einschreibenHinweis': '(adds a note to the letter)',
     'brief.schreiben': 'Your letter',
     'brief.schreibenHinweis': '(you can still adjust it here)',
     'brief.kopieren': 'Copy to clipboard',

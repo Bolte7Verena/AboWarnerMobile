@@ -203,6 +203,8 @@ export default {
     'brief.tippAnschrift': 'l’adresse du prestataire',
     'brief.tippVertragsnummer': 'le numéro de contrat',
     'brief.tippKundennummer': 'le numéro de client',
+    'brief.einschreiben': 'En recommandé',
+    'brief.einschreibenHinweis': '(ajoute la mention à la lettre)',
     'brief.schreiben': 'Votre lettre',
     'brief.schreibenHinweis': '(vous pouvez encore l’adapter ici)',
     'brief.kopieren': 'Copier dans le presse-papiers',
