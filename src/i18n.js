@@ -19,7 +19,7 @@ import es from './i18n/es.js';
 import fr from './i18n/fr.js';
 import pt from './i18n/pt.js';
 import { formatiereDatumDE, formatiereZahlDE, parseBetrag, parseDatumISO } from './calculator.js';
-import { anzeigeRegion, geraeteSprachen } from './region.js';
+import { anzeigeRegion, geraeteRegion, geraeteSprachen } from './region.js';
 import { normalisiereWaehrung } from './waehrungen.js';
 
 export const SPRACHEN = { de, en, es, fr, pt };
@@ -96,6 +96,15 @@ export function tAnzahl(schluessel, anzahl, params = {}) {
     return t(key, { anzahl, ...params });
 }
 
+// "A, B und C" in der App-Sprache.
+export function aufzaehlung(teile) {
+    try {
+        return new Intl.ListFormat(aktiv, { style: 'long', type: 'conjunction' }).format(teile);
+    } catch (error) {
+        return teile.join(', ');
+    }
+}
+
 // Anzeige eines Datums. Deutsch: immer TT.MM.JJJJ. Andere Sprachen: Format der
 // App-Sprache im Land des Geräts (en-US 11/15/2026, en-GB 15/11/2026, siehe
 // anzeigeRegion) — nie das Format einer fremden Gerätesprache. Immer mit
@@ -153,6 +162,8 @@ export function formatiereBetrag(betrag, waehrung, locale, { nurCode = false } =
             const wert = parseBetrag(betrag);
             const zahl = Number.isFinite(wert) ? wert : 0;
             const ziel = locale || anzeigeRegion(aktiv);
+            // Portugiesisch außerhalb Brasiliens: Euro steht hinten ("6,99 €", wie in Portugal).
+            if (code === 'EUR' && !locale && ziel === 'pt-BR' && geraeteRegion() !== 'BR') return `${formatiereZahl(zahl, ziel)}\u00a0${nurCode ? 'EUR' : '€'}`;
             const basis = { style: 'currency', currency: code, currencyDisplay: nurCode ? 'code' : 'symbol', numberingSystem: 'latn', useGrouping: 'always' };
             // Landesübliche Nachkommastellen (Yen: keine), aber nie Cent verschlucken.
             const stellen = Number.isInteger(zahl) ? new Intl.NumberFormat(ziel, basis).resolvedOptions().maximumFractionDigits : 2;

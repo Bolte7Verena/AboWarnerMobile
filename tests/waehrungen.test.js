@@ -126,3 +126,29 @@ test('Alte Sicherungen: Währung bleibt genau so erhalten, wie sie gespeichert w
 test('Alle fünf Sprachen haben die Texte zur Währung', () => {
     for (const [s, w] of Object.entries(SPRACHEN)) for (const k of ['summe.ca', 'summe.nichtEnthalten', 'waehrung.titel', 'waehrung.hinweis', 'waehrung.auto', 'pdf.fremdwaehrung']) assert.ok(w[k], `${s} ${k}`);
 });
+
+// --- Stellung des Währungszeichens je Sprache und Währung ---
+import { formatiereBetrag as betrag, setzeSprache as sprache } from '../src/i18n.js';
+
+test('Portugiesisch: Euro hinten (Portugal), Real vorn; in Brasilien landesüblich', () => {
+    const mitGeraet = (sprachen, fn) => {
+        const alt = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+        Object.defineProperty(globalThis, 'navigator', { value: { language: sprachen[0], languages: sprachen }, configurable: true });
+        sprache('pt');
+        try { return fn(); } finally { sprache('de'); Object.defineProperty(globalThis, 'navigator', alt); }
+    };
+    const z = (x) => x.replace(/\u00a0/g, ' ');
+    for (const geraet of [['de-DE'], ['en-US'], ['fr-FR'], ['pt-PT'], ['es-ES']]) mitGeraet(geraet, () => {
+        assert.equal(z(betrag(6.99, 'EUR')), '6,99 €', geraet[0]);
+        assert.equal(z(betrag(0.01, 'EUR')), '0,01 €', geraet[0]);
+        assert.equal(z(betrag(0, 'EUR')), '0,00 €', geraet[0]);
+        assert.match(z(betrag(1234.5, 'EUR')), /^1[ .]234,50 €$/, geraet[0]);
+    });
+    mitGeraet(['de-DE'], () => { assert.equal(z(betrag(6.99, 'BRL')), 'R$ 6,99'); assert.equal(z(betrag(6.99, 'EUR', undefined, { nurCode: true })), '6,99 EUR'); });
+    mitGeraet(['pt-BR'], () => { assert.equal(z(betrag(6.99, 'BRL')), 'R$ 6,99'); assert.equal(z(betrag(6.99, 'EUR')), '€ 6,99'); });
+});
+
+test('Alle Sprachen: Zeichen steht, wo es im Land üblich ist (Unicode CLDR)', () => {
+    const z = (x) => x.replace(/\u00a0/g, ' ');
+    for (const [land, code, soll] of [['de-DE', 'EUR', '6,99 €'], ['de-DE', 'USD', '6,99 $'], ['de-AT', 'EUR', '€ 6,99'], ['de-CH', 'CHF', 'CHF 6.99'], ['en-US', 'USD', '$6.99'], ['en-US', 'EUR', '€6.99'], ['en-GB', 'GBP', '£6.99'], ['en-GB', 'EUR', '€6.99'], ['es-ES', 'EUR', '6,99 €'], ['es-MX', 'MXN', '$6.99'], ['fr-FR', 'EUR', '6,99 €'], ['fr-CA', 'CAD', '6,99 $'], ['pt-BR', 'BRL', 'R$ 6,99'], ['pt-PT', 'EUR', '6,99 €']]) assert.equal(z(betrag(6.99, code, land)), soll, `${land} ${code}`);
+});

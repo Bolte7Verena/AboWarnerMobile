@@ -6,7 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { erzeugeSchreibenText } from '../src/kuendigungsschreiben.js';
-import { setzeSprache, t } from '../src/i18n.js';
+import { setzeSprache, t, tAnzahl, aufzaehlung } from '../src/i18n.js';
 import { aktualisiereBrief, briefBloecke, briefFassung, briefText, ortAus, BRIEF_FASSUNGEN } from '../src/briefe.js';
 
 const HEUTE = new Date(2026, 10, 13); // 13.11.2026, nur für die Datumszeile
@@ -126,6 +126,39 @@ test('Portugiesisch: Brasilien und Portugal', () => {
 });
 
 const VERMERK = { de: 'Einschreiben', 'en-GB': 'By recorded delivery', 'en-US': 'Via certified mail', 'es-ES': 'Por correo certificado con acuse de recibo', 'es-LA': 'Por correo certificado con acuse de recibo', 'fr-FR': 'Lettre recommandée avec accusé de réception', 'fr-BE': 'Lettre recommandée avec accusé de réception', 'fr-CH': 'Lettre recommandée', 'fr-CA': 'Par courrier recommandé', 'pt-BR': 'Carta registrada com aviso de recebimento (AR)', 'pt-PT': 'Carta registada com aviso de receção' };
+
+test('Eigene Anschrift als Vertragspartner: Brief geht nie an den Nutzer selbst', () => {
+    const eigen = { name: 'Max Mustermann', strasse: 'Musterholzer Str. 19', plzOrt: '28999 Musterhausen' };
+    const falsch = { name: 'easybell', vertragspartner: 'easybell GmbH\nMax Mustermann Ihre\nMusterholzer Str. 19\n28999 Musterhausen Kundenreferenz' };
+    for (const f of BRIEF_FASSUNGEN) {
+        setzeSprache(f.slice(0, 2));
+        const text = erzeugeSchreibenText(falsch, eigen, HEUTE, f);
+        assert.ok(text.split('\n\n').includes('easybell'), f);
+        assert.ok(!/Ihre|Kundenreferenz/.test(text), f);
+        assert.equal(text.split('Musterholzer').length, 2, f + ': eigene Anschrift nur als Absender');
+        const richtig = erzeugeSchreibenText({ ...falsch, vertragspartner: 'easybell GmbH\nBrückenstraße 5A\n10179 Berlin' }, eigen, HEUTE, f);
+        assert.ok(richtig.split('\n\n').includes('easybell GmbH\nBrückenstraße 5A\n10179 Berlin'), f);
+    }
+    setzeSprache('de');
+});
+
+test('Tipp im Schreiben: Einzahl und Mehrzahl in allen Sprachen', () => {
+    const faelle = { de: ['steht diese Angabe', 'stehen diese Angaben', ' und '], en: ['It will', 'These details', ' and '], es: ['este dato aparecerá ', 'estos datos aparecerán', ' y '], fr: ['Cette information apparaîtra ', 'Ces informations apparaîtront', ' et '], pt: ['essa informação aparece ', 'essas informações aparecem', ' e '] };
+    for (const [s, [eins, viele, und]] of Object.entries(faelle)) {
+        setzeSprache(s);
+        const teile = ['brief.tippAnschrift', 'brief.tippVertragsnummer', 'brief.tippKundennummer'].map((k) => t(k));
+        for (const teil of teile) {
+            const x = tAnzahl('brief.tipp', 1, { liste: aufzaehlung([teil]) });
+            assert.ok(x.includes(eins) && x.includes(teil) && !x.includes(viele), x);
+        }
+        for (const liste of [teile.slice(0, 2), teile]) {
+            const x = tAnzahl('brief.tipp', liste.length, { liste: aufzaehlung(liste) });
+            assert.ok(x.includes(viele) && x.includes(und) && !x.includes('{'), x);
+        }
+        assert.ok(t('brief.eigeneAnschrift').length > 40);
+    }
+    setzeSprache('de');
+});
 
 test('Versandvermerk: in allen Fassungen nur mit Einschreiben, sonst nirgends', () => {
     assert.deepEqual(Object.keys(VERMERK), BRIEF_FASSUNGEN);

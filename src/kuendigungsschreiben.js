@@ -13,14 +13,14 @@
  */
 
 import { ermittleKuendigungsfrist, istProbezeitLaufend } from './calculator.js';
-import { t, formatiereDatum } from './i18n.js';
+import { t, tAnzahl, aufzaehlung, formatiereDatum } from './i18n.js';
+import { istEigeneAnschrift, ladeAbsenderDaten, speichereAbsenderDaten } from './absender.js';
 import { erzeugeBriefPdf } from './brief-pdf.js';
 import { aktualisiereBrief, briefBloecke, briefFassung, briefFeld, briefText } from './briefe.js';
 
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>';
 
-const ABSENDER_STORAGE_KEY = 'abo-warner:absender-daten';
 // Pflichtangaben für einen versandfertigen Brief (E-Mail ist optional).
 const ABSENDER_PFLICHTFELDER = ['name', 'strasse', 'plzOrt'];
 
@@ -30,23 +30,6 @@ function escapeHtml(text) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
-}
-
-function ladeAbsenderDaten() {
-    try {
-        return JSON.parse(localStorage.getItem(ABSENDER_STORAGE_KEY)) || {};
-    } catch (error) {
-        return {};
-    }
-}
-
-function speichereAbsenderDaten(absender) {
-    try {
-        localStorage.setItem(ABSENDER_STORAGE_KEY, JSON.stringify(absender));
-        return true;
-    } catch (error) {
-        return false; // Das Schreiben funktioniert trotzdem, es wird nur nichts gemerkt.
-    }
 }
 
 function absenderVollstaendig(absender) {
@@ -84,7 +67,9 @@ function erzeugeBloecke(abo, absender, heute, fassung, einschreiben) {
 
     return briefBloecke(fassung, {
         absender: [name, strasse, plzOrt, email],
-        empfaenger: text(abo.vertragspartner) || abo.name,
+        // Nie an sich selbst schreiben: Ist als Vertragspartner die eigene Anschrift
+        // gespeichert (z. B. aus einem alten Foto), steht nur der Abo-Name da.
+        empfaenger: (istEigeneAnschrift(abo.vertragspartner, absender) ? '' : text(abo.vertragspartner)) || abo.name,
         name,
         email,
         plzOrt: text(absender.plzOrt),
@@ -107,7 +92,8 @@ function erzeugeVertragsdatenHinweis(abo) {
     if (!String(abo.vertragsnummer || '').trim()) fehlend.push(t('brief.tippVertragsnummer'));
     if (!String(abo.kundennummer || '').trim()) fehlend.push(t('brief.tippKundennummer'));
     if (fehlend.length === 0) return '';
-    return t('brief.tipp', { liste: fehlend.join(', ') });
+    // Ein oder mehrere Angaben: eigene Fassung je Sprache (steht/stehen …).
+    return tAnzahl('brief.tipp', fehlend.length, { liste: aufzaehlung(fehlend) });
 }
 
 export function oeffneKuendigungsschreibenModal(abo) {
@@ -151,6 +137,7 @@ export function oeffneKuendigungsschreibenModal(abo) {
                     <p class="absender-merk-hinweis">${t('brief.merkHinweis')}</p>
                 </div>
             </details>
+            <p class="edit-fehler empfaenger-warnung" role="alert" hidden>${escapeHtml(t('brief.eigeneAnschrift'))}</p>
             ${vertragsdatenHinweis ? `<p class="vertragsdaten-hinweis">${escapeHtml(vertragsdatenHinweis)}</p>` : ''}
             <label class="schalter einschreiben-schalter">
                 <input type="checkbox" class="schalter-input einschreiben-input">
@@ -196,6 +183,7 @@ export function oeffneKuendigungsschreibenModal(abo) {
             : t('brief.bitteAusfuellen');
         // Von Hand Geändertes im Brief bleibt erhalten (siehe aktualisiereBrief).
         const neu = erzeugeBloecke(abo, aktuellerAbsender, new Date(), briefFassung(), einschreiben.checked);
+        overlay.querySelector('.empfaenger-warnung').hidden = !istEigeneAnschrift(abo.vertragspartner, aktuellerAbsender);
         textarea.value = bloecke.length > 0 ? aktualisiereBrief(textarea.value, bloecke, neu) : briefText(neu);
         bloecke = neu;
         passeHoeheAn();
