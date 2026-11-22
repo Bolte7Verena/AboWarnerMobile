@@ -353,6 +353,8 @@ p { margin: 0; }
 /* "ca." vor umgerechneten Summen; der Betrag selbst bricht nie um. */
 .stat-ca { font-size: 0.6875rem; font-weight: 500; color: var(--muted-foreground); }
 .stat-betrag { white-space: nowrap; }
+.stat-betrag.lang { font-size: 0.6875rem; }
+.stat-betrag.sehr-lang { font-size: 0.625rem; white-space: normal; overflow-wrap: anywhere; }
 .stat-hinweis { grid-column: 1 / -1; font-size: 0.75rem; color: var(--muted-foreground); overflow-wrap: anywhere; }
 .stat-value.tone-primary { color: var(--primary); }
 .stat-value.tone-warning { color: var(--accent-amber); }
@@ -528,7 +530,7 @@ p { margin: 0; }
     gap: 1rem;
 }
 .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
-.modal-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; }
+.modal-title { min-width: 0; overflow-wrap: anywhere; font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; }
 .modal-close-btn { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; flex-shrink: 0; border-radius: var(--radius-md); border: none; background: transparent; color: var(--muted-foreground); cursor: pointer; }
 .modal-close-btn:hover { background: oklch(1 0 0 / 0.08); color: var(--foreground); }
 .modal-close-btn svg { width: 1rem; height: 1rem; }

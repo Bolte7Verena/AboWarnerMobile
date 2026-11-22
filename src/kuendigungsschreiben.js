@@ -61,9 +61,10 @@ function heuteIsoKompakt() {
 // Macht den Abo-Namen dateisystemsicher (entfernt u.a. \ / : * ? " < > |, die auf
 // Windows in Dateinamen verboten sind) und liefert einen sinnvollen Fallback,
 // falls davon nichts Verwertbares übrig bleibt.
-function zuDateiSicheremNamen(text) {
+export function zuDateiSicheremNamen(text) {
     const bereinigt = text.replace(/[^A-Za-z0-9À-ÖØ-öø-ÿ _-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
-    return bereinigt || 'Abo';
+    // Höchstens 60 Zeichen: Dateisysteme erlauben 255 Byte, sonst schlägt das Teilen fehl.
+    return bereinigt.slice(0, 60).trim() || 'Abo';
 }
 
 // Reiner Text ohne DOM-Zugriff — exportiert, damit er per Unit-Test

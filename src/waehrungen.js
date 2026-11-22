@@ -25,6 +25,8 @@ export const KURSE_JE_EURO = {
     XOF: 655.96, ZAR: 18.522
 };
 
+// Ohne geerbte Namen wie "constructor" (Währungstexte können aus einer Datei stammen).
+Object.setPrototypeOf(KURSE_JE_EURO, null);
 export const WAEHRUNGEN = Object.keys(KURSE_JE_EURO);
 
 // --- Land -> Währung ---
@@ -113,6 +115,7 @@ const SCHREIBWEISEN = {
     FR: 'CHF', 'FR.': 'CHF', SFR: 'CHF', FRANKEN: 'CHF', '¥': 'JPY', 'CA$': 'CAD', 'C$': 'CAD', 'A$': 'AUD', 'AU$': 'AUD', 'NZ$': 'NZD', 'MX$': 'MXN',
     'S$': 'SGD', 'HK$': 'HKD', 'NT$': 'TWD', '₹': 'INR', '₩': 'KRW', '₺': 'TRY', '₽': 'RUB', '₪': 'ILS', '₱': 'PHP', '฿': 'THB', 'ZŁ': 'PLN', '₴': 'UAH', '₦': 'NGN', '₫': 'VND'
 };
+Object.setPrototypeOf(SCHREIBWEISEN, null);
 
 // Gespeicherter oder eingetippter Wert -> ISO-Code ("usd" -> "USD", "€" -> "EUR").
 // Unbekanntes bleibt unverändert (nur getrimmt): Es geht nie etwas verloren.

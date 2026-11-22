@@ -12,6 +12,11 @@ export const TURNUS_MONATE = {
     'Halbjährlich': 6,
     'Jährlich': 12
 };
+// Nur die vier Turnusse oben; nie geerbte Namen wie "constructor" aus einer fremden Datei.
+Object.setPrototypeOf(TURNUS_MONATE, null);
+
+// Obergrenze für einen Betrag (darüber rechnet JavaScript nicht mehr auf den Cent genau).
+export const MAX_BETRAG = 1e13;
 
 // Rollt ein wiederkehrendes Zahlungsdatum turnusgerecht in die Zukunft vor,
 // falls das gespeicherte Datum bereits verstrichen ist (z.B. weil die App seit
@@ -121,7 +126,7 @@ export function naechsteZahlungAb(datum, turnus, heute = new Date()) {
     const stichtag = new Date(heute.getFullYear(), heute.getMonth(), heute.getDate());
     const monate = TURNUS_MONATE[turnus] || 1;
     let kandidat = start;
-    for (let schritt = 1; kandidat < stichtag && schritt <= 1200; schritt++) {
+    for (let schritt = 1; kandidat < stichtag && schritt <= 24000; schritt++) {
         kandidat = minusMonate(start, -schritt * monate);
     }
     return formatiereDatumISO(kandidat);
@@ -250,6 +255,13 @@ export function sortiereAbos(abos, heute = new Date()) {
     });
 }
 
+// Frist aus einem Eingabefeld: ganze Zahl oder NaN. Zahlenfelder erlauben auch
+// "1e3" (= 1000); parseInt machte daraus 1.
+export function parseFristAnzahl(eingabe) {
+    const text = String(eingabe ?? '').trim();
+    return text === '' ? NaN : Math.trunc(Number(text));
+}
+
 // Parst einen Betrag aus einer Nutzereingabe — unabhängig von der Sprache:
 // "29,99", "29.99", "1.299,99", "1,299.99", "1 299,99" (auch mit geschütztem
 // Leerzeichen) und "1'299.99". Kommen Punkt und Komma vor, ist das hintere das
@@ -273,6 +285,8 @@ export function parseBetrag(eingabe) {
         return parseFloat(zahl.replace(tausender, '').replace(',', '.'));
     }
     const istTausender = /^[+-]?\d{1,3}([.,])\d{3}(?:\1\d{3})*$/.test(zahl) && !/^[+-]?0[.,]/.test(zahl);
+    // Mehrere Trennzeichen ohne gültige Dreiergruppen ("1.2.3"): lieber nachfragen als raten.
+    if (!istTausender && (zahl.match(/[.,]/g) || []).length > 1) return NaN;
     return parseFloat(istTausender ? zahl.replace(/[.,]/g, '') : zahl.replace(',', '.'));
 }
 
@@ -290,7 +304,9 @@ export const Calculator = {
     // Unbekannte Währung: null (lieber nicht mitrechnen als falsch).
     konvertiere(betrag, von, nach) {
         const wert = rechneUm(parseBetrag(betrag), von, nach);
-        return wert === null ? null : Math.round(wert * 100) / 100;
+        if (wert === null) return null;
+        // Unbrauchbarer Betrag (z. B. aus einer beschädigten Datei): 0, damit die Summe nicht ausfällt.
+        return Number.isFinite(wert) ? Math.round(wert * 100) / 100 : 0;
     },
 
     // Summen pro Monat und Jahr in der Hauptwährung.
@@ -320,7 +336,7 @@ export const Calculator = {
     istGueltig(abo) {
         return (
             typeof abo.name === 'string' && abo.name.trim().length > 0 &&
-            !isNaN(parseBetrag(abo.kosten)) && parseBetrag(abo.kosten) >= 0 &&
+            parseBetrag(abo.kosten) >= 0 && parseBetrag(abo.kosten) <= MAX_BETRAG &&
             !!abo.waehrung &&
             !!TURNUS_MONATE[abo.turnus] &&
             !isNaN(Date.parse(abo.naechsteZahlung)) &&

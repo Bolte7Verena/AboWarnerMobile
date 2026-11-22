@@ -124,33 +124,38 @@ export function erzeugeUebersichtPdf(alleAbos, heute = new Date(), papier = papi
         const textFarbe = beendet ? GRAU : DUNKEL;
         erzeugeZeile(abo, heute).forEach((wert, i) => {
             const s = SPALTEN[i];
+            // Beträge nie kürzen (fehlende Ziffern wären falsch), sondern kleiner schreiben.
+            if (s.ausrichtung === 'rechts') {
+                pdf.text(s.x - 4, y + 13.5, wert, { groesse: pdf.passendeGroesse(wert, s.w - 8, SCHRIFT), farbe: textFarbe, ausrichtung: 'rechts' });
+                return;
+            }
             const inhalt = pdf.kuerze(wert, s.w - 8, SCHRIFT, i === 0);
-            if (s.ausrichtung === 'rechts') pdf.text(s.x - 4, y + 13.5, inhalt, { groesse: SCHRIFT, farbe: textFarbe, ausrichtung: 'rechts' });
-            else pdf.text(s.x + 4, y + 13.5, inhalt, { groesse: SCHRIFT, fett: i === 0, farbe: textFarbe });
+            pdf.text(s.x + 4, y + 13.5, inhalt, { groesse: SCHRIFT, fett: i === 0, farbe: textFarbe });
         });
         pdf.linie(RAND, y + ZEILENHOEHE, BREITE - RAND, y + ZEILENHOEHE, { staerke: 0.4, farbe: [0.85, 0.86, 0.9] });
         y += ZEILENHOEHE;
     });
 
     // Summenblock
-    const summenHoehe = 62;
+    const hauptwaehrung = ermittleHauptwaehrung(alleAbos);
+    const summen = Calculator.berechneSummen(laufende, hauptwaehrung);
+    const hinweis = t('pdf.hinweis')
+        + (summen.umgerechnet ? t('pdf.fremdwaehrung', { waehrung: hauptwaehrung }) : '')
+        + (summen.nichtEnthalten.length > 0 ? ` ${t('summe.nichtEnthalten', { liste: summen.nichtEnthalten.join(', ') })}` : '');
+    const hinweisZeilen = pdf.umbruch(hinweis, BREITE - 2 * RAND, 8.5).slice(0, 12);
+    const summenHoehe = 62 + (hinweisZeilen.length - 1) * 12;
     if (y + summenHoehe > HOEHE - RAND - 20) {
         pdf.neueSeite();
         y = RAND;
     }
     y += 18;
-    const hauptwaehrung = ermittleHauptwaehrung(alleAbos);
-    const summen = Calculator.berechneSummen(laufende, hauptwaehrung);
     const summe = (wert) => `${summen.umgerechnet ? `${t('summe.ca')} ` : ''}${betragPdf(wert, hauptwaehrung)}`;
     const proMonat = t('pdf.proMonat', { betrag: summe(summen.monat) });
     const proJahr = t('pdf.proJahr', { betrag: summe(summen.jahr) });
     pdf.text(RAND, y + 10, t('pdf.summe', { anzahl: tAnzahl('anzahl.abos', laufende.length) }), { groesse: 10, fett: true, farbe: DUNKEL });
     pdf.text(RAND, y + 27, proMonat, { groesse: 10, farbe: DUNKEL });
     pdf.text(RAND + Math.max(170, pdf.textBreite(proMonat, 10) + 24), y + 27, proJahr, { groesse: 10, farbe: DUNKEL });
-    const hinweis = t('pdf.hinweis')
-        + (summen.umgerechnet ? t('pdf.fremdwaehrung', { waehrung: hauptwaehrung }) : '')
-        + (summen.nichtEnthalten.length > 0 ? ` ${t('summe.nichtEnthalten', { liste: summen.nichtEnthalten.join(', ') })}` : '');
-    pdf.text(RAND, y + 43, hinweis, { groesse: 8.5, farbe: GRAU });
+    hinweisZeilen.forEach((zeile, i) => pdf.text(RAND, y + 43 + i * 12, zeile, { groesse: 8.5, farbe: GRAU }));
 
     // Fußzeile mit Seitenzahlen (erst jetzt ist die Gesamtzahl bekannt)
     const anzahl = pdf.seiten.length;

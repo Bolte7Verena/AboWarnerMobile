@@ -4,7 +4,7 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, FRIST_EINHEITEN, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
+import { Calculator, FRIST_EINHEITEN, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, parseFristAnzahl, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
 import { t, tAnzahl, tWert, formatiereDatum, formatiereZahlEingabe, formatiereBetrag } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
@@ -59,10 +59,10 @@ const STATUS_BADGE_KLASSE = {
     gekuendigt: 'badge-status-gekuendigt'
 };
 
-// Verhindert, dass Anführungszeichen im Namen das value-Attribut der
-// Bearbeiten-Inputs vorzeitig schließen und das Formular kaputt rendern.
+// Für value-Attribute: auch & maskieren, sonst würde aus einem Namen wie
+// "A&copy B" beim Bearbeiten "A© B".
 function escapeAttr(text) {
-    return String(text).replace(/"/g, '&quot;');
+    return escapeHtml(text);
 }
 
 // Vollständiges Maskieren für Freitext-Felder (z.B. Vertragspartner-Anschrift
@@ -141,7 +141,10 @@ function berechneStatistiken(alleAbos) {
 
 // Summe in der Hauptwährung; umgerechnete Summen tragen ein "ca.".
 function summeHtml(betrag, { hauptwaehrung, summen }) {
-    const text = `<span class="stat-betrag">${escapeHtml(formatiereBetrag(betrag, hauptwaehrung))}</span>`;
+    const zahl = formatiereBetrag(betrag, hauptwaehrung);
+    // Sehr große Summen kleiner, statt sie mit "…" abzuschneiden.
+    const groesse = zahl.length > 18 ? ' sehr-lang' : zahl.length > 12 ? ' lang' : '';
+    const text = `<span class="stat-betrag${groesse}">${escapeHtml(zahl)}</span>`;
     return summen.umgerechnet ? `<span class="stat-ca">${escapeHtml(t('summe.ca'))}</span> ${text}` : text;
 }
 
@@ -246,6 +249,9 @@ const KUENDIGUNGS_TURNUSSE = ['Monatlich', 'Vierteljährlich', 'Halbjährlich', 
 
 function erzeugeAboBearbeitenFormular(abo) {
     const fristAngabe = ermittleFristAngabe(abo);
+    // Eigene Kategorie (z.B. aus einer Sicherung) mit anbieten, sonst würde sie
+    // beim Speichern still durch die erste der Liste ersetzt.
+    const kategorien = KUENDIGUNGS_KATEGORIEN.includes(abo.kategorie) ? KUENDIGUNGS_KATEGORIEN : [abo.kategorie || 'Sonstiges', ...KUENDIGUNGS_KATEGORIEN.filter((k) => abo.kategorie || k !== 'Sonstiges')];
     return `
         <form class="abo-edit-form">
             <div class="form-group">
@@ -272,7 +278,7 @@ function erzeugeAboBearbeitenFormular(abo) {
                 <div class="form-group">
                     <label>${t('feld.kategorie')}</label>
                     <select class="input-control select-control" data-feld="kategorie">
-                        ${KUENDIGUNGS_KATEGORIEN.map((k) => `<option value="${k}" ${k === abo.kategorie ? 'selected' : ''}>${escapeHtml(tWert('kategorie', k))}</option>`).join('')}
+                        ${kategorien.map((k) => `<option value="${escapeHtml(k)}" ${k === abo.kategorie ? 'selected' : ''}>${escapeHtml(tWert('kategorie', k))}</option>`).join('')}
                     </select>
                 </div>
             </div>
@@ -533,7 +539,7 @@ function zeigeBearbeitenModus(kachel, abo) {
             turnus: feld('turnus'),
             kategorie: feld('kategorie'),
             naechsteZahlung: feld('naechsteZahlung'),
-            ...erzeugeFristFelder(parseInt(feld('fristAnzahl'), 10), feld('fristEinheit')),
+            ...erzeugeFristFelder(parseFristAnzahl(feld('fristAnzahl')), feld('fristEinheit')),
             // Neue, optionale Vertragsdaten (ab 2.0.2). Ältere Abos haben diese
             // Felder nicht — überall wird dann mit '' gerechnet.
             vertragsnummer: feld('vertragsnummer').trim(),
@@ -579,6 +585,7 @@ export async function zeigeAbos() {
 
     // 1. Daten sicher über die API-Bridge holen
     const alleAbos = await window.api.loadAbos();
+    gezeichnetAm = formatiereDatumISO(new Date());
     raeumeEditKalenderAuf();
 
     // Kategorie existiert nach dem Löschen von Abos evtl. nicht mehr — dann
@@ -618,6 +625,18 @@ export async function zeigeAbos() {
     return alleAbos;
 }
 
+// Bleibt die App über Mitternacht im Speicher, zeigten die Karten sonst weiter
+// die Termine von gestern. Beim Zurückkehren an einem neuen Tag neu zeichnen und
+// Mitteilungen neu planen — aber nie, während gerade etwas ausgefüllt wird.
+let gezeichnetAm = '';
+
+export async function aktualisiereBeiNeuemTag() {
+    const heute = formatiereDatumISO(new Date());
+    if (!gezeichnetAm || heute === gezeichnetAm) return;
+    if (offeneEditKalender.length > 0 || document.querySelector('.modal-overlay:not([hidden])')) return;
+    await nachDatenaenderung();
+}
+
 // Globale Schnittstellen für das DOM
 window.aboLoeschen = async (id) => {
     await window.api.deleteAbo(id);
@@ -642,7 +661,21 @@ window.aboKuendigen = async (id) => {
     await nachDatenaenderung();
 };
 
+// Doppeltes Tippen auf "Speichern" darf das Abo nicht zweimal anlegen.
+let speichertGerade = false;
+
 export async function neuesAboSpeichern() {
+    if (speichertGerade) return false;
+    speichertGerade = true;
+    try {
+        return await speichereNeuesAbo();
+    } finally {
+        speichertGerade = false;
+    }
+}
+
+// true, wenn gespeichert wurde.
+async function speichereNeuesAbo() {
     const fehlerEl = document.getElementById('form-fehler');
 
     const neuesAbo = {
@@ -653,7 +686,7 @@ export async function neuesAboSpeichern() {
         turnus: document.getElementById('input-turnus').value,
         kategorie: document.getElementById('input-kategorie').value,
         naechsteZahlung: document.getElementById('input-datum-iso').value,
-        ...erzeugeFristFelder(parseInt(document.getElementById('input-frist').value, 10), document.getElementById('input-frist-einheit').value),
+        ...erzeugeFristFelder(parseFristAnzahl(document.getElementById('input-frist').value), document.getElementById('input-frist-einheit').value),
         // Optional (zugeklappt unter "Weitere Angaben").
         vertragsnummer: document.getElementById('input-vertragsnummer').value.trim(),
         kundennummer: document.getElementById('input-kundennummer').value.trim(),
@@ -667,11 +700,12 @@ export async function neuesAboSpeichern() {
     // im Hintergrund, wirkt die komplette App wie "tot", obwohl sie nur wartet.
     if (!Calculator.istGueltig(neuesAbo)) {
         if (fehlerEl) fehlerEl.textContent = t('feld.fehler');
-        return;
+        return false;
     }
 
     if (fehlerEl) fehlerEl.textContent = '';
     await window.api.saveAbo(neuesAbo);
     document.getElementById('abo-form').reset();
     await nachDatenaenderung();
+    return true;
 }

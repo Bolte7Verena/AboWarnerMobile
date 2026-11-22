@@ -17,7 +17,9 @@
 
 const WINANSI_SONDERZEICHEN = {
     '€': 0x80, '‚': 0x82, '„': 0x84, '…': 0x85, '‘': 0x91, '’': 0x92,
-    '“': 0x93, '”': 0x94, '•': 0x95, '–': 0x96, '—': 0x97
+    '“': 0x93, '”': 0x94, '•': 0x95, '–': 0x96, '—': 0x97,
+    'ƒ': 0x83, '†': 0x86, '‡': 0x87, 'ˆ': 0x88, '‰': 0x89, 'Š': 0x8a, '‹': 0x8b, 'Œ': 0x8c, 'Ž': 0x8e,
+    '˜': 0x98, '™': 0x99, 'š': 0x9a, '›': 0x9b, 'œ': 0x9c, 'ž': 0x9e, 'Ÿ': 0x9f
 };
 
 // Liefert den WinAnsi-Code eines Zeichens oder den Code von "?".
@@ -80,10 +82,12 @@ function baueBreiten(ascii, extra) {
 
 const BREITEN = {
     regular: baueBreiten(ASCII_REGULAR, {
+        0x89: 1000, 0x8a: 667, 0x8b: 333, 0x8c: 1000, 0x8e: 611, 0x99: 1000, 0x9a: 500, 0x9b: 333, 0x9c: 944, 0x9e: 500, 0x9f: 667,
         0x80: 556, 0x84: 333, 0x85: 1000, 0x93: 333, 0x94: 333, 0x96: 556, 0x97: 1000, 0xa0: 278,
         0xb7: 278, 0xb0: 400, 0xa7: 556, 0xc4: 667, 0xd6: 778, 0xdc: 722, 0xdf: 611, 0xe4: 556, 0xf6: 556, 0xfc: 556
     }),
     bold: baueBreiten(ASCII_BOLD, {
+        0x89: 1000, 0x8a: 667, 0x8b: 333, 0x8c: 1000, 0x8e: 611, 0x99: 1000, 0x9a: 556, 0x9b: 333, 0x9c: 944, 0x9e: 500, 0x9f: 667,
         0x80: 556, 0x84: 500, 0x85: 1000, 0x93: 500, 0x94: 500, 0x96: 556, 0x97: 1000, 0xa0: 278,
         0xb7: 278, 0xb0: 400, 0xa7: 556, 0xc4: 722, 0xd6: 778, 0xdc: 722, 0xdf: 611, 0xe4: 556, 0xf6: 611, 0xfc: 611
     })
@@ -126,6 +130,23 @@ export class PdfDokument {
         if (this.textBreite(t, groesse, fett) <= maxBreite) return t;
         while (t.length > 0 && this.textBreite(t + '…', groesse, fett) > maxBreite) t = t.slice(0, -1);
         return t.trimEnd() + '…';
+    }
+
+    // Schriftgröße, mit der ein Text ungekürzt in maxBreite passt (höchstens `groesse`).
+    passendeGroesse(text, maxBreite, groesse, fett = false) {
+        const breite = this.textBreite(text, groesse, fett);
+        return breite <= maxBreite ? groesse : Math.floor(groesse * maxBreite / breite * 100) / 100;
+    }
+
+    // Bricht einen Text an Leerzeichen in Zeilen um; zu lange Wörter werden gekürzt.
+    umbruch(text, maxBreite, groesse, fett = false) {
+        const zeilen = [];
+        for (const wort of String(text).split(/\s+/).filter(Boolean)) {
+            const versuch = zeilen.length ? `${zeilen[zeilen.length - 1]} ${wort}` : wort;
+            if (zeilen.length && this.textBreite(versuch, groesse, fett) <= maxBreite) zeilen[zeilen.length - 1] = versuch;
+            else zeilen.push(this.kuerze(wort, maxBreite, groesse, fett));
+        }
+        return zeilen;
     }
 
     // ausrichtung: 'links' | 'rechts' (x ist dann die rechte Kante)

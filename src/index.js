@@ -7,7 +7,7 @@
 
 import './api.js';
 import { initSprache, wendeAufDokumentAn } from './i18n.js';
-import { zeigeAbos, neuesAboSpeichern, initDatenSichern } from './app.js';
+import { zeigeAbos, neuesAboSpeichern, initDatenSichern, aktualisiereBeiNeuemTag } from './app.js';
 import { initDatePicker } from './datepicker.js';
 import { zeigeFaelligkeitshinweisFallsNoetig, planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { initRechtliches } from './rechtliches.js';
@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // "Weitere Angaben (optional)" beim nächsten Öffnen wieder zugeklappt,
         // damit das Formular einfach bleibt (Felder leert reset() selbst).
         aboForm.addEventListener('reset', () => {
+            document.getElementById('form-fehler').textContent = '';
             document.getElementById('weitere-angaben').open = false;
             document.getElementById('probe-datum-gruppe').hidden = true;
         });
@@ -95,12 +96,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.getElementById('btn-speichern').addEventListener('click', async (e) => {
             e.preventDefault();
-            await neuesAboSpeichern();
-            if (!document.getElementById('form-fehler').textContent) {
-                schliesseAboModal();
-            }
+            if (await neuesAboSpeichern()) schliesseAboModal();
         });
         document.getElementById('input-suche').addEventListener('input', () => zeigeAbos());
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) aktualisiereBeiNeuemTag();
+        });
         initRechtliches();
         initDatenSichern();
         initHilfe();
