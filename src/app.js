@@ -4,9 +4,9 @@
  * Visuelle Bausteine (Karten, Badges, Icons) folgen 1:1 dem Design-System
  * aus C:\minimalist-landing-gen-main (Farben, Radien, Typografie, Lucide-Icons).
  */
-import { Calculator, FRIST_EINHEITEN, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereBetrag, formatiereZahlDE, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
+import { Calculator, FRIST_EINHEITEN, istProbezeitLaufend, ermittleFristAngabe, erzeugeFristFelder, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor, parseDatumISO, sortiereAbos } from './calculator.js';
 import { initDatePicker } from './datepicker.js';
-import { t, tAnzahl, tWert, formatiereDatum } from './i18n.js';
+import { t, tAnzahl, tWert, formatiereDatum, formatiereZahl, formatiereZahlEingabe, formatiereBetrag } from './i18n.js';
 import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung, frageDatum } from './bestaetigung.js';
 import { planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
@@ -138,8 +138,8 @@ function berechneStatistiken(alleAbos) {
 function renderStatistiken(statsGrid, statistiken) {
     statsGrid.innerHTML = [
         erzeugeStatTile(ICON_LAYERS, t('stat.aktiv'), String(statistiken.aktiveAnzahl), 'primary'),
-        erzeugeStatTile(ICON_WALLET, t('stat.monat'), `${formatiereZahlDE(statistiken.kostenProMonat)} €`, 'neutral'),
-        erzeugeStatTile(ICON_CALENDAR_CLOCK, t('stat.jahr'), `${formatiereZahlDE(statistiken.kostenProJahr)} €`, 'primary'),
+        erzeugeStatTile(ICON_WALLET, t('stat.monat'), `${formatiereZahl(statistiken.kostenProMonat)} €`, 'neutral'),
+        erzeugeStatTile(ICON_CALENDAR_CLOCK, t('stat.jahr'), `${formatiereZahl(statistiken.kostenProJahr)} €`, 'primary'),
         erzeugeStatTile(ICON_ALARM_CLOCK, t('stat.fristen'), String(statistiken.kritischeAnzahl), statistiken.kritischeAnzahl > 0 ? 'warning' : 'neutral')
     ].join('');
 }
@@ -243,7 +243,7 @@ function erzeugeAboBearbeitenFormular(abo) {
             <div class="form-row">
                 <div class="form-group">
                     <label>${t('feld.kosten')}</label>
-                    <input type="text" inputmode="decimal" class="input-control" data-feld="kosten" value="${escapeAttr(formatiereZahlDE(abo.kosten))}" placeholder="${escapeHtml(t('feld.kostenPlatzhalter'))}">
+                    <input type="text" inputmode="decimal" class="input-control" data-feld="kosten" value="${escapeAttr(formatiereZahlEingabe(abo.kosten))}" placeholder="${escapeHtml(t('feld.kostenPlatzhalter'))}">
                 </div>
                 <div class="form-group">
                     <label>${t('feld.waehrung')}</label>

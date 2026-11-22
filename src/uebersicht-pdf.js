@@ -12,11 +12,11 @@
 
 import { PdfDokument } from './pdf.js';
 import {
-    Calculator, ermittleEffektivesZahlungsdatum, ermittleHandlungsDatum, istProbezeitLaufend, formatiereBetrag,
-    formatiereDatumISO, formatiereZahlDE, istGekuendigtLaufend, istVertragBeendet,
+    Calculator, ermittleEffektivesZahlungsdatum, ermittleHandlungsDatum, istProbezeitLaufend,
+    formatiereDatumISO, istGekuendigtLaufend, istVertragBeendet,
     parseDatumISO, sortiereAbos
 } from './calculator.js';
-import { t, tAnzahl, tWert, formatiereDatum } from './i18n.js';
+import { t, tAnzahl, tWert, formatiereDatum, formatiereZahl, formatiereBetrag } from './i18n.js';
 
 const BREITE = 842; // A4 quer
 const HOEHE = 595;
@@ -125,8 +125,8 @@ export function erzeugeUebersichtPdf(alleAbos, heute = new Date()) {
     const monat = Calculator.berechneMonatsSumme(laufende);
     const jahr = Calculator.berechneJahresSumme(laufende);
     pdf.text(RAND, y + 10, t('pdf.summe', { anzahl: tAnzahl('anzahl.abos', laufende.length) }), { groesse: 10, fett: true, farbe: DUNKEL });
-    pdf.text(RAND, y + 27, t('pdf.proMonat', { betrag: formatiereZahlDE(monat) }), { groesse: 10, farbe: DUNKEL });
-    pdf.text(RAND + 170, y + 27, t('pdf.proJahr', { betrag: formatiereZahlDE(jahr) }), { groesse: 10, farbe: DUNKEL });
+    pdf.text(RAND, y + 27, t('pdf.proMonat', { betrag: formatiereZahl(monat) }), { groesse: 10, farbe: DUNKEL });
+    pdf.text(RAND + 170, y + 27, t('pdf.proJahr', { betrag: formatiereZahl(jahr) }), { groesse: 10, farbe: DUNKEL });
     const fremdwaehrung = laufende.some((abo) => (abo.waehrung || 'EUR').toUpperCase() !== 'EUR');
     const hinweis = t('pdf.hinweis') + (fremdwaehrung ? t('pdf.fremdwaehrung') : '');
     pdf.text(RAND, y + 43, hinweis, { groesse: 8.5, farbe: GRAU });

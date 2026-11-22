@@ -11,7 +11,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Calculator, TURNUS_MONATE, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereZahlDE, formatiereBetrag, formatiereDatumDE, formatiereDatumISO, parseDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor } from '../src/calculator.js';
+import { Calculator, TURNUS_MONATE, ermittleEffektivesZahlungsdatum, parseBetrag, formatiereZahlDE, formatiereDatumDE, formatiereDatumISO, parseDatumISO, ermittleKuendigungsfrist, ermittleFristStatus, istGekuendigtLaufend, istVertragBeendet, schlageVertragsendeVor } from '../src/calculator.js';
 
 function heutePlusTage(tage) {
     const d = new Date();
@@ -155,12 +155,31 @@ test('formatiereZahlDE: formatiert mit Komma und immer 2 Nachkommastellen', () =
     assert.equal(formatiereZahlDE(5), '5,00');
 });
 
-test('formatiereBetrag: hängt die Währung an, Komma statt Punkt', () => {
-    assert.equal(formatiereBetrag(14.99, 'EUR'), '14,99 EUR');
+test('parseBetrag: englische, französische und Schweizer Schreibweise', () => {
+    assert.equal(parseBetrag('1,234.56'), 1234.56);
+    assert.equal(parseBetrag('1 234,56'), 1234.56);
+    assert.equal(parseBetrag('1\u00a0234,56'), 1234.56);
+    assert.equal(parseBetrag('1\u202f234,56'), 1234.56);
+    assert.equal(parseBetrag("1'234.56"), 1234.56);
+    assert.equal(parseBetrag('1’234.56'), 1234.56);
+    assert.equal(parseBetrag('1.234.567,89'), 1234567.89);
+    assert.equal(parseBetrag('1,234,567.89'), 1234567.89);
 });
 
-test('formatiereBetrag: fehlende Währung fällt auf EUR zurück', () => {
-    assert.equal(formatiereBetrag(5, undefined), '5,00 EUR');
+test('parseBetrag: ein Trennzeichen mit genau drei Ziffern dahinter ist ein Tausendertrennzeichen', () => {
+    assert.equal(parseBetrag('1.299'), 1299);
+    assert.equal(parseBetrag('1,299'), 1299);
+    assert.equal(parseBetrag('1.234.567'), 1234567);
+    assert.equal(parseBetrag('0,999'), 0.999);
+    assert.equal(parseBetrag('0.5'), 0.5);
+    assert.equal(parseBetrag('9,9'), 9.9);
+    assert.equal(parseBetrag(',99'), 0.99);
+    assert.equal(parseBetrag('29,99 €'), 29.99);
+    assert.equal(parseBetrag('-5'), -5);
+});
+
+test('parseBetrag: leer oder nur Satzzeichen ergibt NaN', () => {
+    for (const wert of ['', '   ', ',', '.', '-', null, undefined]) assert.ok(isNaN(parseBetrag(wert)), String(wert));
 });
 
 test('Round-Trip: parseBetrag(formatiereZahlDE(x)) liefert wieder x', () => {

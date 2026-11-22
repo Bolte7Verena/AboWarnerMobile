@@ -5,7 +5,8 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { t, tAnzahl, tWert, setzeSprache, ermittleSprache, formatiereDatum, SPRACHEN } from '../src/i18n.js';
+import { t, tAnzahl, tWert, setzeSprache, ermittleSprache, formatiereDatum, formatiereZahl, formatiereZahlEingabe, formatiereBetrag, SPRACHEN } from '../src/i18n.js';
+import { parseBetrag } from '../src/calculator.js';
 
 test('t(): Platzhalter werden ersetzt', () => {
     setzeSprache('de');
@@ -248,5 +249,50 @@ test('Datenschutz in allen Sprachen erklärt "Per Foto einlesen" (nur auf Knopfd
         for (const w of woerter) assert.ok(SPRACHEN[code]['datenschutz.inhalt'].includes(w), `${code}: ${w}`);
         // Der Knopfname im Datenschutz stimmt mit dem Knopf in der App überein.
         assert.ok(SPRACHEN[code]['datenschutz.inhalt'].includes(SPRACHEN[code]['foto.knopf']), `${code}: Knopfname`);
+    }
+});
+
+// --- Zahlen und Beträge je Sprache (ab 2.0.2) ---
+
+const NBSP = '\u00a0';
+
+test('formatiereZahl(): landesübliche Dezimal- und Tausendertrennung', () => {
+    const erwartet = { de: '2.436,00', en: '2,436.00', es: '2.436,00', fr: `2${NBSP}436,00`, pt: '2.436,00' };
+    const regionen = { de: 'de-DE', en: 'en-GB', es: 'es-ES', fr: 'fr-FR', pt: 'pt-BR' };
+    for (const [code, text] of Object.entries(erwartet)) {
+        setzeSprache(code);
+        assert.equal(formatiereZahl(2436, regionen[code]), text, code);
+    }
+    assert.equal(formatiereZahl(2436, 'en-US'), '2,436.00');
+    assert.equal(formatiereZahl(2436, 'es-MX'), '2,436.00');
+    assert.equal(formatiereZahl(1234567.891, 'de-DE'), '1.234.567,89');
+    assert.equal(formatiereZahl(29.9, 'en-IE'), '29.90');
+    setzeSprache('de');
+});
+
+test('formatiereZahl(): Gerät in anderer Sprache — es gilt die App-Sprache', () => {
+    // Die Tests laufen mit einer Gerätesprache; geprüft werden die vier übrigen.
+    const geraet = String(navigator.language || '').slice(0, 2);
+    const erwartet = { de: '2.436,00', en: '2,436.00', es: '2.436,00', fr: `2${NBSP}436,00`, pt: '2.436,00' };
+    for (const code of Object.keys(erwartet).filter((c) => c !== geraet)) {
+        setzeSprache(code);
+        assert.equal(formatiereZahl(2436), erwartet[code], code);
+    }
+    setzeSprache('de');
+});
+
+test('formatiereBetrag(): hängt die Währung an, ohne Währung EUR', () => {
+    assert.equal(formatiereBetrag(14.99, 'EUR', 'de-DE'), '14,99 EUR');
+    assert.equal(formatiereBetrag(14.99, 'EUR', 'en-GB'), '14.99 EUR');
+    assert.equal(formatiereBetrag(5, undefined, 'de-DE'), '5,00 EUR');
+    assert.equal(formatiereBetrag('kaputt', 'EUR', 'de-DE'), '0,00 EUR');
+});
+
+test('Anzeige und Eingabefeld lassen sich in jeder Sprache wieder als derselbe Betrag lesen', () => {
+    for (const region of ['de-DE', 'de-AT', 'de-CH', 'en-GB', 'en-US', 'en-IN', 'es-ES', 'es-MX', 'fr-FR', 'fr-CH', 'pt-BR', 'pt-PT']) {
+        for (const wert of [0, 0.5, 9.99, 29.9, 999.99, 1000, 1299, 2436, 12345.67, 1234567.89]) {
+            assert.equal(parseBetrag(formatiereZahlEingabe(wert, region)), wert, `Eingabe ${region} ${wert}`);
+            assert.equal(parseBetrag(formatiereZahl(wert, region)), wert, `Anzeige ${region} ${wert}`);
+        }
     }
 });

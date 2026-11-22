@@ -16,8 +16,8 @@
  *    Dateifeld geleert, Zwischendateien der Kamera löscht die native Seite.
  */
 
-import { t, tAnzahl, aktuelleSprache, formatiereDatum } from './i18n.js';
-import { formatiereZahlDE, naechsteZahlungAb } from './calculator.js';
+import { t, tAnzahl, aktuelleSprache, formatiereDatum, formatiereZahlEingabe } from './i18n.js';
+import { naechsteZahlungAb } from './calculator.js';
 import { werteTextAus, vorschlagNaechsteZahlung } from './texterkennung-auswertung.js';
 
 const MAX_KANTE = 2400; // Pixel, genügt für gut lesbaren Text
@@ -114,7 +114,7 @@ export function uebernehmeVorschlaege(vorschlag, { datumsauswahl } = {}) {
     };
 
     setzeText('input-name', vorschlag.name);
-    const kostenGesetzt = vorschlag.kosten !== undefined && setzeText('input-kosten', formatiereZahlDE(vorschlag.kosten));
+    const kostenGesetzt = vorschlag.kosten !== undefined && setzeText('input-kosten', formatiereZahlEingabe(vorschlag.kosten));
     // Währung: vorbelegt ist nur die Landeswährung des Geräts. Sie wird
     // ersetzt, wenn der Betrag aus dem Foto stammt und eine Währung dabeistand.
     if (kostenGesetzt && vorschlag.waehrung) {

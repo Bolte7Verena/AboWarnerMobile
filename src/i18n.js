@@ -18,7 +18,7 @@ import en from './i18n/en.js';
 import es from './i18n/es.js';
 import fr from './i18n/fr.js';
 import pt from './i18n/pt.js';
-import { formatiereDatumDE, parseDatumISO } from './calculator.js';
+import { formatiereDatumDE, formatiereZahlDE, parseBetrag, parseDatumISO } from './calculator.js';
 
 export const SPRACHEN = { de, en, es, fr, pt };
 export const SPRACH_EINSTELLUNG_KEY = 'abo-warner:sprache';
@@ -114,6 +114,46 @@ export function formatiereDatum(datum, locale) {
     } catch (error) {
         return formatiereDatumDE(d);
     }
+}
+
+// --- Zahlen und Beträge (landesüblich) ---
+// Es gilt die Region des Geräts, wenn sie zur App-Sprache passt (z.B. es-MX
+// 2,436.00, de-CH 2’436.00), sonst die Grundregion der App-Sprache. So steht in
+// der englischen App nie ein deutsches Komma.
+const ZAHLEN_REGION = { de: 'de-DE', en: 'en-GB', es: 'es-ES', fr: 'fr-FR', pt: 'pt-BR' };
+
+function zahlenRegion() {
+    const passend = geraeteSprachen().find((l) => String(l || '').toLowerCase().split(/[-_]/)[0] === aktiv);
+    return passend && passend.includes('-') ? passend : ZAHLEN_REGION[aktiv];
+}
+
+function zahlText(betrag, gruppierung, locale) {
+    const wert = parseBetrag(betrag);
+    const zahl = Number.isFinite(wert) ? wert : 0;
+    try {
+        // Gruppierung "always": auch vierstellige Beträge (2.436,00), was
+        // Spanisch und Portugiesisch (Portugal) sonst weglassen würden.
+        return new Intl.NumberFormat(locale || zahlenRegion(), {
+            minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn', useGrouping: gruppierung ? 'always' : false
+        }).format(zahl).replace(/\u202f/g, '\u00a0'); // schmales Leerzeichen fehlt in der App-Schrift
+    } catch (error) {
+        return formatiereZahlDE(zahl);
+    }
+}
+
+// Anzeige: de 2.436,00 · en 2,436.00 · es 2.436,00 · fr 2 436,00 · pt 2.436,00
+export function formatiereZahl(betrag, locale) {
+    return zahlText(betrag, true, locale);
+}
+
+// Für Eingabefelder: ohne Tausendertrennzeichen (de 2436,00 · en 2436.00).
+export function formatiereZahlEingabe(betrag, locale) {
+    return zahlText(betrag, false, locale);
+}
+
+// Betrag mit Währung, z.B. "14,99 EUR" bzw. "14.99 EUR".
+export function formatiereBetrag(betrag, waehrung, locale) {
+    return `${formatiereZahl(betrag, locale)} ${waehrung || 'EUR'}`;
 }
 
 // Füllt alle markierten Texte in index.html:

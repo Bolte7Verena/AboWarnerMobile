@@ -7,6 +7,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PdfDokument } from '../src/pdf.js';
 import { erzeugeUebersichtPdf, erzeugeZeile, dateinameUebersicht } from '../src/uebersicht-pdf.js';
+import { setzeSprache } from '../src/i18n.js';
 
 function heutePlusTage(tage) {
     const d = new Date();
@@ -117,4 +118,14 @@ test('Übersicht: leere Liste erzeugt trotzdem eine gültige PDF', () => {
 
 test('Dateiname mit Datum', () => {
     assert.match(dateinameUebersicht(new Date(2026, 10, 13)), /^Abo-Uebersicht-2026-11-13\.pdf$/);
+});
+
+test('Übersicht: Beträge landesüblich — Englisch mit Punkt, kein "?" bei Französisch', () => {
+    const abo = { ...BASIS, id: 'g', name: 'Miete', kosten: 2436, naechsteZahlung: heutePlusTage(40) };
+    for (const [code, betrag] of [['de', '2.436,00 EUR'], ['en', '2,436.00 EUR'], ['es', '2.436,00 EUR'], ['pt', '2.436,00 EUR'], ['fr', '2\u00a0436,00 EUR']]) {
+        setzeSprache(code);
+        const region = String(navigator.language || '').slice(0, 2);
+        if (region !== code) assert.equal(erzeugeZeile(abo)[1], betrag, code);
+    }
+    setzeSprache('de');
 });

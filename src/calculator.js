@@ -236,34 +236,38 @@ export function sortiereAbos(abos, heute = new Date()) {
     });
 }
 
-// Parst einen Betrag aus einer Nutzereingabe — akzeptiert sowohl deutsches
-// Format (Komma als Dezimaltrennzeichen, "29,99", optional mit Punkt als
-// Tausendertrennzeichen wie "1.299,99") als auch englisches Format mit Punkt
-// ("29.99"). Nötig, weil <input type="number"> in vielen Browsern/WebViews
+// Parst einen Betrag aus einer Nutzereingabe — unabhängig von der Sprache:
+// "29,99", "29.99", "1.299,99", "1,299.99", "1 299,99" (auch mit geschütztem
+// Leerzeichen) und "1'299.99". Kommen Punkt und Komma vor, ist das hintere das
+// Dezimaltrennzeichen. Steht nur eines davon da, ist es ein Tausendertrennzeichen,
+// wenn es mehrfach vorkommt oder genau drei Ziffern folgen ("1.299" = 1299,
+// Preise haben keine drei Nachkommastellen; "0,999" bleibt eine Dezimalzahl).
+// Nötig, weil <input type="number"> in vielen Browsern/WebViews
 // ein eingetipptes Komma stur ablehnt oder wegfiltert — die Eingabefelder
 // nutzen daher type="text" und übergeben die Interpretation hierher.
 export function parseBetrag(eingabe) {
     if (typeof eingabe === 'number') return eingabe;
     if (typeof eingabe !== 'string') return NaN;
 
-    const bereinigt = eingabe.trim();
-    if (bereinigt.includes(',')) {
-        return parseFloat(bereinigt.replace(/\./g, '').replace(',', '.'));
+    const treffer = /^[+-]?[\d.,]*\d[\d.,]*/.exec(eingabe.replace(/[\s'’]/g, ''));
+    if (!treffer) return NaN;
+    const zahl = treffer[0];
+    const punkt = zahl.lastIndexOf('.');
+    const komma = zahl.lastIndexOf(',');
+    if (punkt >= 0 && komma >= 0) {
+        const tausender = punkt > komma ? /,/g : /\./g;
+        return parseFloat(zahl.replace(tausender, '').replace(',', '.'));
     }
-    return parseFloat(bereinigt);
+    const istTausender = /^[+-]?\d{1,3}([.,])\d{3}(?:\1\d{3})*$/.test(zahl) && !/^[+-]?0[.,]/.test(zahl);
+    return parseFloat(istTausender ? zahl.replace(/[.,]/g, '') : zahl.replace(',', '.'));
 }
 
-// Formatiert einen Betrag als reine Zahl im deutschen Format (Komma statt
-// Punkt, immer 2 Nachkommastellen) — ohne Währungssuffix, z.B. für das
-// value-Attribut von Bearbeiten-Formularfeldern.
+// Reine Zahl im deutschen Format (Komma, immer 2 Nachkommastellen, ohne
+// Tausenderpunkt). Nur noch Rückfall, falls die landesübliche Formatierung
+// (formatiereZahl in i18n.js) auf einem Gerät nicht verfügbar ist.
 export function formatiereZahlDE(betrag) {
     const wert = parseBetrag(betrag);
     return (isNaN(wert) ? 0 : wert).toFixed(2).replace('.', ',');
-}
-
-// Formatiert einen Betrag inkl. Währung im deutschen Format, z.B. "14,99 EUR".
-export function formatiereBetrag(betrag, waehrung) {
-    return `${formatiereZahlDE(betrag)} ${waehrung || 'EUR'}`;
 }
 
 export const Calculator = {
