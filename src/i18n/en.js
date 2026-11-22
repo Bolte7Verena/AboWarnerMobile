@@ -203,15 +203,6 @@ export default {
     'brief.platzhalterName': '[Your name]',
     'brief.platzhalterStrasse': '[Street and house number]',
     'brief.platzhalterPlzOrt': '[Postcode and city]',
-    'brief.betreff': 'Cancellation: {name}',
-    'brief.vertragsnummer': 'Contract number: {nummer}',
-    'brief.kundennummer': 'Customer number: {nummer}',
-    'brief.anrede': 'Dear Sir or Madam,',
-    'brief.kern': 'I hereby cancel my contract referred to above at the earliest possible date.',
-    'brief.bestaetigungMail': 'Please confirm the cancellation in writing by email to {email}.',
-    'brief.bestaetigung': 'Please confirm the cancellation in writing.',
-    'brief.gruss': 'Kind regards,',
-    'brief.unterschriftslinie': '_______________________',
 
     // --- Notice at app start and notifications ---
     'hinweis.titel': 'Cancellation deadline ending soon',
@@ -358,7 +349,7 @@ export default {
                 </ul>
 
                 <h3>Which currency are the totals in?</h3>
-                <p>In your main currency. The app suggests it based on your country. You can change it via the globe at the top right. If you have subscriptions in other currencies, the app converts them at a fixed reference rate and adds “approx.”, because it does not fetch rates from the internet.</p>
+                <p>In your main currency. The app suggests it based on your subscriptions and your country. You can change it via the globe at the top right. If you have subscriptions in other currencies, the app converts them at a fixed reference rate and adds “approx.”, because it does not fetch rates from the internet.</p>
 
                 <h3>How do I cancel?</h3>
                 <ol>

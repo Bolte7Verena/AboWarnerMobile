@@ -22,13 +22,34 @@ function teile(tag) {
 // Land, wenn das Gerät nur eine Sprache ohne Land meldet ("pt" -> Brasilien).
 const LAND_ZUR_SPRACHE = { de: 'DE', en: 'US', es: 'ES', fr: 'FR', pt: 'BR', it: 'IT', nl: 'NL', pl: 'PL', ja: 'JP', ko: 'KR', sv: 'SE', da: 'DK', nb: 'NO', no: 'NO', tr: 'TR', ru: 'RU', cs: 'CZ', hu: 'HU', ro: 'RO', uk: 'UA' };
 
+// "Español (Latinoamérica)" meldet sich als es-419 ohne Land: dann hilft die
+// Zeitzone des Geräts (sie wird nur hier gelesen, nichts wird übertragen).
+const LAND_ZUR_ZEITZONE = {
+    'America/Mexico_City': 'MX', 'America/Monterrey': 'MX', 'America/Tijuana': 'MX', 'America/Cancun': 'MX', 'America/Merida': 'MX', 'America/Hermosillo': 'MX', 'America/Chihuahua': 'MX',
+    'America/Argentina/Buenos_Aires': 'AR', 'America/Buenos_Aires': 'AR', 'America/Argentina/Cordoba': 'AR', 'America/Bogota': 'CO', 'America/Santiago': 'CL', 'America/Lima': 'PE',
+    'America/Montevideo': 'UY', 'America/Guayaquil': 'EC', 'America/Caracas': 'VE', 'America/La_Paz': 'BO', 'America/Asuncion': 'PY', 'America/Costa_Rica': 'CR', 'America/Panama': 'PA',
+    'America/Guatemala': 'GT', 'America/El_Salvador': 'SV', 'America/Tegucigalpa': 'HN', 'America/Managua': 'NI', 'America/Santo_Domingo': 'DO', 'America/Havana': 'CU', 'America/Puerto_Rico': 'PR'
+};
+
+function geraeteZeitzone() {
+    try {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    } catch (error) {
+        return '';
+    }
+}
+
+const istLateinamerika = (tag) => /^es[-_]419/i.test(String(tag || ''));
+
 // Land des Geräts, z.B. "DE", "US", "BR". Es zählt die bevorzugte Sprache.
-export function geraeteRegion(sprachen = geraeteSprachen()) {
+export function geraeteRegion(sprachen = geraeteSprachen(), zeitzone = geraeteZeitzone()) {
     const erste = teile(sprachen.find(Boolean));
     if (erste.region) return erste.region;
     // "pt" ohne Land: steht weiter hinten dieselbe Sprache mit Land, gilt dieses.
     const gleiche = sprachen.map(teile).find((x) => x.sprache === erste.sprache && x.region);
-    return (gleiche && gleiche.region) || LAND_ZUR_SPRACHE[erste.sprache] || '';
+    if (gleiche) return gleiche.region;
+    if (istLateinamerika(sprachen.find(Boolean))) return LAND_ZUR_ZEITZONE[zeitzone] || 'US';
+    return LAND_ZUR_SPRACHE[erste.sprache] || '';
 }
 
 // --- Anzeigeformat (Datum, Zahlen, Beträge) ---
@@ -45,10 +66,10 @@ const LAENDER = {
     pt: ['BR', 'PT', 'AO', 'MZ']
 };
 
-export function anzeigeRegion(appSprache, sprachen = geraeteSprachen()) {
+export function anzeigeRegion(appSprache, sprachen = geraeteSprachen(), zeitzone = geraeteZeitzone()) {
     const passend = sprachen.find((tag) => teile(tag).sprache === appSprache && teile(tag).region);
     if (passend) return `${appSprache}-${teile(passend).region}`;
-    const land = geraeteRegion(sprachen);
+    const land = geraeteRegion(sprachen, zeitzone);
     // Nur die Sprache selbst ("en") oder eine andere Sprache: das Land zählt nur,
     // wenn die App-Sprache dort üblich ist.
     if ((LAENDER[appSprache] || []).includes(land)) return `${appSprache}-${land}`;

@@ -199,15 +199,6 @@ export default {
     'brief.platzhalterName': '[Tu nombre]',
     'brief.platzhalterStrasse': '[Calle y número]',
     'brief.platzhalterPlzOrt': '[Código postal y ciudad]',
-    'brief.betreff': 'Cancelación: {name}',
-    'brief.vertragsnummer': 'Número de contrato: {nummer}',
-    'brief.kundennummer': 'Número de cliente: {nummer}',
-    'brief.anrede': 'Estimados señores:',
-    'brief.kern': 'Por la presente cancelo el contrato arriba indicado en la fecha más próxima posible.',
-    'brief.bestaetigungMail': 'Les ruego que me confirmen la cancelación por escrito a la dirección de correo {email}.',
-    'brief.bestaetigung': 'Les ruego que me confirmen la cancelación por escrito.',
-    'brief.gruss': 'Atentamente,',
-    'brief.unterschriftslinie': '_______________________',
 
     // --- Aviso al iniciar y notificaciones ---
     'hinweis.titel': 'El plazo de cancelación termina pronto',
@@ -354,7 +345,7 @@ export default {
                 </ul>
 
                 <h3>¿En qué moneda aparecen los totales?</h3>
-                <p>En tu moneda principal. La app la propone según tu país. Puedes cambiarla con el globo terráqueo de arriba a la derecha. Si tienes suscripciones en otras monedas, la app las convierte con un tipo de cambio fijo de referencia y añade «aprox.», porque no consulta tipos de cambio en internet.</p>
+                <p>En tu moneda principal. La app la propone según tus suscripciones y tu país. Puedes cambiarla con el globo terráqueo de arriba a la derecha. Si tienes suscripciones en otras monedas, la app las convierte con un tipo de cambio fijo de referencia y añade «aprox.», porque no consulta tipos de cambio en internet.</p>
 
                 <h3>¿Cómo cancelo?</h3>
                 <ol>

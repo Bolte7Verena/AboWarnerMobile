@@ -11,7 +11,7 @@ import { oeffneKuendigungsschreibenModal } from './kuendigungsschreiben.js';
 import { frageBestaetigung, frageDatum } from './bestaetigung.js';
 import { planeFaelligkeitsBenachrichtigungen } from './faelligkeitshinweis.js';
 import { pruefeSicherung, MAX_DATEIGROESSE_BYTES } from './sicherung.js';
-import { ermittleHauptwaehrung } from './waehrungen.js';
+import { ermittleHauptwaehrung, normalisiereWaehrung } from './waehrungen.js';
 import { fuelleWaehrungsAuswahl, waehrungsOptionen } from './waehrungsauswahl.js';
 import { erzeugeUebersichtPdf, dateinameUebersicht } from './uebersicht-pdf.js';
 
@@ -222,7 +222,7 @@ function erzeugeAboAnsicht(abo, tageBisZahlung, effektivesZahlungsdatum) {
                     <p class="abo-price">${escapeHtml(formatiereBetrag(abo.kosten, abo.waehrung))}</p>
                 </div>
                 <div class="abo-unterzeile">
-                    <p class="abo-meta">${escapeHtml(tWert('turnus', abo.turnus))} | ${escapeHtml(abo.waehrung)}</p>
+                    <p class="abo-meta">${escapeHtml(tWert('turnus', abo.turnus))} | ${escapeHtml(normalisiereWaehrung(abo.waehrung))}</p>
                     <p class="abo-price-sub">${erzeugeZahlungsZeile(abo, effektivesZahlungsdatum)}</p>
                 </div>
             </div>

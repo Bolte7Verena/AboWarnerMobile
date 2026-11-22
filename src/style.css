@@ -675,3 +675,7 @@ p { margin: 0; }
 @media (max-width: 385px) {
     .abo-aktionen .btn svg { display: none; }
 }
+/* Sehr schmale Handys: Platz für lange Beträge in den Kacheln */
+@media (max-width: 345px) {
+    .stat-icon { display: none; }
+}

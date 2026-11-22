@@ -47,6 +47,15 @@ test('Datum: nie in der Schreibweise einer fremden Gerätesprache', () => {
     setzeSprache('de');
 });
 
+test('es-419 (Lateinamerika ohne Land): Land aus der Zeitzone', () => {
+    assert.equal(geraeteRegion(['es-419'], 'America/Mexico_City'), 'MX');
+    assert.equal(geraeteRegion(['es-419', 'en-US'], 'America/Bogota'), 'CO');
+    assert.equal(geraeteRegion(['es-419'], 'Europe/Berlin'), 'US', 'unbekannt: Dollar statt Euro');
+    assert.equal(anzeigeRegion('es', ['es-419'], 'America/Lima'), 'es-PE');
+    assert.equal(anzeigeRegion('es', ['es-419'], 'Europe/Berlin'), 'es-US');
+    assert.equal(geraeteRegion(['es-ES'], 'America/Mexico_City'), 'ES', 'ausdrückliches Land geht vor');
+});
+
 test('wochenbeginn(): USA, Kanada, Brasilien, Mexiko Sonntag; Europa Montag; Ägypten Samstag', () => {
     for (const land of ['US', 'CA', 'BR', 'MX', 'JP', 'IN']) assert.equal(wochenbeginn(land), 0, land);
     for (const land of ['DE', 'AT', 'CH', 'GB', 'FR', 'ES', 'AR', 'AU', '']) assert.equal(wochenbeginn(land), 1, land);

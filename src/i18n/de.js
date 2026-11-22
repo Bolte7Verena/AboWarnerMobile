@@ -201,16 +201,6 @@ export default {
     'brief.platzhalterName': '[Dein Name]',
     'brief.platzhalterStrasse': '[Straße und Hausnummer]',
     'brief.platzhalterPlzOrt': '[PLZ und Ort]',
-    'brief.betreff': 'Kündigung: {name}',
-    'brief.vertragsnummer': 'Vertragsnummer: {nummer}',
-    'brief.kundennummer': 'Kundennummer: {nummer}',
-    'brief.anrede': 'Sehr geehrte Damen und Herren,',
-    'brief.kern': 'hiermit kündige ich den oben genannten Vertrag fristgerecht zum nächstmöglichen Zeitpunkt.',
-    'brief.bestaetigungMail': 'Bitte bestätigen Sie mir die Kündigung und das Vertragsende per E-Mail an {email}.',
-    'brief.bestaetigung': 'Bitte bestätigen Sie mir die Kündigung und das Vertragsende schriftlich.',
-    'brief.gruss': 'Mit freundlichen Grüßen',
-    // Leer = keine Unterschriftslinie (deutsche Fassung wie bisher).
-    'brief.unterschriftslinie': '',
 
     // --- Hinweis beim App-Start und Mitteilungen ---
     'hinweis.titel': 'Kündigungsfrist endet bald',
@@ -353,7 +343,7 @@ export default {
                 </ul>
 
                 <h3>In welcher Währung stehen die Summen?</h3>
-                <p>In deiner Hauptwährung. Die App schlägt sie nach deinem Land vor. Ändern kannst du sie über die Weltkugel oben rechts. Hast du Abos in anderen Währungen, rechnet die App mit einem festen Richtkurs um und schreibt „ca.“ davor, denn sie holt keine Kurse aus dem Internet.</p>
+                <p>In deiner Hauptwährung. Die App schlägt sie nach deinen Abos und deinem Land vor. Ändern kannst du sie über die Weltkugel oben rechts. Hast du Abos in anderen Währungen, rechnet die App mit einem festen Richtkurs um und schreibt „ca.“ davor, denn sie holt keine Kurse aus dem Internet.</p>
 
                 <h3>Wie kündige ich?</h3>
                 <ol>

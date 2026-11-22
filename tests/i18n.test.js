@@ -52,7 +52,6 @@ test('ermittleSprache(): feste Einstellung schlägt Gerätesprache', () => {
 
 test('Deutsche Sprachdatei: keine leeren Texte, Kalender vollständig', () => {
     for (const [k, v] of Object.entries(SPRACHEN.de)) {
-        if (k === 'brief.unterschriftslinie') continue; // absichtlich leer
         assert.ok(typeof v === 'string' && v.trim().length > 0, k);
     }
     assert.equal(SPRACHEN.de['kalender.wochentage'].split(',').length, 7);

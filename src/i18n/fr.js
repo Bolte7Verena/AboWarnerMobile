@@ -30,7 +30,7 @@ export default {
     'status.sicher': 'Sûr',
     'status.gekuendigt': 'Résilié',
     'karte.gekuendigtZum': 'Résilié, prend fin le {datum}',
-    'karte.moeglichBis': 'Résilier avant le {datum}',
+    'karte.moeglichBis': 'Résilier jusqu’au {datum}',
     'karte.probeEndet': 'Essai jusqu’au {datum}',
     'karte.probeBadge': 'Essai',
     'karte.keineZahlung': 'Plus aucun paiement',
@@ -200,19 +200,10 @@ export default {
     'brief.platzhalterName': '[Votre nom]',
     'brief.platzhalterStrasse': '[Rue et numéro]',
     'brief.platzhalterPlzOrt': '[Code postal et ville]',
-    'brief.betreff': 'Objet : résiliation – {name}',
-    'brief.vertragsnummer': 'Numéro de contrat : {nummer}',
-    'brief.kundennummer': 'Numéro de client : {nummer}',
-    'brief.anrede': 'Madame, Monsieur,',
-    'brief.kern': 'Par la présente, je résilie le contrat mentionné ci-dessus à la date la plus proche possible.',
-    'brief.bestaetigungMail': 'Je vous remercie de bien vouloir me confirmer cette résiliation par écrit à l’adresse e-mail {email}.',
-    'brief.bestaetigung': 'Je vous remercie de bien vouloir me confirmer cette résiliation par écrit.',
-    'brief.gruss': 'Veuillez agréer, Madame, Monsieur, mes salutations distinguées.',
-    'brief.unterschriftslinie': '_______________________',
 
     // --- Avis au démarrage et notifications ---
     'hinweis.titel': 'Délai de résiliation bientôt écoulé',
-    'hinweis.zeile': 'résilier avant le {datum}',
+    'hinweis.zeile': 'résilier jusqu’au {datum}',
     'hinweis.zeileProbe': 'essai jusqu’au {datum}',
     'mitteilung.fristTitel': 'Délai de résiliation',
     'mitteilung.fristText': '{name} : résiliation possible seulement jusqu’au {datum}.',
@@ -228,7 +219,7 @@ export default {
     'pdf.spalteKosten': 'Coût',
     'pdf.spalteTurnus': 'Fréquence',
     'pdf.spalteZahlung': 'Prochain paiement',
-    'pdf.spalteKuendigung': 'Résilier avant le',
+    'pdf.spalteKuendigung': 'Résilier jusqu’au',
     'pdf.spalteStatus': 'Statut',
     'pdf.laeuft': 'actif',
     'pdf.probe': 'Essai jusqu’au {datum}',
@@ -344,7 +335,7 @@ export default {
 
                 <h3>Que signifie le délai de préavis ?</h3>
                 <p>Le délai de préavis indique combien de temps avant le prochain paiement votre résiliation doit parvenir au prestataire. Vous le trouverez dans votre contrat. Saisissez-le tel qu’il y figure : tapez le nombre et choisissez à côté jours, semaines ou mois. S’il est indiqué p. ex. « 3 mois », choisissez 3 et « Mois ». L’application calcule alors avec de vrais mois calendaires.</p>
-                <p>L’application calcule la date et l’affiche sur chaque carte : « Résilier avant le … ». Une fois cette date passée, elle vous indique la possibilité suivante.</p>
+                <p>L’application calcule la date et l’affiche sur chaque carte : « Résilier jusqu’au … ». Une fois cette date passée, elle vous indique la possibilité suivante.</p>
 
                 <h3>Que signifient le rouge, le jaune et le vert ?</h3>
                 <ul class="hilfe-farben">
@@ -355,7 +346,7 @@ export default {
                 </ul>
 
                 <h3>Dans quelle devise sont affichés les totaux ?</h3>
-                <p>Dans votre devise principale. L’application la propose selon votre pays. Vous pouvez la modifier via le globe en haut à droite. Si vous avez des abonnements dans d’autres devises, l’application les convertit à un taux de référence fixe et ajoute « env. », car elle ne récupère aucun taux sur Internet.</p>
+                <p>Dans votre devise principale. L’application la propose selon vos abonnements et votre pays. Vous pouvez la modifier via le globe en haut à droite. Si vous avez des abonnements dans d’autres devises, l’application les convertit à un taux de référence fixe et ajoute « env. », car elle ne récupère aucun taux sur Internet.</p>
 
                 <h3>Comment résilier ?</h3>
                 <ol>

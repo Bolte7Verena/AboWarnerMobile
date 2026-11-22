@@ -199,15 +199,6 @@ export default {
     'brief.platzhalterName': '[Seu nome]',
     'brief.platzhalterStrasse': '[Rua e número]',
     'brief.platzhalterPlzOrt': '[CEP e cidade]',
-    'brief.betreff': 'Cancelamento: {name}',
-    'brief.vertragsnummer': 'Número do contrato: {nummer}',
-    'brief.kundennummer': 'Número de cliente: {nummer}',
-    'brief.anrede': 'Prezados senhores,',
-    'brief.kern': 'Venho por meio desta cancelar o contrato acima indicado na data mais próxima possível.',
-    'brief.bestaetigungMail': 'Solicito que confirmem o cancelamento por escrito para o e-mail {email}.',
-    'brief.bestaetigung': 'Solicito que confirmem o cancelamento por escrito.',
-    'brief.gruss': 'Atenciosamente,',
-    'brief.unterschriftslinie': '_______________________',
 
     // --- Aviso ao iniciar e notificações ---
     'hinweis.titel': 'O prazo de cancelamento termina em breve',
@@ -354,7 +345,7 @@ export default {
                 </ul>
 
                 <h3>Em que moeda aparecem os totais?</h3>
-                <p>Na sua moeda principal. O app sugere a moeda de acordo com o seu país. Você pode alterá-la no globo no canto superior direito. Se você tem assinaturas em outras moedas, o app as converte por uma taxa fixa de referência e acrescenta “aprox.”, pois não busca taxas na internet.</p>
+                <p>Na sua moeda principal. O app sugere a moeda de acordo com as suas assinaturas e o seu país. Você pode alterá-la no globo no canto superior direito. Se você tem assinaturas em outras moedas, o app as converte por uma taxa fixa de referência e acrescenta “aprox.”, pois não busca taxas na internet.</p>
 
                 <h3>Como cancelo?</h3>
                 <ol>

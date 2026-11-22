@@ -14,6 +14,7 @@
 
 import { ermittleKuendigungsfrist, istProbezeitLaufend } from './calculator.js';
 import { t, formatiereDatum } from './i18n.js';
+import { baueBrief, briefFassung, briefFeld } from './briefe.js';
 
 const ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>';
@@ -66,42 +67,24 @@ function zuDateiSicheremNamen(text) {
 }
 
 // Reiner Text ohne DOM-Zugriff — exportiert, damit er per Unit-Test
-// prüfbar ist.
-export function erzeugeSchreibenText(abo, absender, heute = new Date()) {
+// prüfbar ist. Aufbau und Formulierungen je Land: briefe.js.
+export function erzeugeSchreibenText(abo, absender, heute = new Date(), fassung = briefFassung()) {
     const text = (wert) => String(wert || '').trim();
     const name = text(absender.name) || t('brief.platzhalterName');
     const strasse = text(absender.strasse) || t('brief.platzhalterStrasse');
-    const plzOrt = text(absender.plzOrt) || t('brief.platzhalterPlzOrt');
+    const plzOrt = text(absender.plzOrt) || briefFeld('platzhalterPlzOrt', t('brief.platzhalterPlzOrt'), fassung);
     const email = text(absender.email);
 
-    const empfaenger = text(abo.vertragspartner) || abo.name;
-    const vertragsnummer = text(abo.vertragsnummer);
-    const kundennummer = text(abo.kundennummer);
-
-    const absenderBlock = [name, strasse, plzOrt, email].filter(Boolean).join('\n');
-    const bezugBlock = [
-        t('brief.betreff', { name: abo.name }),
-        vertragsnummer && t('brief.vertragsnummer', { nummer: vertragsnummer }),
-        kundennummer && t('brief.kundennummer', { nummer: kundennummer })
-    ].filter(Boolean).join('\n');
-    const bestaetigung = email
-        ? t('brief.bestaetigungMail', { email })
-        : t('brief.bestaetigung');
-    // Optionale Unterschriftslinie (je Sprache; Deutsch: keine).
-    const linie = t('brief.unterschriftslinie');
-    const unterschrift = linie ? `${linie}\n${name}` : name;
-
-    return [
-        absenderBlock,
-        empfaenger,
-        formatiereDatum(heute),
-        bezugBlock,
-        t('brief.anrede'),
-        t('brief.kern'),
-        bestaetigung,
-        t('brief.gruss'),
-        unterschrift
-    ].join('\n\n');
+    return baueBrief(fassung, {
+        absender: [name, strasse, plzOrt, email],
+        empfaenger: text(abo.vertragspartner) || abo.name,
+        name,
+        email,
+        plzOrt: text(absender.plzOrt),
+        vertrag: text(abo.vertragsnummer),
+        kunde: text(abo.kundennummer),
+        abo: abo.name
+    }, heute);
 }
 
 function erzeugeFristHinweis(abo) {
@@ -150,8 +133,8 @@ export function oeffneKuendigungsschreibenModal(abo) {
                             <input type="text" class="input-control" data-absender-feld="strasse" placeholder="${escapeHtml(t('brief.feldStrassePlatzhalter'))}" autocomplete="street-address">
                         </div>
                         <div class="form-group">
-                            <label>${t('brief.feldPlzOrt')}</label>
-                            <input type="text" class="input-control" data-absender-feld="plzOrt" placeholder="${escapeHtml(t('brief.feldPlzOrtPlatzhalter'))}">
+                            <label>${briefFeld('feldPlzOrt', t('brief.feldPlzOrt'))}</label>
+                            <input type="text" class="input-control" data-absender-feld="plzOrt" placeholder="${escapeHtml(briefFeld('feldPlzOrtPlatzhalter', t('brief.feldPlzOrtPlatzhalter')))}">
                         </div>
                     </div>
                     <div class="form-group">
