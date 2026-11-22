@@ -11,7 +11,7 @@ export default {
     'start.titel': 'Vue d’ensemble des abonnements',
     'start.subline': 'Tout sous contrôle',
     'start.untertitel': 'Gardez tous vos contrats, coûts et délais de résiliation au même endroit.',
-    'suche.platzhalter': 'Rechercher ou filtrer des abonnements…',
+    'suche.platzhalter': 'Rechercher un abonnement…',
     'knopf.neuesAbo': 'Nouvel abonnement',
 
     // --- Tuiles de synthèse ---
