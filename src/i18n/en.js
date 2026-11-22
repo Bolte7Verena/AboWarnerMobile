@@ -96,6 +96,8 @@ export default {
     'feld.vertragspartnerPlatzhalter': 'e.g., Sample Company, Inc.\nCustomer Service\n1 Sample Street\nSample City, ST 12345',
     'feld.gekuendigtZum': 'Canceled, contract ends on',
     'feld.fehler': 'Please fill in all fields correctly (including the date).',
+    'feld.bitteWaehlen': 'Please select',
+    'feld.fehlerKategorie': 'Please select a category.',
     'feld.fehlerFrist': 'The notice period is too long: {max} (10 years) at most.',
     'neu.titel': 'Add new subscription',
     'neu.weitere': 'More details (optional)',

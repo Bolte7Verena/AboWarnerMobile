@@ -742,7 +742,8 @@ async function speichereNeuesAbo() {
     // in Electron ein echtes, synchrones OS-Dialogfenster, das die gesamte
     // Renderer-Oberfläche einfriert, solange es offen ist — landet es unauffällig
     // im Hintergrund, wirkt die komplette App wie "tot", obwohl sie nur wartet.
-    const fehler = eingabeFehler(neuesAbo, parseFristAnzahl(document.getElementById('input-frist').value), document.getElementById('input-frist-einheit').value);
+    const fehler = eingabeFehler(neuesAbo, parseFristAnzahl(document.getElementById('input-frist').value), document.getElementById('input-frist-einheit').value)
+        || (neuesAbo.kategorie ? '' : t('feld.fehlerKategorie'));
     if (fehler) {
         if (fehlerEl) fehlerEl.textContent = fehler;
         return false;

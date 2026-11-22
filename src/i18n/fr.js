@@ -93,6 +93,8 @@ export default {
     'feld.vertragspartnerPlatzhalter': 'p. ex. Société Exemple SARL\nService client\n1 rue Exemple\n12345 Ville Exemple',
     'feld.gekuendigtZum': 'Résilié, le contrat prend fin le',
     'feld.fehler': 'Veuillez remplir correctement tous les champs (date comprise).',
+    'feld.bitteWaehlen': 'Choisir',
+    'feld.fehlerKategorie': 'Veuillez choisir une catégorie.',
     'feld.fehlerFrist': 'Le délai de préavis est trop long : {max} (10 ans) au maximum.',
     'neu.titel': 'Ajouter un abonnement',
     'neu.weitere': 'Plus d’informations (facultatif)',

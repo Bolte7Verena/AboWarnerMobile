@@ -14,6 +14,7 @@
  */
 
 import { naechsteZahlungAb } from './calculator.js';
+import { findeAnbieter, findeKategorie } from './texterkennung-anbieter.js';
 import { KURSE_JE_EURO, normalisiereWaehrung } from './waehrungen.js';
 
 /**
@@ -118,13 +119,17 @@ export function parseZahl(text) {
 function betraegeInZeile(zeile, dollar) {
     const liste = [];
     const code = (zeichen) => (zeichen === '$' ? dollar : normalisiereWaehrung(zeichen));
-    for (const m of zeile.matchAll(BETRAG_VOR)) liste.push({ wert: parseZahl(m[2]), waehrung: code(m[1]) });
-    for (const m of zeile.matchAll(BETRAG_NACH)) liste.push({ wert: parseZahl(m[1]), waehrung: code(m[2]) });
+    const ganz = (zahl) => !/[.,]\d{2}$/u.test(zahl.trim());
+    for (const m of zeile.matchAll(BETRAG_VOR)) liste.push({ wert: parseZahl(m[2]), waehrung: code(m[1]), ganz: ganz(m[2]) });
+    for (const m of zeile.matchAll(BETRAG_NACH)) liste.push({ wert: parseZahl(m[1]), waehrung: code(m[2]), ganz: ganz(m[1]) });
     return liste.filter((b) => Number.isFinite(b.wert) && b.wert > 0 && b.wert < 100000);
 }
 
+const NETTO = regex(wort('netto\\p{L}*|net(?:\\s+amount)?|subtotal|zwischensumme|base\\s+imponible|montant\\s+ht|total\\s+ht|valor\\s+l(?:í|i)quido'));
+const STEUER = regex(wort('umsatzsteuer|mehrwertsteuer|mwst\\.?|ust\\.?|vat|sales\\s+tax|tax|iva|tva'));
+
 function findeBetrag(zeilen, dollar) {
-    const kandidaten = [];
+    let kandidaten = [];
     zeilen.forEach((zeile) => {
         const summe = STICHWORT_SUMME.test(zeile);
         const preis = STICHWORT_PREIS.test(zeile);
@@ -133,8 +138,23 @@ function findeBetrag(zeilen, dollar) {
         if (betraege.length === 0 && (summe || preis)) {
             betraege = [...zeile.matchAll(BETRAG_OHNE)].map((m) => ({ wert: parseZahl(m[1]), waehrung: '' })).filter((b) => b.wert > 0 && b.wert < 100000);
         }
-        betraege.forEach((b) => kandidaten.push({ ...b, summe, preis }));
+        betraege.forEach((b) => kandidaten.push({ ...b, summe: summe && !NETTO.test(zeile), preis, netto: NETTO.test(zeile), steuer: STEUER.test(zeile) && !NETTO.test(zeile) }));
     });
+    // Die Texterkennung verliert gern das Komma ("29,99 €" -> "299€"). Haben die anderen
+    // Beträge Nachkommastellen, ist eine ganze Zahl verdächtig: nicht vorschlagen.
+    // Stehen Nettobetrag und Steuer da, ergibt sich die Summe daraus.
+    const genau = kandidaten.filter((b) => !b.ganz);
+    if (genau.length > 0 && kandidaten.some((b) => b.ganz && (b.summe || b.preis))) {
+        const einzig = (liste) => (new Set(liste.map((b) => b.wert)).size === 1 ? liste[0] : null);
+        const netto = einzig(genau.filter((b) => b.netto));
+        const steuer = einzig(genau.filter((b) => b.steuer));
+        const andere = genau.filter((b) => b.summe);
+        if (andere.length === 0) {
+            if (!netto || !steuer || steuer.wert >= netto.wert) return null;
+            return { wert: Math.round((netto.wert + steuer.wert) * 100) / 100, waehrung: netto.waehrung };
+        }
+        kandidaten = genau;
+    }
     const eindeutig = (liste) => {
         const werte = new Set(liste.map((b) => b.wert));
         return werte.size === 1 ? liste[0] : null;
@@ -161,6 +181,23 @@ const TURNUS_MUSTER = [
 function findeTurnus(text) {
     const gefunden = TURNUS_MUSTER.filter(([, muster]) => regex(muster).test(text)).map(([turnus]) => turnus);
     return gefunden.length === 1 ? gefunden[0] : '';
+}
+
+// Abrechnungszeitraum "01.11.2026 - 30.11.2026" -> Monatlich usw. Nur wenn alle
+// Zeiträume im Text dasselbe ergeben.
+function findeTurnusAusZeitraum(zeilen, optionen) {
+    const gefunden = new Set();
+    const re = /(\d{1,4}[./-]\d{1,2}[./-]\d{2,4})\s*(?:-|–|—|bis|to|until|al|au|a|até|hasta)\s*(\d{1,4}[./-]\d{1,2}[./-]\d{2,4})/giu;
+    for (const zeile of zeilen) for (const m of zeile.matchAll(re)) {
+        const a = findeDatum(m[1], optionen);
+        const b = findeDatum(m[2], optionen);
+        if (!a || !b) continue;
+        const tage = Math.round((b - a) / 86400000) + 1;
+        const turnus = tage >= 28 && tage <= 32 ? 'Monatlich' : tage >= 89 && tage <= 93 ? 'Vierteljährlich' : tage >= 181 && tage <= 185 ? 'Halbjährlich' : tage >= 365 && tage <= 367 ? 'Jährlich' : '?';
+        gefunden.add(turnus);
+    }
+    const [turnus] = gefunden;
+    return gefunden.size === 1 && turnus !== '?' ? turnus : '';
 }
 
 // --- Datum der nächsten Zahlung ---
@@ -241,6 +278,10 @@ const STICHWORT_LETZTE = regex(wort([
     'data\\s+d[ae]\\s+(?:fatura|emiss(?:ã|a)o|compra|pedido)', 'pago\\s+em', 'fatura\\s+de'
 ].join('|')));
 
+// "Datum: 10.11.2026" direkt vor einem Datum, nur auf Rechnungen.
+const RECHNUNG = regex(wort('rechnung\\p{L}*|invoice|factura|facture|fatura'));
+const STICHWORT_DATUM = regex(`${wort('datum|date|fecha|data')}\\s*[:.]?\\s*(?=\\d|le\\s)`);
+
 function findeDatumNachStichwort(zeilen, stichwort, optionen) {
     for (let i = 0; i < zeilen.length; i++) {
         const m = stichwort.exec(zeilen[i]);
@@ -267,63 +308,17 @@ const MARKEN = [
     'McFit', 'FitX', 'Clever Fit', 'Urban Sports Club', 'Basic-Fit', 'Gymshark',
     'HelloFresh', 'Blinkist', 'Duolingo', 'Babbel', 'Headspace', 'Calm', 'Zeit Online', 'Spiegel+', 'BILDplus', 'Le Monde', 'El País', 'Folha'
 ];
-// "Max", "Free", "Orange", "Vivo", "TIM", "Sky", "WOW", "Calm" sind auch normale Wörter:
-// nur mit passender Groß-/Kleinschreibung als eigenes Wort.
-function findeMarke(text) {
-    for (const marke of MARKEN) {
+// Auch normale Wörter oder Vornamen ("Max Mustermann"): nur, wenn die Zeile nur
+// aus der Marke besteht oder die Firma so heißt.
+const MEHRDEUTIG = ['Max', 'Free', 'Orange', 'Vivo', 'TIM', 'Sky', 'WOW', 'Calm', 'NOS', 'MEO', 'Claro', 'Tidal', 'Folha'];
+function findeMarke(text, firma) {
+    const gefunden = MARKEN.filter((marke) => {
         const muster = marke.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-        if (new RegExp(`(?<![\\p{L}\\p{N}])${muster}(?![\\p{L}\\p{N}])`, 'u').test(text)) return marke;
-    }
-    return '';
-}
-
-const RECHTSFORM_LANG = regex(`(?:\\s|,)(?:gmbh(?:\\s*&\\s*co\\.?\\s*kg)?|ltd\\.?|limited|llc|inc\\.?|plc|corp(?:oration)?\\.?|sarl|s\\.\\s?a\\.\\s?r\\.\\s?l\\.?|s\\.\\s?à\\s?r\\.\\s?l\\.?|ltda\\.?|eireli|b\\.\\s?v\\.|n\\.\\s?v\\.|s\\.\\s?a\\.?|s\\.\\s?l\\.?(?:u\\.?)?|s\\.\\s?a\\.\\s?s\\.?|e\\.\\s?v\\.|sociedad\\s+an(?:ó|o)nima|s\\/a)\\s*$`);
-const RECHTSFORM_KURZ = /(?:\s|,)(?:AG|SE|KG|OHG|UG(?:\s\(haftungsbeschränkt\))?|KGaA|SA|SAS|SL|SLU|BV|NV|LLC|PLC|LTD|INC|LTDA)\.?\s*$/u;
-
-const LABEL_BANK = regex(wort('iban|bic'));
-
-function istFirmenzeile(zeile) {
-    if (zeile.length > 70 || zeile.length < 4) return false;
-    if (/@|www\.|https?:/iu.test(zeile) || LABEL_BANK.test(zeile)) return false;
-    if ((zeile.match(/\d/gu) || []).length > 3) return false;
-    return RECHTSFORM_LANG.test(zeile) || RECHTSFORM_KURZ.test(zeile);
-}
-
-const PLZ_ORT = [
-    /^(?:[A-Z]{1,2}[-\s])?\d{4,5}\s+\p{L}/u,       // 10115 Berlin, F-75001 Paris, 28001 Madrid, 1010 Wien
-    /(?<!\d)\d{5}-\d{3}(?!\d)/u,                    // CEP Brasilien
-    /(?<!\d)\d{4}-\d{3}(?!\d)/u,                    // Portugal
-    /\b[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b/u,       // Großbritannien
-    /\p{L}+,?\s+[A-Z]{2}\s+\d{5}(?:-\d{4})?\b/u,    // USA
-    /\p{L}[\p{L}\s.-]*\s\d{4,5}$/u                  // Ort vor PLZ (z.B. Dublin 2 nicht, Sample City 12345)
-];
-const istPlzOrt = (zeile) => PLZ_ORT.some((m) => m.test(zeile));
-// Kontakt-, Bank- und Steuerzeilen beenden die Anschrift. Die Kürzel gelten nur
-// als ganze Wörter: sonst gälten auch "Industriestraße" (ust), "Privatweg" (vat)
-// oder "Halifax" (fax) als Kontaktzeile und die Anschrift bliebe leer.
-const LABEL_KONTAKT = regex(wort([
-    't[eé]l(?:[eé](?:fon(?:nummer)?|fone|fono|fax|phone|copie))?', '(?:mobile|cell)?phone', 'fax',
-    'ust(?:\\s?-?\\s?id(?:\\s?-?\\s?nr)?)?', '(?:umsatz|mehrwert)?steuer(?:\\s?-?\\s?(?:nummer|nr|id(?:entifikationsnummer|entnummer|nr)?))?', 'vat'
-].join('|')));
-const istKontaktzeile = (zeile) => /@|www\.|https?:/iu.test(zeile) || LABEL_BANK.test(zeile) || LABEL_KONTAKT.test(zeile);
-
-function findeAnbieter(zeilen) {
-    for (let i = 0; i < zeilen.length; i++) {
-        if (!istFirmenzeile(zeilen[i])) continue;
-        const block = [zeilen[i]];
-        for (let j = i + 1; j < Math.min(zeilen.length, i + 5); j++) {
-            if (istKontaktzeile(zeilen[j])) break;
-            block.push(zeilen[j]);
-            if (istPlzOrt(zeilen[j])) {
-                const name = zeilen[i].replace(RECHTSFORM_LANG, '').replace(RECHTSFORM_KURZ, '').replace(/[,\s]+$/u, '').trim();
-                return { name, anschrift: block.join('\n') };
-            }
-        }
-        // Firmenzeile ohne erkennbare Anschrift: nur den Namen verwenden.
-        const name = zeilen[i].replace(RECHTSFORM_LANG, '').replace(RECHTSFORM_KURZ, '').replace(/[,\s]+$/u, '').trim();
-        return { name, anschrift: '' };
-    }
-    return { name: '', anschrift: '' };
+        if (MEHRDEUTIG.includes(marke)) return new RegExp(`^${muster}[®™]?$`, 'mu').test(text) || new RegExp(`^${muster}(?![\\p{L}\\p{N}])`, 'u').test(firma);
+        return new RegExp(`(?<![\\p{L}\\p{N}])${muster}(?![\\p{L}\\p{N}])`, 'u').test(text);
+    });
+    // Mehrere Marken ("Telekom … inklusive Netflix"): die des Anbieters zählt.
+    return gefunden.find((marke) => firma.toLowerCase().includes(marke.toLowerCase())) || gefunden[0] || '';
 }
 
 function zuISO(datum) {
@@ -335,7 +330,7 @@ function zuISO(datum) {
  * optionen.monatZuerst: true, wenn die Geräte-Region Daten als MM/TT schreibt (USA).
  * optionen.dollar: Bedeutung eines einfachen "$" (Standard USD, in Mexiko MXN ...).
  * Rückgabe: nur die sicher erkannten Felder, z.B.
- *   { name, kosten, waehrung, turnus, naechsteZahlung (ISO), kundennummer, vertragsnummer, vertragspartner }
+ *   { name, kosten, waehrung, turnus, kategorie, naechsteZahlung (ISO), kundennummer, vertragsnummer, vertragspartner }
  */
 export function werteTextAus(zeilen, optionen = {}) {
     const saubere = (Array.isArray(zeilen) ? zeilen : String(zeilen || '').split('\n'))
@@ -345,7 +340,7 @@ export function werteTextAus(zeilen, optionen = {}) {
     const ergebnis = {};
 
     const anbieter = findeAnbieter(saubere);
-    const marke = findeMarke(text);
+    const marke = findeMarke(text, anbieter.name);
     const name = marke || anbieter.name;
     if (name) ergebnis.name = name;
     if (anbieter.anschrift) ergebnis.vertragspartner = anbieter.anschrift;
@@ -356,8 +351,11 @@ export function werteTextAus(zeilen, optionen = {}) {
         if (betrag.waehrung) ergebnis.waehrung = betrag.waehrung;
     }
 
-    const turnus = findeTurnus(text);
+    const turnus = findeTurnus(text) || findeTurnusAusZeitraum(saubere, optionen);
     if (turnus) ergebnis.turnus = turnus;
+
+    const kategorie = findeKategorie(text, name);
+    if (kategorie) ergebnis.kategorie = kategorie;
 
     const datum = findeNaechsteZahlung(saubere, optionen);
     if (datum) {
@@ -365,7 +363,9 @@ export function werteTextAus(zeilen, optionen = {}) {
     } else {
         // Keine "nächste Zahlung" genannt: Rechnungs-/Zahlungsdatum merken,
         // das Formular schlägt daraus die nächste Zahlung vor.
-        const letzte = findeDatumNachStichwort(saubere, STICHWORT_LETZTE, optionen);
+        // Auf Rechnungen steht es oft nur als "Datum: …".
+        const letzte = findeDatumNachStichwort(saubere, STICHWORT_LETZTE, optionen)
+            || (RECHNUNG.test(text) ? findeDatumNachStichwort(saubere, STICHWORT_DATUM, optionen) : null);
         if (letzte) ergebnis.letzteZahlung = zuISO(letzte);
     }
 

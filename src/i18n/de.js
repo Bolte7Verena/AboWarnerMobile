@@ -94,6 +94,8 @@ export default {
     'feld.vertragspartnerPlatzhalter': 'z.B. Musterfirma GmbH\nKundenservice\nMusterstraße 1\n12345 Musterstadt',
     'feld.gekuendigtZum': 'Gekündigt zum (Vertragsende)',
     'feld.fehler': 'Bitte alle Felder korrekt ausfüllen (inkl. Datum).',
+    'feld.bitteWaehlen': 'Bitte wählen',
+    'feld.fehlerKategorie': 'Bitte wähle eine Kategorie.',
     'feld.fehlerFrist': 'Die Kündigungsfrist ist zu lang: höchstens {max} (10 Jahre).',
     'neu.titel': 'Neues Abo hinzufügen',
     'neu.weitere': 'Weitere Angaben (optional)',

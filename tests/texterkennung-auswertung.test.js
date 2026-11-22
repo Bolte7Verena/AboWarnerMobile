@@ -87,6 +87,7 @@ test('Spanisch: Factura de seguro', () => {
         kosten: 84,
         waehrung: 'EUR',
         turnus: 'Jährlich',
+        kategorie: 'Versicherung',
         naechsteZahlung: '2027-03-15',
         kundennummer: '0098812',
         vertragsnummer: 'POL-2026-8831'
@@ -287,4 +288,92 @@ test('Echte Kontakt-, Bank- und Steuerzeilen beenden die Anschrift weiterhin', (
         assert.equal(e.vertragspartner, undefined, zeile);
         assert.equal(e.name, 'Testfirma', zeile);
     }
+});
+
+// --- Anbieter wie auf echten Rechnungen (Zeilen so, wie Tesseract sie gelesen hat) ---
+import { findeAnbieter, findeKategorie } from '../src/texterkennung-anbieter.js';
+
+const KOPF = (absender) => [...(absender ? [absender] : []), 'Herrn Kundennummer: 1234567', 'nn ee Rechnungsnummer: RE-2026-887766', 'Beispielweg 3', '12345 Musterstadt Rechnungsdatum: 10.11.2026', 'Ihre Rechnung für November 2026'];
+const SUMMEN = ['Komplettpaket Internet + Telefon 01.11.2026 - 30.11.2026 25,20 €', 'Summe netto 25,20 €', 'Umsatzsteuer 19 % 4,79€', 'Rechnungsbetrag 299€'];
+const FUSS = ['easybell GmbH Geschäftsführer: Erika Beispiel Musterbank AG', 'Brückenstraße 5A ‚Amtsgericht Charlottenburg HRB 99999 B IBAN: DEOO 1234 5678 9012 3456 78', '10179 Berlin USt-IdNr.: DE999999999 www.easybell.de'];
+const EASYBELL = 'easybell GmbH\nBrückenstraße 5A\n10179 Berlin';
+
+test('Anbieter aus der Absenderzeile, egal wie der Trennpunkt gelesen wurde', () => {
+    for (const trenn of [' · ', ' - ', ' | ', ' + ', ', ', ' • ', ' * ', ' – ', ' . ', ' ']) {
+        const e = werteTextAus(['easybell', ...KOPF(`easybell GmbH${trenn}Brückenstraße 5A${trenn}10179 Berlin`), ...SUMMEN]);
+        assert.equal(e.name, 'easybell', trenn);
+        assert.equal(e.vertragspartner, EASYBELL, trenn);
+    }
+});
+
+test('Anbieter nur in der mehrspaltigen Fußzeile', () => {
+    const e = werteTextAus([...KOPF(''), ...SUMMEN, ...FUSS]);
+    assert.equal(e.name, 'easybell');
+    assert.equal(e.vertragspartner, EASYBELL);
+    const mitTippfehler = werteTextAus([...KOPF(''), ...SUMMEN, FUSS[0].replace('Geschäftsführer', 'Gescháftsfúhrer'), ...FUSS.slice(1)]);
+    assert.equal(mitTippfehler.vertragspartner, EASYBELL);
+});
+
+test('Ganze Beispielrechnung: Name, Betrag trotz verlorenem Komma, Turnus, Kategorie, nächste Zahlung', () => {
+    const e = werteTextAus(['easybell', ...KOPF('easybell GmbH - Brückenstraße 5A - 10179 Berlin'), ...SUMMEN, ...FUSS]);
+    assert.deepEqual(e, { name: 'easybell', vertragspartner: EASYBELL, kosten: 29.99, waehrung: 'EUR', turnus: 'Monatlich', kategorie: 'Telekommunikation', letzteZahlung: '2026-11-10', kundennummer: '1234567' });
+    assert.equal(vorschlagNaechsteZahlung(e, e.turnus, new Date(2026, 10, 22)).datum, '2026-12-10');
+});
+
+test('10.11.2026 wird vorgerückt, egal wie das Datum beschriftet ist', () => {
+    for (const zeile of ['Rechnungsdatum: 10.11.2026', 'Rechnungsdatum 10.11.2026', 'Rechnung vom 10.11.2026', 'Rechnung vom 10. November 2026', 'Datum: 10.11.2026', 'Datum 10.11.2026', 'Der Betrag wird am 10.11.2026 abgebucht', 'Fällig am 10.11.2026', 'zahlbar bis 10.11.2026', 'Fälligkeitsdatum: 10.11.26']) {
+        const e = werteTextAus(['Ihre Rechnung', zeile]);
+        assert.equal(vorschlagNaechsteZahlung(e, 'Monatlich', new Date(2026, 10, 22))?.datum, '2026-12-10', zeile);
+        assert.equal(vorschlagNaechsteZahlung(e, 'Vierteljährlich', new Date(2026, 10, 22))?.datum, '2027-02-10', zeile);
+    }
+    assert.deepEqual(werteTextAus(['Stand Datum: 10.11.2026']), {}, 'ohne Rechnung kein Datum');
+});
+
+test('Empfänger der Rechnung, Bank und Zahlungsdienst sind nicht der Anbieter', () => {
+    const firmenkunde = werteTextAus(['easybell GmbH - Brückenstraße 5A - 10179 Berlin', 'Muster Handels GmbH Kundennummer: 1234567', 'z. Hd. Max Mustermann', 'Beispielweg 3', '12345 Musterstadt', ...SUMMEN, ...FUSS]);
+    assert.equal(firmenkunde.vertragspartner, EASYBELL);
+    assert.equal(findeAnbieter(['Musterbank AG', 'IBAN: DE00 1234']).name, '');
+    assert.equal(findeAnbieter(['Beispiel Strom GmbH', 'Musterbank AG IBAN DE00']).name, 'Beispiel Strom');
+    // Logo-Zeile direkt über der Kundenanschrift: nie die Anschrift des Kunden nehmen
+    assert.equal(findeAnbieter(['Beispiel Strom GmbH', 'Herrn', 'Max Mustermann', 'Beispielweg 3', '12345 Musterstadt']).anschrift, '');
+    assert.equal(findeAnbieter(['Beispiel Strom GmbH', 'Frau Erika Muster', 'Beispielweg 3', '12345 Musterstadt']).anschrift, '');
+});
+
+test('Firmennamen mitten im Satz und mit verschiedenen Rechtsformen', () => {
+    for (const [zeile, name] of [
+        ['Ihr Vertrag mit der Deutsche Beispiel AG', 'Deutsche Beispiel'], ['Vielen Dank, Ihre Stadtwerke Musterstadt GmbH & Co. KG', 'Stadtwerke Musterstadt'], ['Zahlungsempfänger: easybell GmbH', 'easybell'],
+        ['Fitness für alle e.V.', 'Fitness für alle'], ['Sample Broadband Ltd. Registered in England', 'Sample Broadband'], ['Ejemplo Telecom S.A.U.', 'Ejemplo Telecom'], ['Exemplo Seguros Lda.', 'Exemplo Seguros'], ['Musik & Mehr GmbH', 'Musik & Mehr'], ['1a Versand GmbH', '1a Versand'], ['© 2026 Adobe Inc.', '2026 Adobe']
+    ]) assert.equal(findeAnbieter([zeile]).name.replace(/^2026 /, ''), name.replace(/^2026 /, ''), zeile);
+    for (const zeile of ['Ab sofort AB 10 Euro', 'Mo - SA von 8 bis 18 Uhr', 'SE', 'GmbH', 'Wir sind für Sie da.', 'Geschäftsführer: Max Muster']) assert.equal(findeAnbieter([zeile]).name, '', zeile);
+});
+
+test('Vorname "Max" oder Wörter wie "Free" sind keine Marke', () => {
+    assert.equal(werteTextAus(['Max Mustermann', 'Rechnungsbetrag 9,99 €']).name, undefined);
+    assert.equal(werteTextAus(['Feel Free to call', 'Orange County']).name, undefined);
+    assert.equal(werteTextAus(['Max', 'Rechnungsbetrag 9,99 €']).name, 'Max');
+    assert.equal(werteTextAus(['Orange SA', '1 rue Exemple', '75015 Paris']).name, 'Orange');
+    assert.equal(werteTextAus(['Telekom Deutschland GmbH', 'MagentaTV inklusive Netflix']).name, 'Telekom');
+});
+
+test('Verlorenes Komma: nie den zehnfachen Betrag vorschlagen', () => {
+    assert.equal(werteTextAus(['Grundgebühr 25,20 €', 'Rechnungsbetrag 299€']).kosten, undefined);
+    assert.equal(werteTextAus(['Summe netto 25,20 €', 'Umsatzsteuer 4,79 €', 'Rechnungsbetrag 299€']).kosten, 29.99);
+    assert.equal(werteTextAus(['Summe netto 25,20 €', 'Umsatzsteuer 4,79 €', 'Rechnungsbetrag 29,99 €']).kosten, 29.99);
+    assert.equal(werteTextAus(['Subtotal £20.00', 'VAT £4.00', 'Total due £24.00']).kosten, 24);
+    // Nur ganze Zahlen auf dem Beleg: das ist üblich (Yen, runde Beträge)
+    assert.equal(werteTextAus(['Gesamtbetrag 300 €']).kosten, 300);
+    assert.equal(werteTextAus(['Total ¥980', 'JPY 980']).kosten, 980);
+});
+
+test('Abrechnungszeitraum ergibt den Turnus, auch im Februar und über den Jahreswechsel', () => {
+    for (const [z1, t1] of [['01.11.2026 - 30.11.2026', 'Monatlich'], ['01.02.2027 bis 28.02.2027', 'Monatlich'], ['01.02.2028-29.02.2028', 'Monatlich'], ['15.12.2026 – 14.01.2027', 'Monatlich'], ['01.10.2026 - 31.12.2026', 'Vierteljährlich'], ['01.07.2026 - 31.12.2026', 'Halbjährlich'], ['01.01.2028 - 31.12.2028', 'Jährlich'], ['01.11.2026 - 07.11.2026', undefined]]) assert.equal(werteTextAus([`Zeitraum ${z1}`]).turnus, t1, z1);
+    assert.equal(werteTextAus(['01.11.2026 - 30.11.2026', '01.01.2026 - 31.12.2026']).turnus, undefined, 'widersprüchlich');
+});
+
+test('Kategorie: nur wenn eindeutig, sonst leer', () => {
+    for (const [text, kat] of [['Ihr DSL-Anschluss mit Telefonflat', 'Telekommunikation'], ['Abschlag Strom, Verbrauch 250 kWh', 'Energie'], ['Haftpflichtversicherung Beitrag', 'Versicherung'], ['Fitnessstudio Mitgliedschaft', 'Sport'], ['Kaltmiete und Nebenkosten', 'Wohnen'], ['Cloud-Speicher Lizenz', 'Software'],
+        ['Fibre broadband and line rental', 'Telekommunikation'], ['Electricity meter reading', 'Energie'], ['Seguro de hogar, póliza', 'Versicherung'], ['Facture électricité, compteur', 'Energie'], ['Aluguel e condomínio', 'Wohnen'],
+        ['Vielen Dank für Ihren Einkauf', ''], ['Internet: www.beispiel.de Tel.: 030 1234', ''], ['Strom und Miete', ''], ['', '']]) assert.equal(findeKategorie(text), kat, text);
+    assert.equal(findeKategorie('irgendwas', 'Netflix'), 'Streaming');
+    assert.equal(findeKategorie('irgendwas', 'Spotify'), 'Musik');
 });

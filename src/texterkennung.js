@@ -131,6 +131,13 @@ export function uebernehmeVorschlaege(vorschlag, { datumsauswahl } = {}) {
         markiere(el);
         anzahl++;
     }
+    // Kategorie nur, solange der Nutzer noch keine gewählt hat.
+    const kategorieFeld = feld('input-kategorie');
+    if (vorschlag.kategorie && !kategorieFeld.value) {
+        kategorieFeld.value = vorschlag.kategorie;
+        markiere(kategorieFeld);
+        anzahl++;
+    }
     // Datum: liegt es in der Vergangenheit (z. B. Rechnungsdatum), wird anhand des
     // Turnus die NÄCHSTE Zahlung vorgeschlagen. Der Nutzer kann es vor dem Speichern ändern.
     const datumVorschlag = vorschlagNaechsteZahlung(vorschlag, feld('input-turnus').value);

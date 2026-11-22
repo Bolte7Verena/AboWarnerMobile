@@ -92,6 +92,8 @@ export default {
     'feld.vertragspartnerPlatzhalter': 'ex.: Empresa Exemplo Ltda.\nAtendimento ao cliente\nRua Exemplo, 1\n12345-000 Cidade Exemplo',
     'feld.gekuendigtZum': 'Cancelada, o contrato termina em',
     'feld.fehler': 'Preencha todos os campos corretamente (incluindo a data).',
+    'feld.bitteWaehlen': 'Escolha',
+    'feld.fehlerKategorie': 'Escolha uma categoria.',
     'feld.fehlerFrist': 'O prazo de aviso prévio é longo demais: no máximo {max} (10 anos).',
     'neu.titel': 'Adicionar nova assinatura',
     'neu.weitere': 'Mais informações (opcional)',

@@ -92,6 +92,8 @@ export default {
     'feld.vertragspartnerPlatzhalter': 'p. ej. Empresa Ejemplo S.L.\nAtención al cliente\nCalle Ejemplo 1\n12345 Ciudad Ejemplo',
     'feld.gekuendigtZum': 'Cancelada, el contrato termina el',
     'feld.fehler': 'Rellena todos los campos correctamente (incluida la fecha).',
+    'feld.bitteWaehlen': 'Elige una',
+    'feld.fehlerKategorie': 'Elige una categoría.',
     'feld.fehlerFrist': 'El plazo de preaviso es demasiado largo: como máximo {max} (10 años).',
     'neu.titel': 'Añadir nueva suscripción',
     'neu.weitere': 'Más datos (opcional)',
