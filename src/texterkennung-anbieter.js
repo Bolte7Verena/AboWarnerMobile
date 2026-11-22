@@ -12,22 +12,28 @@
  * gilt als Anbieter. Banken und der Empfänger der Rechnung zählen nicht.
  */
 
+import { istEigeneAnschrift } from './absender.js';
+
 const wort = (muster) => `(?<![\\p{L}\\p{N}])(?:${muster})(?![\\p{L}])`;
 
 // Text ohne Akzente, gleiche Länge (für Fehllesungen wie "Gescháftsfúhrer").
 const ohneAkzente = (text) => [...text].map((z) => z.normalize('NFD')[0]).join('');
 
 // --- Wörter, ab denen eine Zeile nicht mehr zur Anschrift gehört ---
+// Registerangaben stehen nur bei der Firma selbst (Fußzeile, Briefkopf).
+const REGISTER_WOERTER = wort('geschaftsfuhr\\p{L}*|vertretungsberechtigt\\p{L}*|vorstand|aufsichtsrat\\p{L}*|amtsgericht|registergericht|handelsregister|sitz der gesellschaft|hr[ab](?:\\s?-?\\s?nr\\.?)?|ust\\s?-?\\s?id\\p{L}*|ustid\\p{L}*|iban|bic|blz|bankverbindung|glaubiger\\p{L}*|swift|registered|company\\s+(?:no|number)|rcs|siret|siren|au\\s+capital|nif|cif|registro\\s+mercantil|inscrita|cnpj|nipc|contribuinte');
+// Angaben aus dem Kundenblock rechts neben der Empfängeranschrift.
+const KUNDEN_WOERTER = wort('ihre?[nmrs]?|unsere?|your|our|(?:kunden|rechnungs?|vertrags?|auftrags?|bestell|beleg|vorgangs?|mandats?)\\s?-?\\s?(?:referenz|nummer|nr|kennung|id|konto|datum|betrag|zeichen)\\p{L}*|referenz|reference|ref|zeichen|kd|datum|rechnung|seite|page|customer|invoice|account|date|client|facture|factura|fecha|cliente|fatura|data|zeitraum|leistungszeitraum|period|sachbearbeiter\\p{L}*|ansprechpartner\\p{L}*');
+const REGISTER = new RegExp(REGISTER_WOERTER, 'iu');
+const KUNDENBLOCK = new RegExp(KUNDEN_WOERTER, 'iu');
 const FREMD = new RegExp([
-    wort('geschaftsfuhr\\p{L}*|vertretungsberechtigt\\p{L}*|vorstand|aufsichtsrat\\p{L}*|amtsgericht|registergericht|handelsregister|sitz der gesellschaft|hr[ab](?:\\s?-?\\s?nr\\.?)?|ust|ust\\s?-?\\s?id\\p{L}*|ustid\\p{L}*|(?:umsatz|mehrwert)?steuer(?:\\s?-?\\s?(?:nummer|nr|id\\p{L}*))?|finanzamt'),
-    wort('iban|bic|blz|konto(?:nummer|nr|inhaber\\p{L}*)?|kto|bankverbindung|glaubiger\\p{L}*|swift'),
+    REGISTER_WOERTER,
+    KUNDEN_WOERTER,
+    wort('ust|(?:umsatz|mehrwert)?steuer(?:\\s?-?\\s?(?:nummer|nr|id\\p{L}*))?|finanzamt|konto(?:nummer|nr|inhaber\\p{L}*)?|kto|vat|ape|tva|capital|n\\.?i\\.?f\\.?|cpf|reg\\.?\\s?no'),
     wort('tel|tele(?:fon(?:nummer|nr)?|fone|fono|phone|fax|kopie|copie)|(?:mobile|cell)?phone|fax|mobile?|hotline|e-?mail|mail|web|internet(?=\\s*:)'),
-    wort('kunden\\s?-?\\s?(?:nummer|nr|kennung|id)|kd\\.?|vertrags(?:nummer|nr|konto)\\p{L}*|rechnung(?:s\\s?-?\\s?(?:nummer|nr|datum|betrag))?|datum|seite|page|customer|invoice|account|date|vat|registered|company\\s+(?:no|number)|reg\\.?\\s?no'),
-    wort('rcs|siret|siren|ape|tva|au\\s+capital|capital|client|facture'),
-    wort('nif|cif|n\\.?i\\.?f\\.?|factura|fecha|cliente|registro\\s+mercantil|inscrita'),
-    wort('cnpj|cpf|nipc|fatura|data|contribuinte'),
     '[^ ]*@|www\\.|https?:'
 ].join('|'), 'iu');
+const KONTAKT_AM_ANFANG = /^\W*(?:tel|fax|t[eé]l|phone|mobil|e-?mail|mail|web|www|https?:|\S+@|internet\s*:|hotline|ust|iban|bic|vat)/iu;
 
 // Erste Spalte einer Zeile: alles vor dem ersten fremden Wort.
 export function ersteSpalte(zeile) {
@@ -78,6 +84,8 @@ function firmenIn(zeile, nr) {
     return liste;
 }
 
+const kern = (name) => ohneAkzente(name).toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+
 // --- Anschrift ---
 const PLZ_ORT = [
     /^(?:[A-Z]{1,2}[-\s])?\d{4,5}\s+\p{L}/u,       // 10115 Berlin, F-75001 Paris, 28001 Madrid, 1010 Wien
@@ -90,40 +98,97 @@ const PLZ_ORT = [
 export const istPlzOrt = (zeile) => PLZ_ORT.some((m) => m.test(zeile));
 
 // "· Brückenstraße 5A · 10179 Berlin" hinter dem Firmennamen in derselben Zeile.
-const PLZ_IN_ZEILE = /(?<![\p{L}\d])(?:[A-Z]{1,2}-)?\d{4,5}\s+\p{Lu}[\p{L}.-]{2,}(?:\s+(?:am|an\s+der|im|in|bei|ob\s+der|\(?\p{Lu}[\p{L}.)-]+))*/u;
+// Ort: ein Wort, dazu nur typische Zusätze (Bad Homburg, Frankfurt am Main). Hängt die
+// Texterkennung den Empfänger an die Zeile, gehört er nicht zum Ort.
+const ORT = '(?:(?:Bad|Sankt|St\\.|Markt|Neu|Alt|Groß|Klein|Burg|Schloß|Hann\\.|San|Santa|Los|Las|La|Le|El|Saint)\\s)?\\p{Lu}[\\p{L}.-]{2,}(?:\\s(?:am|an\\sder|a\\.\\s?d\\.|im|in|bei|ob\\sder|v\\.\\s?d\\.|vor\\sder)\\s\\p{Lu}[\\p{L}.-]+|\\s\\(\\p{L}+\\))?';
+const PLZ_IN_ZEILE = new RegExp(`(?<![\\p{L}\\d])(?:[A-Z]{1,2}-)?\\d{4,5}\\s?(?=\\p{Lu}\\p{L}{2}|St\\.)${ORT}`, 'u');
 
-function anschriftInZeile(rest) {
+// Trennstriche werden als I l ! / [ ] gelesen, Ziffern der PLZ als O, o, I, l.
+function glaette(rest) {
+    return rest
+        .replace(/\s[Il!/[\]{}()]\s/gu, ' | ')
+        .replace(/(?<![\p{L}\d])(?=[\dOoIl]{5}\s?\p{Lu}\p{Ll})(?=(?:[OoIl]*\d){3})[\dOoIl]{5}/u, (z) => z.replace(/[Oo]/g, '0').replace(/[Il]/g, '1'));
+}
+
+function anschriftInZeile(rohRest) {
+    const rest = glaette(rohRest);
     const m = PLZ_IN_ZEILE.exec(rest);
     if (!m) return null;
-    const strasse = ersteSpalte(rest.slice(0, m.index));
-    const ort = ersteSpalte(m[0]);
-    if (strasse.length < 4 || strasse.length > 60 || !/\p{L}{3}/u.test(strasse) || ort.length < 6) return null;
+    // "10179 Musterholzer Str. 19": Der Ort fehlt, es folgt schon die nächste Straße.
+    if (/^[.\s]*(?:str|stra(?:ß|ss)e|weg|platz|allee|gasse|ring|\d)/iu.test(rest.slice(m.index + m[0].length))) return null;
     // Zwischen Firma und PLZ darf nichts Fremdes stehen ("… HRB 12345 Berlin").
     if (FREMD.test(ohneAkzente(rest.slice(0, m.index)))) return null;
+    const strasse = ersteSpalte(rest.slice(0, m.index));
+    const ort = ersteSpalte(m[0]).replace(/^((?:[A-Z]{1,2}-)?\d{4,5})(?=\p{Lu})/u, '$1 ');
+    if (strasse.length < 4 || strasse.length > 60 || !/\p{L}{3}/u.test(strasse) || ort.length < 6) return null;
     return [strasse, ort];
 }
 
 // Beginn einer Empfängeranschrift: ab hier gehört der Text dem Kunden.
 const EMPFAENGER = /^(?:herrn?|frau|familie|an|z\.?\s?hd\.?|zu händen|mr|mrs|ms|miss|attn|mme|mlle|m|monsieur|madame|sr|sra|d|dña|dona)\.?(?:\s|$)/iu;
+// Abteilung zwischen Firma und Straße ("Kundenservice", "Postfach 12 34").
+const ABTEILUNG = /service|abteilung|buchhaltung|verwaltung|zentrale|niederlassung|postfach|p\.?\s?o\.?\s?box|department|atenci[oó]n|servicio|clientes|bo[iî]te\s+postale|cs\s\d|atendimento|departamento/iu;
+const FIRMA_TEST = new RegExp(FIRMA.source, 'u');
+const istPerson = (zeile) => /^\p{Lu}[\p{L}'’.-]+(?:\s+\p{Lu}[\p{L}'’.-]*){1,3}$/u.test(zeile) && !FIRMA_TEST.test(zeile);
 
-function anschriftDarunter(zeilen, nr) {
+// Nachname aus der Anrede ("Sehr geehrter Herr Mustermann,").
+function nameAusAnrede(zeilen) {
+    for (const z of zeilen) {
+        const m = /^(?:sehr\s+geehrter?|guten\s+tag|hallo|lieber?|dear|estimad[oa]|hola|ch[eè]re?|bonjour|prezad[oa]|ol[aá]|car[oa])\s+(.+?)\s*[,!:.]?$/iu.exec(z);
+        if (!m || /damen|herren|sir|madam|señores|clientes?$|kunde|messieurs/iu.test(m[1])) continue;
+        const letzter = m[1].split(/\s+/u).pop();
+        if (/^\p{Lu}\p{L}{2,}/u.test(letzter)) return kern(letzter);
+    }
+    return '';
+}
+
+// Folgt weiter unten eine Anschrift mit Personennamen (der Empfänger)?
+function hatEmpfaengerDanach(zeilen, ab) {
+    for (let j = ab; j + 2 < zeilen.length; j++) {
+        const [name, strasse, ort] = [zeilen[j], zeilen[j + 1], zeilen[j + 2]].map(ersteSpalte);
+        if ((istPerson(name) || EMPFAENGER.test(name)) && /\d/.test(strasse) && istPlzOrt(ort)) return true;
+    }
+    return false;
+}
+
+// Anschrift in den Zeilen unter dem Firmennamen. In Briefen steht genau dort aber
+// meist der EMPFÄNGER (unter der Absenderzeile). Deshalb nur mit Beleg, dass es
+// die Firma ist; sonst bleibt das Feld leer:
+//   - Registerangaben daneben (Fußzeile: Geschäftsführer, HRB, USt-IdNr., IBAN …), oder
+//   - Telefon/Internet/USt beginnt direkt darunter (Briefkopf), oder
+//   - weiter unten folgt noch eine Anschrift mit Personennamen (= der Empfänger).
+function anschriftDarunter(zeilen, firma, anrede) {
+    const restFirma = ersteSpalte(firma.rest);
+    if (/[\p{L}\d]/u.test(restFirma)) return null; // hinter der Firma steht noch etwas: Absenderzeile
+    let register = REGISTER.test(ohneAkzente(firma.rest));
+    if (KUNDENBLOCK.test(ohneAkzente(firma.rest))) return null;
     const block = [];
-    for (let j = nr + 1; j < Math.min(zeilen.length, nr + 5); j++) {
-        if (EMPFAENGER.test(zeilen[j])) return null;
-        const teil = ersteSpalte(zeilen[j]);
+    for (let j = firma.zeile + 1; j < Math.min(zeilen.length, firma.zeile + 5); j++) {
+        const zeile = zeilen[j];
+        const flach = ohneAkzente(zeile);
+        // Infoblock daneben (Ihre Kundenreferenz …) oder Empfänger: nicht die Firma.
+        if (EMPFAENGER.test(zeile) || KUNDENBLOCK.test(flach)) return null;
+        if (REGISTER.test(flach)) register = true;
+        const teil = ersteSpalte(zeile);
         if (!teil || teil.length > 70) return null;
+        if (anrede && kern(teil).includes(anrede)) return null;
+        // Direkt unter der Firma muss Straße/Postfach/Abteilung stehen, kein Name.
+        if (block.length === 0 && !/\d/.test(teil) && !ABTEILUNG.test(teil)) return null;
         block.push(teil);
-        if (istPlzOrt(teil)) return block;
-        // Höchstens zwei Zeilen ohne Ziffer (Abteilung, Gebäude) vor dem Ort.
-        if (block.length === 3 && !block.some((z) => /\d/.test(z))) return null;
+        if (istPlzOrt(teil)) {
+            if (block.length < 2 && !/^\d+[a-z]?\s.+,/iu.test(block[0])) return null; // Ort ohne Straße (nur "12 Sample Street, London …" steht in einer Zeile)
+            const belegt = register || KONTAKT_AM_ANFANG.test(zeilen[j + 1] || '') || hatEmpfaengerDanach(zeilen, j + 1);
+            return belegt ? { block, register } : null;
+        }
+        if (block.length === 3) return null;
     }
     return null;
 }
 
-const kern = (name) => ohneAkzente(name).toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
 
+// eigene = gemerkte Absenderdaten des Nutzers: diese Anschrift nie übernehmen.
 // Liefert { name (ohne Rechtsform), anschrift (Firma, Straße, Ort) } oder leere Texte.
-export function findeAnbieter(zeilen) {
+export function findeAnbieter(zeilen, eigene = {}) {
     const text = zeilen.join('\n');
     const adressen = ohneAkzente(text).toLowerCase();
     let nennungen = zeilen.flatMap((z, i) => firmenIn(z, i));
@@ -132,21 +197,26 @@ export function findeAnbieter(zeilen) {
     else nennungen = nennungen.filter((f) => !/iban|bic|blz/iu.test([zeilen[f.zeile], zeilen[f.zeile + 1]].join(' ')));
     if (nennungen.length === 0) return { name: '', anschrift: '' };
 
+    const anrede = nameAusAnrede(zeilen);
     const firmen = new Map();
     for (const f of nennungen) {
         const k = kern(f.name);
-        if (!firmen.has(k)) firmen.set(k, { name: f.name, voll: f.voll, punkte: 0, anschrift: null });
+        if (!firmen.has(k)) firmen.set(k, { name: f.name, voll: f.voll, punkte: 0, anschrift: null, guete: 0 });
         const firma = firmen.get(k);
         firma.punkte += 1;
         const inZeile = anschriftInZeile(f.rest);
-        const darunter = inZeile ? null : anschriftDarunter(zeilen, f.zeile);
+        const darunter = inZeile ? null : anschriftDarunter(zeilen, f, anrede);
         if (inZeile) firma.punkte += 3;
         else if (darunter) firma.punkte += 1;
-        if (FREMD.test(ohneAkzente(f.rest))) firma.punkte += 1; // Geschäftsführer, HRB … daneben
+        if (REGISTER.test(ohneAkzente(f.rest))) firma.punkte += 1; // Geschäftsführer, HRB … daneben
         if (EMPFAENGER.test(zeilen[f.zeile + 1] || '') && !inZeile) firma.punkte -= 2; // "Muster GmbH / z. Hd. …"
-        if (!firma.anschrift || (inZeile && !firma.inZeile)) {
-            firma.anschrift = inZeile || darunter || firma.anschrift;
-            firma.inZeile = !!inZeile;
+        // Mehrere Fundstellen: die verlässlichste. Straße ohne Hausnummer ist oft verlesen.
+        const block = inZeile || (darunter && darunter.block);
+        if (!block) continue;
+        const guete = (inZeile ? 3 : darunter.register ? 2.5 : 1) - (/[0-9]/.test(block[0]) ? 0 : 2);
+        if (guete > firma.guete && !istEigeneAnschrift(block.join('\n'), eigene) && !(anrede && kern(block.join(' ')).includes(anrede))) {
+            firma.anschrift = block;
+            firma.guete = guete;
         }
     }
     for (const [k, firma] of firmen) {

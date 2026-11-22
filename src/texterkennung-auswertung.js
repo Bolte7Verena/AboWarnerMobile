@@ -328,6 +328,7 @@ function zuISO(datum) {
 /**
  * zeilen: erkannter Text, eine Zeile je Eintrag (Reihenfolge wie auf dem Bild).
  * optionen.monatZuerst: true, wenn die Geräte-Region Daten als MM/TT schreibt (USA).
+ * optionen.eigene: gemerkte Absenderdaten; die eigene Anschrift wird nie Vertragspartner.
  * optionen.dollar: Bedeutung eines einfachen "$" (Standard USD, in Mexiko MXN ...).
  * Rückgabe: nur die sicher erkannten Felder, z.B.
  *   { name, kosten, waehrung, turnus, kategorie, naechsteZahlung (ISO), kundennummer, vertragsnummer, vertragspartner }
@@ -339,7 +340,7 @@ export function werteTextAus(zeilen, optionen = {}) {
     const text = saubere.join('\n');
     const ergebnis = {};
 
-    const anbieter = findeAnbieter(saubere);
+    const anbieter = findeAnbieter(saubere, optionen.eigene);
     const marke = findeMarke(text, anbieter.name);
     const name = marke || anbieter.name;
     if (name) ergebnis.name = name;

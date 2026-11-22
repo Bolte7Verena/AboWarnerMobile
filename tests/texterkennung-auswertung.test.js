@@ -56,6 +56,7 @@ test('Englisch (USA): Datum MM/TT nur mit Region USA', () => {
         Adobe Inc.
         345 Park Avenue
         San Jose, CA 95110
+        www.example.com
         Total due: $22.99
         Billed monthly
         Next billing date: 03/04/2027
@@ -75,6 +76,7 @@ test('Spanisch: Factura de seguro', () => {
         Seguros Ejemplo S.A.
         Calle de Alcalá 45
         28014 Madrid
+        Tel. 910 000 000
         Número de póliza: POL-2026-8831
         Número de cliente: 0098812
         Importe total: 84,00 €
@@ -99,6 +101,7 @@ test('Französisch: Facture d’abonnement', () => {
         Presse Exemple SARL
         12 rue de la Paix
         75002 Paris
+        Tél. 01 00 00 00 00
         N° client : C-77812
         Numéro de contrat : AB 4410
         Abonnement mensuel
@@ -119,6 +122,7 @@ test('Portugiesisch (Brasil): Fatura com CEP e R$', () => {
         Academia Exemplo Ltda.
         Rua das Flores, 100
         01310-100 São Paulo - SP
+        Telefone: 11 0000-0000
         Número do contrato: 556677
         Código do cliente: 8812
         Mensalidade: R$ 119,90
@@ -269,7 +273,7 @@ test('Anschrift: Straßen und Orte mit "ust", "vat", "fax", "bic" werden erkannt
         ['Privatweg 3', '10115 Berlin'], ['Halifaxstraße 2', '52078 Aachen'], ['Bickenbacher Weg 4', '64404 Bickenbach'],
         ['Steuerwaldstraße 9', '31137 Hildesheim'], ['Hotel am Markt 2', '10115 Berlin'], ['Rue Auguste Comte 7', '69002 Lyon']
     ]) {
-        const e = werteTextAus(['Testfirma GmbH', strasse, ort, 'Kundennummer: K-45678']);
+        const e = werteTextAus(['Testfirma GmbH', strasse, ort, 'Tel. 030 123456', 'Kundennummer: K-45678']);
         assert.equal(e.vertragspartner, `Testfirma GmbH\n${strasse}\n${ort}`, strasse);
     }
 });
@@ -284,7 +288,7 @@ test('Echte Kontakt-, Bank- und Steuerzeilen beenden die Anschrift weiterhin', (
         'Fax: 030 2', 'IBAN DE00 0000', 'BIC ABCDEF', 'USt-IdNr. DE1', 'UStIdNr: DE1', 'USt-ID DE1', 'Steuernummer 12/3', 'Steuer-Nr. 12/3', 'Umsatzsteuer-ID DE1', 'VAT No. GB1',
         'info@example.com', 'www.example.com'
     ]) {
-        const e = werteTextAus(['Testfirma GmbH', zeile, '10115 Berlin', 'Kundennummer: K-45678']);
+        const e = werteTextAus(['Testfirma GmbH', zeile, '10115 Berlin', 'Tel. 030 1', 'Kundennummer: K-45678']);
         assert.equal(e.vertragspartner, undefined, zeile);
         assert.equal(e.name, 'Testfirma', zeile);
     }
@@ -376,4 +380,77 @@ test('Kategorie: nur wenn eindeutig, sonst leer', () => {
         ['Vielen Dank für Ihren Einkauf', ''], ['Internet: www.beispiel.de Tel.: 030 1234', ''], ['Strom und Miete', ''], ['', '']]) assert.equal(findeKategorie(text), kat, text);
     assert.equal(findeKategorie('irgendwas', 'Netflix'), 'Streaming');
     assert.equal(findeKategorie('irgendwas', 'Spotify'), 'Musik');
+});
+
+// --- Nie die Anschrift des Empfängers (Fehler auf dem S20 FE, 22.11.2026) ---
+import { istEigeneAnschrift } from '../src/absender.js';
+
+const EMPFAENGER = ['Max Mustermann', 'Musterholzer Str. 19', '28999 Musterhausen'];
+const INFO = ['Ihre', 'Kundenreferenz R-4711', 'Kundennummer 1234567'];
+const FUSSZEILEN = ['easybell GmbH Geschäftsführer: Erika Beispiel IBAN: DE00 1234 5678 9012 3456 78', 'Brückenstraße 5A Amtsgericht Charlottenburg HRB 99999 B', '10179 Berlin www.easybell.de'];
+
+test('Absenderzeile unvollständig gelesen: Empfänger darunter wird nie Vertragspartner', () => {
+    for (const absender of ['easybell GmbH', 'easybel GmbH | Bruckenstraße 5', 'easybell GmbH | Brückenstraße 5A |', 'easybell GmbH | Brückenstraße 5A | 10179', 'easybell GmbH | Brückenstraße', 'easybell GmbH |', 'easybell GmbH 10179 Berlin Musterholzer Str. 19']) {
+        for (const empf of [EMPFAENGER, ['Herrn', ...EMPFAENGER], EMPFAENGER.slice(1), EMPFAENGER.map((z, i) => `${z} ${INFO[i]}`), ['Max Mustermann Ihre', ...EMPFAENGER.slice(1).map((z, i) => `${z} ${INFO[i + 1]}`)]]) {
+            for (const fuss of [[], FUSSZEILEN]) {
+                const v = werteTextAus([absender, ...empf, 'Rechnung für November 2026', 'Sehr geehrter Herr Mustermann,', ...fuss]).vertragspartner;
+                assert.ok(v === undefined || v === EASYBELL, `${absender} / ${empf[0]}: ${v}`);
+                if (fuss.length) assert.equal(v, EASYBELL, absender);
+            }
+        }
+    }
+});
+
+test('Wortreste aus dem Infoblock landen nie in der Anschrift', () => {
+    for (const rest of ['Ihre', 'Ihre Kundenreferenz', 'Kundenreferenz R-4711', 'Kundennummer: 1234567', 'Rechnungsnummer RE-1', 'Rechnungsdatum 10.11.2026', 'Datum: 10.11.2026', 'Unser Zeichen AB', 'Seite 1 von 2', 'Vertragskonto 12', 'Ansprechpartner Erika', 'Your reference 12', 'Customer number 12', 'Référence client 12', 'Fecha 10/11/2026', 'Data 10/11/2026', 'Max Mustermann', 'Musterholzer']) {
+        const v = werteTextAus([`easybell GmbH | Brückenstraße 5A | 10179 Berlin ${rest}`]).vertragspartner;
+        assert.equal(v, EASYBELL, rest);
+    }
+});
+
+test('Ohne Beleg bleibt das Feld leer: Firma, Straße, Ort allein könnten auch der Empfänger sein', () => {
+    assert.equal(werteTextAus(['Testfirma GmbH', 'Musterweg 1', '12345 Musterstadt', 'Kundennummer: 1']).vertragspartner, undefined);
+    assert.equal(werteTextAus(['Testfirma GmbH', 'Musterweg 1', '12345 Musterstadt', 'Tel. 030 1']).vertragspartner, 'Testfirma GmbH\nMusterweg 1\n12345 Musterstadt');
+    assert.equal(werteTextAus(['Testfirma GmbH', 'Musterweg 1', '12345 Musterstadt', 'USt-IdNr. DE1']).vertragspartner, 'Testfirma GmbH\nMusterweg 1\n12345 Musterstadt');
+    assert.equal(werteTextAus(['Gimnasio Ejemplo S.L.', 'Calle Mayor 45', '28013 Madrid', 'Ana García', 'Avenida Ejemplo 3', '28001 Madrid']).vertragspartner, 'Gimnasio Ejemplo S.L.\nCalle Mayor 45\n28013 Madrid');
+});
+
+test('Orte mit Zusätzen und verlesene Trennzeichen oder Ziffern in der Absenderzeile', () => {
+    for (const ort of ['60311 Frankfurt am Main', '61348 Bad Homburg', '53757 Sankt Augustin', '99999 Neu-Ulm', '1010 Wien', '8000 Zürich']) assert.equal(werteTextAus([`Testfirma GmbH | Musterweg 1 | ${ort}`]).vertragspartner, `Testfirma GmbH\nMusterweg 1\n${ort}`, ort);
+    for (const z of ['easybell GmbH I Brückenstraße 5A I 10179 Berlin', 'easybell GmbH / Brückenstraße 5A / 10179 Berlin', 'easybell GmbH | Brückenstraße 5A | 1O179 Berlin', 'easybell GmbH | Brückenstraße 5A | 10179Berlin', 'easybell GmbH ! Brückenstraße 5A ! l0179 Berlin']) assert.equal(werteTextAus([z]).vertragspartner, EASYBELL, z);
+});
+
+test('Gemerkte eigene Anschrift wird nie Vertragspartner', () => {
+    const eigene = { name: 'Max Mustermann', strasse: 'Musterholzer Straße 19', plzOrt: '28999 Musterhausen' };
+    const z = ['Testfirma GmbH', 'Musterholzer Str. 19', '28999 Musterhausen', 'Tel. 030 1'];
+    assert.equal(werteTextAus(z, { eigene }).vertragspartner, undefined);
+    assert.ok(werteTextAus(z, { eigene: { ...eigene, strasse: 'Anderer Weg 2', plzOrt: '10115 Berlin', name: 'Erika Muster' } }).vertragspartner);
+    assert.equal(istEigeneAnschrift('easybell GmbH\nMax Mustermann Ihre\nMusterholzer Str. 19\n28999 Musterhausen Kundenreferenz', eigene), true);
+    assert.equal(istEigeneAnschrift('easybell GmbH\nBrückenstraße 5A\n10179 Berlin', eigene), false);
+    assert.equal(istEigeneAnschrift('Stadtwerke\nMusterholzer Str. 2\n28999 Musterhausen', eigene), false, 'gleicher Ort genügt nicht');
+    assert.equal(istEigeneAnschrift('Firma\nMusterholzer Str. 19\n10115 Berlin', eigene), false, 'gleiche Straße, anderer Ort');
+    for (const leer of [{}, undefined, { name: '', strasse: '', plzOrt: '' }, { name: 'A', strasse: 'B', plzOrt: 'C' }]) assert.equal(istEigeneAnschrift('Firma\nWeg 1\n10115 Berlin', leer), false);
+    assert.equal(istEigeneAnschrift('', eigene), false);
+    assert.equal(istEigeneAnschrift(undefined, eigene), false);
+});
+
+test('Zufällig verstümmelte Rechnungsköpfe (5000 Varianten): nie der Empfänger, nie Wortreste', () => {
+    const basis = ['easybell', 'easybell GmbH | Brückenstraße 5A | 10179 Berlin', 'Max Mustermann Ihre', 'Musterholzer Str. 19 Kundenreferenz R-4711', '28999 Musterhausen Kundennummer 1234567', 'Rechnungsnummer RE-2026-887766', 'Sehr geehrter Herr Mustermann,', ...FUSSZEILEN];
+    let s = 7;
+    const zufall = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+    for (let n = 0; n < 5000; n++) {
+        let z = [...basis];
+        for (let m = 0; m < 1 + Math.floor(zufall() * 4); m++) {
+            const i = Math.floor(zufall() * z.length);
+            const art = zufall();
+            if (art < 0.3) z.splice(i, 1);
+            else if (art < 0.6) z[i] = z[i].slice(0, Math.ceil(z[i].length * zufall()));
+            else if (art < 0.75 && i + 1 < z.length) z.splice(i, 2, `${z[i]} ${z[i + 1]}`);
+            else z[i] = z[i].replace(/\d/g, (d) => (zufall() < 0.3 ? 'O' : d));
+            z = z.filter((x) => x && x.trim());
+            if (z.length === 0) z = ['x'];
+        }
+        const v = werteTextAus(z).vertragspartner;
+        if (v) assert.ok(!/muster|28999|ihre|referenz|nummer|rechnung|herr/i.test(v.split('\n').slice(1).join(' ')), `${v} <- ${z.join(' / ')}`);
+    }
 });
