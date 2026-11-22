@@ -617,6 +617,7 @@ p { margin: 0; }
 
 /* "Von AppVektor" — bewusst klein und unauffällig, wie ein Impressum */
 .footer-von { max-width: 72rem; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.25rem 1rem; padding: 0 1.5rem calc(1.5rem + env(safe-area-inset-bottom)); margin-top: -1rem; font-size: 0.75rem; color: var(--muted-foreground); opacity: 0.8; }
+.test-stand { padding: 0 1rem calc(1rem + env(safe-area-inset-bottom)); text-align: center; font-size: 0.75rem; color: var(--accent-amber); }
 .footer-von-titel { width: 100%; text-align: center; }
 .footer-von a { color: inherit; text-decoration: underline; text-decoration-color: oklch(1 0 0 / 0.2); text-underline-offset: 2px; }
 .footer-von a:hover { color: var(--foreground); }

@@ -46,6 +46,8 @@ android {
         // Release (App-ID com.abowarner.pro, Signatur) bleibt unverändert.
         debug {
             applicationIdSuffix ".test"
+            // Stand der Test-App in den Android-App-Infos (nur Debug, Release unverändert).
+            versionNameSuffix "-test " + (System.getenv("AWP_TEST_STAND") ?: "lokal")
         }
         release {
             minifyEnabled true

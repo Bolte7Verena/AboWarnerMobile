@@ -5,6 +5,7 @@
  * Electron-Preload/contextBridge bereits vor Skriptausführung bereitstand.
  */
 
+/* global __TEST_STAND__ */
 import './api.js';
 import { initSprache, wendeAufDokumentAn } from './i18n.js';
 import { zeigeAbos, neuesAboSpeichern, initDatenSichern, aktualisiereBeiNeuemTag } from './app.js';
@@ -125,6 +126,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             formEl: document.getElementById('abo-form')
         });
         initFotoEinlesen({ datumsauswahl: zahlungsDatum });
+
+        // Nur in Test-Apps: Stand in der Fußzeile (siehe build.mjs).
+        if (__TEST_STAND__) {
+            const stand = document.createElement('p');
+            stand.className = 'test-stand';
+            stand.textContent = `AWP Test – ${__TEST_STAND__}`;
+            document.querySelector('.site-footer').appendChild(stand);
+        }
 
         // 4. Nur für automatisierte Store-Screenshots (siehe demo-seed.js):
         // feste Demo-Abos anlegen, bevor die Liste gerendert wird. Das Flag

@@ -26,6 +26,9 @@ await build({
     format: 'esm',
     outfile: 'www/index.js',
     target: 'es2020',
+    // Nur für Test-Apps gesetzt (z.B. "23.11.2026 10:15 a1b2c3d"), sonst leer: steht
+    // dann unten in der Fußzeile, damit klar ist, welcher Stand auf dem Handy läuft.
+    define: { __TEST_STAND__: JSON.stringify(process.env.AWP_TEST_STAND || '') },
     logLevel: 'info'
 });
 
