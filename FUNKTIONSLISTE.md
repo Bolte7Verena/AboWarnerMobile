@@ -257,8 +257,9 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Meldung nennt genau das fehlende oder falsche Feld, steht direkt am Feld und unter dem Knopf, Feld rot markiert, App scrollt hin; gilt für Neues Abo und Bearbeiten (5 Sprachen). Bei mehreren Feldern werden alle genannt
 - [x] Markierung verschwindet, sobald das Feld geändert, per Kalender gewählt oder vom Foto ausgefüllt wird
 - [x] Frist mit Nachkommastellen („2.5“) wird gemeldet statt still abgeschnitten
-- [ ] Entscheidung: eigene Auswahl „jederzeit kündbar“ (Einschätzung liegt vor, noch nichts geändert)
-- [ ] Offen: Frist 0 und Zahlung heute: vorgeschlagenes Vertragsende ist der Vortag (gehört zur Entscheidung „jederzeit kündbar“)
+- [x] Auswahl „Jederzeit kündbar“ neben Tage/Wochen/Monate (5 Sprachen): Karte grün mit Hinweis auf die nächste Zahlung, keine Frist-Erinnerung, Probezeit erinnert weiter; auch in Schreiben, PDF-Übersicht, Sicherung und Hilfe. Vorhandene Abos (auch mit 0 Tagen) unverändert
+- [x] Entscheidung: vorerst keine Erinnerung vor jeder Zahlung
+- [x] Frist 0 und heute Zahlungstag: Vertragsende-Vorschlag ist jetzt der Tag vor der folgenden Zahlung (vorher gestern)
 
 **Geprüft**
 - [x] Keine Daten verlassen das Handy, kein Analytics-, Tracking- oder Werbe-SDK (14.11.2026)
