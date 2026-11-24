@@ -1,6 +1,6 @@
 # Store-Texte Abo-Warner Pro, Version 2.0.2
 
-Stand 22.11.2026, vorbereitet für App Store Connect und Google Play Console. Nichts davon ist hochgeladen.
+Stand 24.11.2026, vorbereitet für App Store Connect und Google Play Console. Nichts davon ist hochgeladen.
 
 **Intern, gehört nicht in den Store**
 
@@ -30,7 +30,7 @@ Stand 22.11.2026, vorbereitet für App Store Connect und Google Play Console. Ni
 | Einleitung | Angaben nur selbst eintragen | GEÄNDERT: selbst eintragen oder per Foto vorschlagen lassen; sagt, bis wann man kündigen kann |
 | Foto | – | NEU |
 | Status | „Sicher“, „Bald fällig“, „Kritisch“, „Gekündigt“ | GEÄNDERT: „Kündigung möglich bis …“ in Rot, Gelb, Grün |
-| Kündigungsfrist | – | NEU: Tage, Wochen oder Monate |
+| Kündigungsfrist | – | NEU: Tage, Wochen oder Monate oder „Jederzeit kündbar“ (ergänzt 24.11.2026) |
 | Probeabo | – | NEU |
 | Erinnerung | drei Tage vor der Abbuchung | GEÄNDERT: 7 Tage vor Ende der Kündigungsfrist |
 | Kündigungsschreiben | „Musterschreiben“, Absender wird gemerkt | GEÄNDERT: fertiger Brief zum Kopieren oder Teilen; Absender-Satz entfällt |
@@ -75,7 +75,7 @@ Abo,Abos,Kündigung,Kündigungsfrist,Vertrag,Verträge,Kosten,Erinnerung,Übersi
 Abos, Verträge und Kündigungsfristen im Blick. Alles bleibt auf deinem Gerät.
 ```
 
-**Beschreibung, beide Stores** (max. 4000, hier 2030)
+**Beschreibung, beide Stores** (max. 4000, hier 2055)
 
 ```text
 Abo-Warner Pro hilft dir, wiederkehrende Ausgaben und Kündigungsfristen im Blick zu behalten.
@@ -88,7 +88,7 @@ Das kann die App:
 • Per Foto einlesen: Die App liest eine Rechnung oder Vertragsbestätigung auf deinem Gerät und schlägt die erkannten Angaben vor. Du prüfst und speicherst selbst. Das Bild wird nicht gespeichert.
 • Übersicht auf einen Blick: aktive Abos, Kosten pro Monat, Kosten pro Jahr und wie viele Fristen fällig sind
 • Auf jeder Karte: „Kündigung möglich bis …“, in Rot, Gelb oder Grün, je nachdem, wie viel Zeit noch bleibt
-• Kündigungsfrist in Tagen, Wochen oder Monaten
+• Kündigungsfrist in Tagen, Wochen oder Monaten oder „Jederzeit kündbar“
 • Probeabos: mit Enddatum und Erinnerung 3 Tage vorher
 • Erinnerung 7 Tage vor Ende einer Kündigungsfrist als lokale Benachrichtigung (nur, wenn du es erlaubst)
 • Kündigungsschreiben: Die App erstellt aus deinen Angaben einen fertigen Brief, den du kopieren oder als PDF teilen kannst
@@ -113,13 +113,13 @@ Gut zu wissen:
 • Die App ist keine Rechtsberatung.
 ```
 
-**Was ist neu, Version 2.0.2** (App Store max. 4000, Google Play max. 500, hier 437)
+**Was ist neu, Version 2.0.2** (App Store max. 4000, Google Play max. 500, hier 462)
 
 ```text
 • Per Foto einlesen, nur auf deinem Gerät
 • Jede Karte zeigt, bis wann du kündigen kannst
 • Erinnerung 7 Tage vor Ende der Kündigungsfrist
-• Frist in Tagen, Wochen oder Monaten
+• Frist in Tagen, Wochen oder Monaten oder „Jederzeit kündbar“
 • Probeabos mit Erinnerung
 • Kündigungsschreiben mit Vertrags- und Kundennummer
 • Wählbare Hauptwährung, umgerechnet mit festen Richtkursen (ca.)
@@ -155,7 +155,7 @@ subscription,subscriptions,cancel,cancellation,deadline,contract,costs,reminder,
 Track subscriptions, contracts and cancellation deadlines. All on your device.
 ```
 
-**Beschreibung, beide Stores** (max. 4000, hier 1927)
+**Beschreibung, beide Stores** (max. 4000, hier 1948)
 
 ```text
 Abo-Warner Pro helps you keep track of recurring expenses and cancellation deadlines.
@@ -168,7 +168,7 @@ What the app does:
 • Scan from photo: the app reads an invoice or contract confirmation on your device and suggests the details it finds. You check and save them yourself. The image is not saved.
 • Overview at a glance: active subscriptions, cost per month, cost per year and how many deadlines are due
 • On each card: “Cancel by …” in red, yellow or green, depending on how much time is left
-• Notice period in days, weeks or months
+• Notice period in days, weeks or months, or “Cancel anytime”
 • Free trials: with an end date and a reminder 3 days before
 • A reminder 7 days before a cancellation deadline as a local notification (only if you allow it)
 • Cancellation letter: the app creates a ready-made letter from your details that you can copy or share as a PDF
@@ -193,13 +193,13 @@ Good to know:
 • The app does not provide legal advice.
 ```
 
-**Was ist neu, Version 2.0.2** (App Store max. 4000, Google Play max. 500, hier 423)
+**Was ist neu, Version 2.0.2** (App Store max. 4000, Google Play max. 500, hier 444)
 
 ```text
 • Scan from photo, read only on your device
 • Each card shows the date you can cancel by
 • Reminder 7 days before a cancellation deadline
-• Notice period in days, weeks or months
+• Notice period in days, weeks or months, or “Cancel anytime”
 • Free trials with a reminder
 • Cancellation letters with contract and customer number
 • Choose your main currency, converted at fixed reference rates (approx.)
@@ -235,7 +235,7 @@ suscripción,cancelar,contrato,gastos,recordatorio,preaviso,prueba,costes,baja,c
 Controla suscripciones, contratos y plazos de cancelación. Todo en tu móvil.
 ```
 
-**Beschreibung, beide Stores** (max. 4000, hier 1989)
+**Beschreibung, beide Stores** (max. 4000, hier 2017)
 
 ```text
 Abo-Warner Pro te ayuda a controlar los gastos periódicos y los plazos de cancelación.
@@ -248,7 +248,7 @@ Qué hace la app:
 • Leer desde una foto: la app lee una factura o confirmación de contrato en tu dispositivo y propone los datos que reconoce. Tú los revisas y los guardas. La imagen no se guarda.
 • Resumen de un vistazo: suscripciones activas, coste al mes, coste al año y cuántos plazos son urgentes
 • En cada tarjeta: «Cancelar hasta el …» en rojo, amarillo o verde, según el tiempo que quede
-• Plazo de preaviso en días, semanas o meses
+• Plazo de preaviso en días, semanas o meses, o «Cancela cuando quieras»
 • Periodos de prueba: con fecha de fin y recordatorio 3 días antes
 • Recordatorio 7 días antes de que termine un plazo de cancelación, como notificación local (solo si lo permites)
 • Carta de cancelación: la app crea con tus datos una carta lista para copiar o compartir en PDF
@@ -273,13 +273,13 @@ Conviene saber:
 • La app no ofrece asesoramiento jurídico.
 ```
 
-**Was ist neu, Version 2.0.2** (App Store max. 4000, Google Play max. 500, hier 449)
+**Was ist neu, Version 2.0.2** (App Store max. 4000, Google Play max. 500, hier 477)
 
 ```text
 • Leer desde una foto, solo en tu dispositivo
 • Cada tarjeta muestra hasta cuándo puedes cancelar
 • Recordatorio 7 días antes de que termine el plazo
-• Preaviso en días, semanas o meses
+• Preaviso en días, semanas o meses, o «Cancela cuando quieras»
 • Periodos de prueba con recordatorio
 • Carta con número de contrato y de cliente
 • Moneda principal a elegir, con tipos de cambio fijos de referencia (aprox.)
@@ -315,7 +315,7 @@ abonnement,résilier,contrat,dépenses,rappel,préavis,essai,coûts,échéance,f
 Abonnements, contrats et délais de résiliation. Tout reste sur votre appareil.
 ```
 
-**Beschreibung, beide Stores** (max. 4000, hier 2188)
+**Beschreibung, beide Stores** (max. 4000, hier 2221)
 
 ```text
 Abo-Warner Pro vous aide à garder un œil sur vos dépenses récurrentes et vos délais de résiliation.
@@ -328,7 +328,7 @@ Ce que fait l’application :
 • Lire depuis une photo : l’application lit une facture ou une confirmation de contrat sur votre appareil et propose les informations reconnues. Vous les vérifiez et les enregistrez vous-même. L’image n’est pas enregistrée.
 • Vue d’ensemble : abonnements actifs, coût par mois, coût par an et nombre de délais urgents
 • Sur chaque carte : « Résilier jusqu’au … » en rouge, jaune ou vert, selon le temps restant
-• Préavis en jours, semaines ou mois
+• Préavis en jours, semaines ou mois, ou « Résiliable à tout moment »
 • Périodes d’essai : avec date de fin et rappel 3 jours avant
 • Rappel 7 jours avant la fin d’un délai de résiliation, sous forme de notification locale (uniquement si vous l’autorisez)
 • Lettre de résiliation : l’application rédige à partir de vos données une lettre prête à copier ou à partager en PDF
@@ -353,13 +353,13 @@ Bon à savoir :
 • L’application ne fournit pas de conseil juridique.
 ```
 
-**Was ist neu, Version 2.0.2** (App Store max. 4000, Google Play max. 500, hier 427)
+**Was ist neu, Version 2.0.2** (App Store max. 4000, Google Play max. 500, hier 460)
 
 ```text
 • Lire depuis une photo, uniquement sur votre appareil
 • Chaque carte indique jusqu’à quand résilier
 • Rappel 7 jours avant la fin du délai
-• Préavis en jours, semaines ou mois
+• Préavis en jours, semaines ou mois, ou « Résiliable à tout moment »
 • Périodes d’essai avec rappel
 • Lettre avec numéros de contrat et de client
 • Devise principale au choix, taux de référence fixes (env.)
@@ -395,7 +395,7 @@ assinatura,cancelar,contrato,gastos,lembrete,aviso,teste,custos,mensalidade,fatu
 Controle assinaturas, contratos e prazos de cancelamento. Tudo no seu celular.
 ```
 
-**Beschreibung, beide Stores** (max. 4000, hier 1906)
+**Beschreibung, beide Stores** (max. 4000, hier 1934)
 
 ```text
 O Abo-Warner Pro ajuda você a acompanhar gastos recorrentes e prazos de cancelamento.
@@ -408,7 +408,7 @@ O que o app faz:
 • Ler de uma foto: o app lê uma fatura ou confirmação de contrato no seu aparelho e sugere os dados reconhecidos. Você confere e salva. A imagem não é salva.
 • Visão geral: assinaturas ativas, custo por mês, custo por ano e quantos prazos são urgentes
 • Em cada cartão: “Cancelar até …” em vermelho, amarelo ou verde, conforme o tempo que resta
-• Prazo de aviso prévio em dias, semanas ou meses
+• Prazo de aviso prévio em dias, semanas ou meses, ou “Cancele quando quiser”
 • Períodos de teste: com data de término e lembrete 3 dias antes
 • Lembrete 7 dias antes do fim de um prazo de cancelamento, como notificação local (somente se você permitir)
 • Carta de cancelamento: o app cria com os seus dados uma carta pronta para copiar ou compartilhar em PDF
@@ -433,13 +433,13 @@ Bom saber:
 • O app não oferece consultoria jurídica.
 ```
 
-**Was ist neu, Version 2.0.2** (App Store max. 4000, Google Play max. 500, hier 413)
+**Was ist neu, Version 2.0.2** (App Store max. 4000, Google Play max. 500, hier 441)
 
 ```text
 • Ler de uma foto, apenas no seu aparelho
 • Cada cartão mostra até quando você pode cancelar
 • Lembrete 7 dias antes do fim do prazo
-• Aviso prévio em dias, semanas ou meses
+• Aviso prévio em dias, semanas ou meses, ou “Cancele quando quiser”
 • Períodos de teste com lembrete
 • Carta com número do contrato e de cliente
 • Moeda principal à escolha, com taxas fixas de referência (aprox.)

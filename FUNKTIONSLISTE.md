@@ -285,6 +285,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [x] Store-Screenshots erzeugt: 135 Bilder, 5 Sprachen, iPhone 6,9 und 6,3 Zoll, iPad 13 Zoll, Google Play (22.11.2026; DE/ES/FR mit Euro, EN mit Dollar im US-Format, PT mit Real; Ordner store-screenshots, nur lokal, nicht auf GitHub und nicht hochgeladen)
 - [ ] Screenshots ansehen und freigeben (Jens, Kira)
 - [x] Store-Texte in 5 Sprachen auf Stand 2.0.2 vorbereitet, mit Änderungsliste (22.11.2026, store-assets/store-texte.md, nicht hochgeladen)
+- [x] Store-Texte: „Jederzeit kündbar“ in Beschreibung und „Was ist neu“ ergänzt, 5 Sprachen mit den Begriffen aus der App; alle Felder nachgezählt, alle innerhalb der Grenzen (24.11.2026)
 - [ ] Store-Texte freigeben (Jens, Kira), ES/FR/PT gegenlesen lassen
 - [x] Datenschutzseite auf abo-warner-pro.com in 5 Sprachen auf Stand 2.0.2 (neue Felder, Foto-Funktion, Link zu appvektor.com, Gerätesicherung; veröffentlicht 22.11.2026, Commit f35d757)
 - [x] Play Console Datensicherheit geprüft (22.11.2026): „keine Daten erhoben, keine geteilt“ passt weiter; in der Console selbst noch von Jens zu vergleichen
