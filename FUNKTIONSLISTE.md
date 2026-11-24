@@ -4,7 +4,7 @@ Die eine Übersicht für Jens, Kira und Lilly.
 [x] = erledigt, [ ] = offen.
 Lilly hält diese Liste nach jedem erledigten Auftrag aktuell.
 
-Stand: 22.11.2026
+Stand: 24.11.2026
 
 ---
 
@@ -62,7 +62,7 @@ Vor jeder Einreichung auf einem echten iPhone testen, nicht nur im Browser.
 
 ---
 
-## 1. Version 2.0.1 (Zweig master, liegt bei Apple und Google in der Prüfung)
+## 1. Version 2.0.1 (bei Apple freigegeben und veröffentlicht, Meldung 24.11.2026)
 
 Geprüft im Code von master (Stand ab6372a).
 
@@ -104,9 +104,17 @@ Geprüft im Code von master (Stand ab6372a).
 
 ---
 
-## 2. Update 2.0.2 (Zweig update-2.0.2)
+## 2. Update 2.0.2 (Zweig update-2.0.2, seit 24.11.2026 auch master)
 
 Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
+
+**Einreichung vorbereitet (24.11.2026)**
+- [x] update-2.0.2 in master zusammengeführt (Fast-Forward) und auf GitHub gepusht
+- [x] Version 2.0.2: iOS Buildnummer 4 im Projekt (Codemagic setzt beim Build selbst letzte Apple-Buildnummer + 1), Android versionCode 2 (2.0.1 hatte 1), versionName 2.0.2
+- [x] Android-Bundle builds/AboWarnerPro-2.0.2-release-vc2.aab (signiert mit Upload-Schlüssel, versionCode 2 / 2.0.2, ohne gelben Teststempel; nicht hochgeladen)
+- [ ] iOS: Codemagic-Workflow „iOS – Build, Sign & TestFlight“ auf Zweig master starten (Jens)
+- [ ] 2.0.2 auf echtem iPhone über TestFlight prüfen (feste Regel), dann bei Apple einreichen
+- [ ] AAB in der Play Console hochladen (Jens)
 
 **Paket 1 – Abos und Kündigen**
 - [x] Sicherheitsabfrage vor dem Löschen eines Abos
@@ -273,7 +281,7 @@ Geprüft im Code von update-2.0.2. Noch nicht in den Stores.
 - [ ] Foto-Funktion auf echtem iPhone testen (Codemagic-Build)
 - [ ] Erkennungsqualität Tesseract auf Jens' Android-Handy testen
 - [ ] Übersetzungen ES/FR/PT: Bedeutung prüfen (Kira anhand von Screenshots), Gegenleser optional später
-- [ ] Versionsnummer auf 2.0.2 setzen (erst kurz vor Einreichung)
+- [x] Versionsnummer auf 2.0.2 setzen (24.11.2026)
 - [x] Store-Screenshots erzeugt: 135 Bilder, 5 Sprachen, iPhone 6,9 und 6,3 Zoll, iPad 13 Zoll, Google Play (22.11.2026; DE/ES/FR mit Euro, EN mit Dollar im US-Format, PT mit Real; Ordner store-screenshots, nur lokal, nicht auf GitHub und nicht hochgeladen)
 - [ ] Screenshots ansehen und freigeben (Jens, Kira)
 - [x] Store-Texte in 5 Sprachen auf Stand 2.0.2 vorbereitet, mit Änderungsliste (22.11.2026, store-assets/store-texte.md, nicht hochgeladen)
@@ -322,7 +330,7 @@ Alle Repos privat, Konto Bolte7Verena. Anmeldung über den Git Credential Manage
 
 | Ordner auf dem Medion | GitHub-Repo | Zweige auf GitHub | Live-Seite |
 |---|---|---|---|
-| G:\AboWarnerMobile (+ Arbeitsordner G:\AboWarnerMobile-fix-zoom) | Bolte7Verena/AboWarnerMobile | master (2.0.1 in Prüfung), fix-2.0.1-zoom, update-2.0.2 | – (App) |
+| G:\AboWarnerMobile (+ Arbeitsordner G:\AboWarnerMobile-fix-zoom) | Bolte7Verena/AboWarnerMobile | master (= update-2.0.2, Version 2.0.2), fix-2.0.1-zoom, update-2.0.2 | – (App) |
 | G:\appvektor-landing | Bolte7Verena/appvektor-landing | sprachen (= live, Standardzweig), main (alter Stand vor den Sprachen) | appvektor.com (Worker appvektor) |
 | G:\minimalist-landing-gen-main | Bolte7Verena/abo-warner-pro-landing | main | abo-warner-pro.com (Worker tanstack-start-ts) |
 | G:\wie-tickt-ki-wirklich | Bolte7Verena/wieticktkiwirklich | main | wieticktkiwirklich.com (Worker wieticktkiwirklich) |
